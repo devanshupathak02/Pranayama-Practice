@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "Pranayama Timer",
+    "slug": "pranayama-timer",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0F172A"
+    },
+    "ios": {
+      "bundleIdentifier": "com.pranayama.timer",
+      "supportsTablet": false,
+      "userInterfaceStyle": "dark",
+      "infoPlist": {
+        "UIBackgroundModes": ["audio"]
+      }
+    },
+    "android": {
+      "package": "com.pranayama.timer",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0F172A"
+      },
+      "userInterfaceStyle": "dark"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+# dependencies
+node_modules/
+
+# expo
+.expo/
+dist/
+web-build/
+
+# build artifacts
+*.apk
+*.aab
+*.ipa
+
+# system / environment
+.DS_Store
+Thumbs.db
+*.log
