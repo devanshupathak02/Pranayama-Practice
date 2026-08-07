@@ -24,7 +24,7 @@ Every popular interval timer (Tabata, HIIT apps) is built for a person watching 
 | Each phase can carry media | Full-screen image + pre-recorded audio, per phase, not a generic tone |
 | Session history | Local log of past sessions (date, routine, duration, completed) |
 | App launch time | Under 2 seconds |
-| Works in dark mode | Yes |
+| Works in dark mode | No — v1 uses a single light, warm theme (see 05-design-system.md). Dark mode is not required for v1. |
 
 ## The v1 routine: "Pranayama"
 

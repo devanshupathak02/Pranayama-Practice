@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated, Easing } from 'react-native';
+import { theme } from '../../constants/theme';
 
 interface Props {
   isPaused?: boolean;
@@ -65,15 +66,15 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: 'rgba(14, 165, 233, 0.15)',
+    backgroundColor: 'rgba(186, 117, 23, 0.15)', // accent color at 0.15 opacity
     borderWidth: 2,
-    borderColor: 'rgba(56, 189, 248, 0.4)',
+    borderColor: 'rgba(216, 169, 59, 0.4)', // borderAccent color at 0.4 opacity
   },
   innerCircle: {
     width: 140,
     height: 140,
     borderRadius: 70,
-    backgroundColor: '#0369A1',
-    opacity: 0.6,
+    backgroundColor: theme.accent,
+    opacity: 1.0,
   },
 });

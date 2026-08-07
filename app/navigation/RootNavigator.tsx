@@ -7,6 +7,7 @@ import { RoutineDetailScreen } from '../screens/RoutineDetailScreen/RoutineDetai
 import { ActiveSessionScreen } from '../screens/ActiveSessionScreen/ActiveSessionScreen';
 import { HistoryScreen } from '../screens/HistoryScreen/HistoryScreen';
 import { SettingsScreen } from '../screens/SettingsScreen/SettingsScreen';
+import { theme } from '../constants/theme';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -17,21 +18,21 @@ export const RootNavigator: React.FC = () => {
         initialRouteName="Home"
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#0F172A',
+            backgroundColor: theme.background,
           },
-          headerTintColor: '#F8FAFC',
+          headerTintColor: theme.textPrimary,
           headerTitleStyle: {
             fontWeight: '600',
           },
           contentStyle: {
-            backgroundColor: '#0F172A',
+            backgroundColor: theme.background,
           },
         }}
       >
         <Stack.Screen
           name="Home"
           component={HomeScreen}
-          options={{ title: 'Pranayama' }}
+          options={{ title: 'Pranayama Timer' }}
         />
         <Stack.Screen
           name="RoutineDetail"

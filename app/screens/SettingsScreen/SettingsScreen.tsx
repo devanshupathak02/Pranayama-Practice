@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Switch, TouchableOpacity } from 'react-native';
 import { SettingsScreenNavigationProp } from '../../navigation/types';
 import { useSessionStore } from '../../store/sessionStore';
+import { theme } from '../../constants/theme';
 
 interface Props {
   navigation: SettingsScreenNavigationProp;
@@ -39,8 +40,8 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
         <Switch
           value={muteTechniqueNames}
           onValueChange={handleToggleMute}
-          trackColor={{ false: '#334155', true: '#0EA5E9' }}
-          thumbColor={muteTechniqueNames ? '#F8FAFC' : '#94A3B8'}
+          trackColor={{ false: theme.border, true: theme.accent }}
+          thumbColor="#FFFFFF"
         />
       </View>
 
@@ -58,26 +59,31 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: theme.background,
     paddingTop: 60,
     paddingHorizontal: 24,
   },
   title: {
     fontSize: 28,
-    fontWeight: '700',
-    color: '#F8FAFC',
+    fontWeight: '600',
+    color: theme.textPrimary,
     marginBottom: 32,
   },
   settingRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#1E293B',
+    backgroundColor: theme.surface,
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: theme.border,
     marginBottom: 40,
+    shadowColor: 'rgba(120, 90, 40, 1)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 20,
+    elevation: 2,
   },
   settingTextContainer: {
     flex: 1,
@@ -86,22 +92,24 @@ const styles = StyleSheet.create({
   settingTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#F8FAFC',
+    color: theme.textPrimary,
     marginBottom: 4,
   },
   settingDescription: {
     fontSize: 12,
-    color: '#94A3B8',
+    color: theme.textSecondary,
     lineHeight: 16,
   },
   backButton: {
-    backgroundColor: '#334155',
+    backgroundColor: theme.surface,
     paddingVertical: 14,
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: theme.border,
   },
   backButtonText: {
-    color: '#F8FAFC',
+    color: theme.textPrimary,
     fontSize: 16,
     fontWeight: '500',
   },

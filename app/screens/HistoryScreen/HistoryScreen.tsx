@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native
 import { HistoryScreenNavigationProp } from '../../navigation/types';
 import { useHistoryStore } from '../../store/historyStore';
 import { SessionRecord } from '../../models/SessionHistory';
+import { theme } from '../../constants/theme';
 
 interface Props {
   navigation: HistoryScreenNavigationProp;
@@ -94,7 +95,7 @@ export const HistoryScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: theme.background,
     paddingTop: 60,
     paddingHorizontal: 20,
   },
@@ -106,14 +107,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: '700',
-    color: '#F8FAFC',
+    fontWeight: '600',
+    color: theme.textPrimary,
   },
   clearButton: {
     padding: 8,
   },
   clearButtonText: {
-    color: '#EF4444',
+    color: theme.danger,
     fontSize: 14,
     fontWeight: '500',
   },
@@ -121,12 +122,17 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   recordCard: {
-    backgroundColor: '#1E293B',
-    borderRadius: 12,
+    backgroundColor: theme.surface,
+    borderRadius: 16,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: theme.border,
+    shadowColor: 'rgba(120, 90, 40, 1)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 20,
+    elevation: 2,
   },
   recordHeader: {
     flexDirection: 'row',
@@ -137,16 +143,16 @@ const styles = StyleSheet.create({
   routineTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#F8FAFC',
+    color: theme.textPrimary,
   },
   durationText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#38BDF8',
+    color: theme.accent,
   },
   dateText: {
     fontSize: 12,
-    color: '#94A3B8',
+    color: theme.textSecondary,
   },
   emptyContainer: {
     flex: 1,
@@ -161,24 +167,26 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#F8FAFC',
+    color: theme.textPrimary,
     marginBottom: 8,
   },
   emptyText: {
     fontSize: 14,
-    color: '#64748B',
+    color: theme.textSecondary,
     textAlign: 'center',
     lineHeight: 20,
   },
   backButton: {
-    backgroundColor: '#334155',
+    backgroundColor: theme.surface,
     paddingVertical: 14,
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: 'center',
     marginBottom: 24,
+    borderWidth: 1,
+    borderColor: theme.border,
   },
   backButtonText: {
-    color: '#F8FAFC',
+    color: theme.textPrimary,
     fontSize: 16,
     fontWeight: '500',
   },

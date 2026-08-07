@@ -5,30 +5,37 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0F172A"
+      "backgroundColor": "#FAF7F2"
     },
     "ios": {
       "bundleIdentifier": "com.pranayama.timer",
       "supportsTablet": false,
-      "userInterfaceStyle": "dark",
+      "userInterfaceStyle": "light",
       "infoPlist": {
-        "UIBackgroundModes": ["audio"]
+        "UIBackgroundModes": [
+          "audio"
+        ]
       }
     },
     "android": {
       "package": "com.pranayama.timer",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0F172A"
+        "backgroundColor": "#FAF7F2"
       },
-      "userInterfaceStyle": "dark"
+      "userInterfaceStyle": "light"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "befb2fe3-8369-440d-a18a-5d0b42353494"
+      }
     }
   }
 }

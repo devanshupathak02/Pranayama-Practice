@@ -7,6 +7,7 @@ import {
 import { getRoutineById } from '../../data/routines';
 import { useSessionStore } from '../../store/sessionStore';
 import { Phase } from '../../models/Phase';
+import { theme } from '../../constants/theme';
 
 interface Props {
   navigation: RoutineDetailScreenNavigationProp;
@@ -87,29 +88,29 @@ export const RoutineDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: theme.background,
     paddingTop: 24,
     paddingHorizontal: 20,
   },
   title: {
     fontSize: 28,
-    fontWeight: '700',
-    color: '#F8FAFC',
+    fontWeight: '600',
+    color: theme.textPrimary,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 14,
-    color: '#94A3B8',
+    color: theme.textSecondary,
     marginBottom: 8,
   },
   duration: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#38BDF8',
+    color: theme.accent,
     marginBottom: 20,
   },
   primaryButton: {
-    backgroundColor: '#0EA5E9',
+    backgroundColor: theme.accent,
     width: '100%',
     paddingVertical: 16,
     borderRadius: 12,
@@ -124,7 +125,7 @@ const styles = StyleSheet.create({
   sectionHeader: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#E2E8F0',
+    color: theme.textPrimary,
     marginBottom: 12,
   },
   listContent: {
@@ -133,17 +134,22 @@ const styles = StyleSheet.create({
   phaseCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1E293B',
-    borderRadius: 8,
+    backgroundColor: theme.surface,
+    borderRadius: 16,
     padding: 14,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: theme.border,
+    shadowColor: 'rgba(120, 90, 40, 1)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 20,
+    elevation: 2,
   },
   phaseNumber: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#38BDF8',
+    color: theme.accent,
     width: 36,
   },
   phaseDetails: {
@@ -152,33 +158,35 @@ const styles = StyleSheet.create({
   phaseLabel: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#F8FAFC',
+    color: theme.textPrimary,
     marginBottom: 2,
   },
   phaseMeta: {
     fontSize: 12,
-    color: '#94A3B8',
+    color: theme.textSecondary,
   },
   errorContainer: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: theme.background,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
   },
   errorText: {
-    color: '#EF4444',
+    color: theme.danger,
     fontSize: 18,
     marginBottom: 24,
   },
   backButton: {
-    backgroundColor: '#334155',
+    backgroundColor: theme.surface,
     paddingVertical: 12,
     paddingHorizontal: 24,
-    borderRadius: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: theme.border,
   },
   backButtonText: {
-    color: '#F8FAFC',
+    color: theme.textPrimary,
     fontSize: 16,
   },
 });

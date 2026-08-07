@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
 import { HomeScreenNavigationProp } from '../../navigation/types';
 import { ROUTINES } from '../../data/routines';
 import { useSessionStore } from '../../store/sessionStore';
 import { Routine } from '../../models/Routine';
+import { theme } from '../../constants/theme';
 
 interface Props {
   navigation: HomeScreenNavigationProp;
@@ -33,7 +34,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.headerTitle}>Pranayama</Text>
+        <Text style={styles.headerTitle}>Pranayama Timer</Text>
         <Text style={styles.headerSubtitle}>Select a breathing routine to practice</Text>
 
         {/* D10: Render routine cards dynamically from ROUTINES array */}
@@ -63,6 +64,15 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
             );
           })}
         </View>
+
+        <View style={styles.creditContainer}>
+          <Text style={styles.creditText}>Powered by</Text>
+          <Image
+            source={require('../../../assets/images/still-mountain-lockup.png')}
+            style={styles.creditImage}
+            resizeMode="contain"
+          />
+        </View>
       </ScrollView>
 
       <View style={styles.footerRow}>
@@ -81,7 +91,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: theme.background,
   },
   scrollContent: {
     paddingTop: 40,
@@ -90,24 +100,29 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 32,
-    fontWeight: '700',
-    color: '#F8FAFC',
+    fontWeight: '600',
+    color: theme.textPrimary,
     marginBottom: 4,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#94A3B8',
+    color: theme.textSecondary,
     marginBottom: 24,
   },
   routineList: {
     gap: 16,
   },
   routineCard: {
-    backgroundColor: '#1E293B',
+    backgroundColor: theme.surfaceTinted,
     borderRadius: 16,
     padding: 20,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: theme.borderAccent,
+    shadowColor: 'rgba(120, 90, 40, 1)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 20,
+    elevation: 2,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -117,47 +132,65 @@ const styles = StyleSheet.create({
   },
   routineName: {
     fontSize: 22,
-    fontWeight: '700',
-    color: '#F8FAFC',
+    fontWeight: '600',
+    color: theme.accentOnTint,
   },
   badge: {
-    backgroundColor: 'rgba(14, 165, 233, 0.2)',
+    backgroundColor: 'rgba(216, 169, 59, 0.2)', // borderAccent with 20% opacity
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 12,
+    borderRadius: 999,
     borderWidth: 1,
-    borderColor: 'rgba(56, 189, 248, 0.4)',
+    borderColor: theme.borderAccent,
   },
   badgeText: {
-    color: '#38BDF8',
+    color: theme.accentOnTint,
     fontSize: 12,
     fontWeight: '600',
   },
   routineDescription: {
     fontSize: 14,
-    color: '#94A3B8',
+    color: theme.accentOnTint,
     lineHeight: 20,
     marginBottom: 16,
+    opacity: 0.9,
   },
   phaseCountText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#38BDF8',
+    color: theme.accentOnTint,
   },
   footerRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingVertical: 16,
     borderTopWidth: 1,
-    borderTopColor: '#1E293B',
-    backgroundColor: '#0F172A',
+    borderTopColor: theme.border,
+    backgroundColor: theme.background,
   },
   textButton: {
     padding: 12,
   },
   textButtonText: {
-    color: '#94A3B8',
+    color: theme.textSecondary,
     fontSize: 14,
     fontWeight: '500',
+  },
+  creditContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 32,
+    marginBottom: 8,
+    opacity: 0.7,
+  },
+  creditText: {
+    fontSize: 12,
+    color: theme.textSecondary,
+    marginRight: 6,
+  },
+  creditImage: {
+    width: 60,
+    height: 45,
   },
 });

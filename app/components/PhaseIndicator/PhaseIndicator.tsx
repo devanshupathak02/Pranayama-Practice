@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Phase } from '../../models/Phase';
+import { theme } from '../../constants/theme';
 
 interface Props {
   currentPhase: Phase | null;
@@ -37,7 +38,14 @@ export const PhaseIndicator: React.FC<Props> = ({
         </Text>
       </View>
 
-      <Text style={styles.phaseLabel}>{currentPhase.label}</Text>
+      <Text
+        style={[
+          styles.phaseLabel,
+          { color: isPranayama ? '#FFFFFF' : theme.textPrimary }
+        ]}
+      >
+        {currentPhase.label}
+      </Text>
     </View>
   );
 };
@@ -54,14 +62,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   badgeNormal: {
-    backgroundColor: '#1E293B',
+    backgroundColor: theme.surface,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: theme.border,
   },
   badgePranayama: {
-    backgroundColor: 'rgba(14, 165, 233, 0.25)',
+    backgroundColor: theme.surfaceTinted,
     borderWidth: 1,
-    borderColor: '#38BDF8',
+    borderColor: theme.borderAccent,
   },
   badgeText: {
     fontSize: 11,
@@ -69,15 +77,14 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   badgeTextNormal: {
-    color: '#94A3B8',
+    color: theme.textSecondary,
   },
   badgeTextPranayama: {
-    color: '#38BDF8',
+    color: theme.accentOnTint,
   },
   phaseLabel: {
     fontSize: 24,
     fontWeight: '600',
-    color: '#F8FAFC',
     textAlign: 'center',
     paddingHorizontal: 16,
   },

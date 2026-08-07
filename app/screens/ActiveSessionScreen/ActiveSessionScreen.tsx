@@ -4,6 +4,7 @@ import { ActiveSessionScreenNavigationProp } from '../../navigation/types';
 import { useSessionStore } from '../../store/sessionStore';
 import { PhaseIndicator } from '../../components/PhaseIndicator/PhaseIndicator';
 import { BreathingCircle } from '../../components/BreathingCircle/BreathingCircle';
+import { theme } from '../../constants/theme';
 
 interface Props {
   navigation: ActiveSessionScreenNavigationProp;
@@ -76,7 +77,12 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
 
   // D9: Full-screen image ONLY during pranayama phases
   const renderContent = () => (
-    <View style={styles.contentOverlay}>
+    <View
+      style={[
+        styles.contentOverlay,
+        { backgroundColor: isPranayama && currentPhase?.image ? 'rgba(9, 13, 22, 0.85)' : 'transparent' }
+      ]}
+    >
       {/* Top Routine Progress Bar */}
       <View style={styles.progressBarContainer}>
         <View style={[styles.progressBarFill, { width: `${progressRatio * 100}%` }]} />
@@ -94,21 +100,44 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
         </View>
       )}
 
-      <Text style={styles.timerDisplay}>
+      <Text
+        style={[
+          styles.timerDisplay,
+          { color: isPranayama && currentPhase?.image ? '#FFFFFF' : theme.textPrimary }
+        ]}
+      >
         {formatMMSS(currentPhaseSecondsRemaining)}
       </Text>
 
-      <Text style={styles.totalElapsed}>
+      <Text
+        style={[
+          styles.totalElapsed,
+          { color: isPranayama && currentPhase?.image ? 'rgba(255,255,255,0.6)' : theme.textSecondary }
+        ]}
+      >
         Session Time: {formatMMSS(totalElapsedSeconds)}
       </Text>
 
       <View style={styles.controlsRow}>
         <TouchableOpacity
-          style={styles.controlButtonSecondary}
+          style={[
+            styles.controlButtonSecondary,
+            {
+              backgroundColor: isPranayama && currentPhase?.image ? 'rgba(255,255,255,0.1)' : theme.surface,
+              borderColor: isPranayama && currentPhase?.image ? 'rgba(255,255,255,0.2)' : theme.border,
+            }
+          ]}
           onPress={skipPhase}
           activeOpacity={0.7}
         >
-          <Text style={styles.controlTextSecondary}>Skip</Text>
+          <Text
+            style={[
+              styles.controlTextSecondary,
+              { color: isPranayama && currentPhase?.image ? '#FFFFFF' : theme.textSecondary }
+            ]}
+          >
+            Skip
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -122,11 +151,17 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.controlButtonDanger}
+          style={[
+            styles.controlButtonDanger,
+            {
+              backgroundColor: isPranayama && currentPhase?.image ? 'rgba(179, 62, 43, 0.2)' : theme.surface,
+              borderColor: theme.danger,
+            }
+          ]}
           onPress={handleExitSession}
           activeOpacity={0.7}
         >
-          <Text style={styles.controlTextDanger}>End</Text>
+          <Text style={[styles.controlTextDanger, { color: theme.danger }]}>End</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -150,14 +185,13 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#090D16',
+    backgroundColor: theme.background,
   },
   contentOverlay: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 24,
-    backgroundColor: 'rgba(9, 13, 22, 0.85)',
   },
   progressBarContainer: {
     position: 'absolute',
@@ -165,13 +199,13 @@ const styles = StyleSheet.create({
     left: 24,
     right: 24,
     height: 4,
-    backgroundColor: '#1E293B',
+    backgroundColor: theme.border,
     borderRadius: 2,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: '#38BDF8',
+    backgroundColor: theme.accent,
     borderRadius: 2,
   },
   circleContainer: {
@@ -180,13 +214,11 @@ const styles = StyleSheet.create({
   timerDisplay: {
     fontSize: 72,
     fontWeight: '200',
-    color: '#F8FAFC',
     letterSpacing: 4,
     marginVertical: 12,
   },
   totalElapsed: {
     fontSize: 14,
-    color: '#64748B',
     marginBottom: 40,
   },
   controlsRow: {
@@ -197,7 +229,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   controlButtonPrimary: {
-    backgroundColor: '#0EA5E9',
+    backgroundColor: theme.accent,
     paddingVertical: 16,
     paddingHorizontal: 36,
     borderRadius: 30,
@@ -210,28 +242,22 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   controlButtonSecondary: {
-    backgroundColor: '#1E293B',
     paddingVertical: 14,
     paddingHorizontal: 24,
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: '#334155',
   },
   controlTextSecondary: {
-    color: '#94A3B8',
     fontSize: 14,
     fontWeight: '500',
   },
   controlButtonDanger: {
-    backgroundColor: 'rgba(220, 38, 38, 0.2)',
     paddingVertical: 14,
     paddingHorizontal: 24,
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: 'rgba(220, 38, 38, 0.4)',
   },
   controlTextDanger: {
-    color: '#EF4444',
     fontSize: 14,
     fontWeight: '500',
   },
@@ -241,17 +267,17 @@ const styles = StyleSheet.create({
   },
   completedTitle: {
     fontSize: 28,
-    fontWeight: '700',
-    color: '#F8FAFC',
+    fontWeight: '600',
+    color: theme.textPrimary,
     marginBottom: 8,
   },
   completedSubtitle: {
     fontSize: 16,
-    color: '#38BDF8',
+    color: theme.accent,
     marginBottom: 40,
   },
   primaryButton: {
-    backgroundColor: '#0EA5E9',
+    backgroundColor: theme.accent,
     paddingVertical: 16,
     paddingHorizontal: 32,
     borderRadius: 12,
