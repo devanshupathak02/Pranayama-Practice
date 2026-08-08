@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import {
   RoutineDetailScreenNavigationProp,
   RoutineDetailScreenRouteProp,
 } from '../../navigation/types';
 import { getRoutineById } from '../../data/routines';
 import { useSessionStore } from '../../store/sessionStore';
+import { useRoutineStore } from '../../store/routineStore';
 import { Phase } from '../../models/Phase';
 import { theme } from '../../constants/theme';
 
@@ -18,12 +19,32 @@ export const RoutineDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const { routineId } = route.params;
   const routine = getRoutineById(routineId);
   const { startSession } = useSessionStore();
+  const { deleteRoutine } = useRoutineStore();
 
   const handleStartSession = () => {
     if (routine) {
       startSession(routine.id);
       navigation.navigate('ActiveSession');
     }
+  };
+
+  const handleDelete = () => {
+    if (!routine) return;
+    Alert.alert(
+      'Delete Routine',
+      `Are you sure you want to delete "${routine.name}"? This action cannot be undone.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            await deleteRoutine(routine.id);
+            navigation.navigate('Home');
+          },
+        },
+      ]
+    );
   };
 
   const handleBack = () => {
@@ -66,12 +87,35 @@ export const RoutineDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       </Text>
 
       <TouchableOpacity
-        style={styles.primaryButton}
+        style={[
+          styles.primaryButton,
+          routine.source === 'custom' && { marginBottom: 12 }
+        ]}
         onPress={handleStartSession}
         activeOpacity={0.8}
       >
         <Text style={styles.primaryButtonText}>Begin Session</Text>
       </TouchableOpacity>
+
+      {routine.source === 'custom' && (
+        <View style={styles.actionsRow}>
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() => navigation.navigate('RoutineBuilder', { routineId: routine.id })}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.editButtonText}>Edit Routine</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={handleDelete}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.deleteButtonText}>Delete Routine</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <Text style={styles.sectionHeader}>Phase Sequence</Text>
 
@@ -188,5 +232,40 @@ const styles = StyleSheet.create({
   backButtonText: {
     color: theme.textPrimary,
     fontSize: 16,
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+    marginBottom: 24,
+  },
+  editButton: {
+    flex: 1,
+    backgroundColor: theme.surface,
+    borderWidth: 1,
+    borderColor: theme.borderAccent,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  editButtonText: {
+    color: theme.accent,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  deleteButton: {
+    flex: 1,
+    backgroundColor: theme.surface,
+    borderWidth: 1,
+    borderColor: theme.danger,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  deleteButtonText: {
+    color: theme.danger,
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

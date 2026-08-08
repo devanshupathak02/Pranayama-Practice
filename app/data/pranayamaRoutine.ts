@@ -215,4 +215,5 @@ export const PRANAYAMA_ROUTINE: Routine = {
   description: 'Fixed 34-minute guided pranayama sequence with witness pauses',
   totalDurationSeconds: TOTAL_ROUTINE_DURATION_SECONDS,
   phases: PRANAYAMA_PHASES,
+  source: 'builtin',
 };

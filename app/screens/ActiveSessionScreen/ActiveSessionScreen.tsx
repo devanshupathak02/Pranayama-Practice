@@ -43,7 +43,10 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('Home');
   };
 
-  const isPranayama = currentPhase?.type === 'pranayama';
+  const hasImage = !!currentPhase?.image;
+  const imageSource = typeof currentPhase?.image === 'string'
+    ? { uri: currentPhase.image }
+    : currentPhase?.image;
   const totalPhases = activeRoutine?.phases.length || 18;
   const totalRoutineDuration = activeRoutine?.totalDurationSeconds || 2070;
   const isCompleted = status === 'COMPLETED';
@@ -75,12 +78,12 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
     );
   }
 
-  // D9: Full-screen image ONLY during pranayama phases
+  // D13/D9: Full-screen image whenever phase.image is present/truthy
   const renderContent = () => (
     <View
       style={[
         styles.contentOverlay,
-        { backgroundColor: isPranayama && currentPhase?.image ? 'rgba(9, 13, 22, 0.85)' : 'transparent' }
+        { backgroundColor: hasImage ? 'rgba(9, 13, 22, 0.85)' : 'transparent' }
       ]}
     >
       {/* Top Routine Progress Bar */}
@@ -94,7 +97,7 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
         totalPhases={totalPhases}
       />
 
-      {!isPranayama && (
+      {!hasImage && (
         <View style={styles.circleContainer}>
           <BreathingCircle isPaused={status === 'PAUSED'} />
         </View>
@@ -103,7 +106,7 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
       <Text
         style={[
           styles.timerDisplay,
-          { color: isPranayama && currentPhase?.image ? '#FFFFFF' : theme.textPrimary }
+          { color: hasImage ? '#FFFFFF' : theme.textPrimary }
         ]}
       >
         {formatMMSS(currentPhaseSecondsRemaining)}
@@ -112,7 +115,7 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
       <Text
         style={[
           styles.totalElapsed,
-          { color: isPranayama && currentPhase?.image ? 'rgba(255,255,255,0.6)' : theme.textSecondary }
+          { color: hasImage ? 'rgba(255,255,255,0.6)' : theme.textSecondary }
         ]}
       >
         Session Time: {formatMMSS(totalElapsedSeconds)}
@@ -123,8 +126,8 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
           style={[
             styles.controlButtonSecondary,
             {
-              backgroundColor: isPranayama && currentPhase?.image ? 'rgba(255,255,255,0.1)' : theme.surface,
-              borderColor: isPranayama && currentPhase?.image ? 'rgba(255,255,255,0.2)' : theme.border,
+              backgroundColor: hasImage ? 'rgba(255,255,255,0.1)' : theme.surface,
+              borderColor: hasImage ? 'rgba(255,255,255,0.2)' : theme.border,
             }
           ]}
           onPress={skipPhase}
@@ -133,7 +136,7 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
           <Text
             style={[
               styles.controlTextSecondary,
-              { color: isPranayama && currentPhase?.image ? '#FFFFFF' : theme.textSecondary }
+              { color: hasImage ? '#FFFFFF' : theme.textSecondary }
             ]}
           >
             Skip
@@ -154,7 +157,7 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
           style={[
             styles.controlButtonDanger,
             {
-              backgroundColor: isPranayama && currentPhase?.image ? 'rgba(179, 62, 43, 0.2)' : theme.surface,
+              backgroundColor: hasImage ? 'rgba(179, 62, 43, 0.2)' : theme.surface,
               borderColor: theme.danger,
             }
           ]}
@@ -167,10 +170,10 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
     </View>
   );
 
-  if (isPranayama && currentPhase?.image) {
+  if (currentPhase?.image) {
     return (
       <ImageBackground
-        source={currentPhase.image}
+        source={imageSource}
         style={styles.container}
         resizeMode="cover"
       >

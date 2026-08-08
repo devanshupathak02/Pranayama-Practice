@@ -18,20 +18,20 @@ export const PhaseIndicator: React.FC<Props> = ({
     return null;
   }
 
-  const isPranayama = currentPhase.type === 'pranayama';
+  const hasImage = !!currentPhase.image;
 
   return (
     <View style={styles.container}>
       <View
         style={[
           styles.badge,
-          isPranayama ? styles.badgePranayama : styles.badgeNormal,
+          hasImage ? styles.badgePranayama : styles.badgeNormal,
         ]}
       >
         <Text
           style={[
             styles.badgeText,
-            isPranayama ? styles.badgeTextPranayama : styles.badgeTextNormal,
+            hasImage ? styles.badgeTextPranayama : styles.badgeTextNormal,
           ]}
         >
           PHASE {currentPhaseIndex + 1} OF {totalPhases}
@@ -41,7 +41,7 @@ export const PhaseIndicator: React.FC<Props> = ({
       <Text
         style={[
           styles.phaseLabel,
-          { color: isPranayama ? '#FFFFFF' : theme.textPrimary }
+          { color: hasImage ? '#FFFFFF' : theme.textPrimary }
         ]}
       >
         {currentPhase.label}

@@ -11,4 +11,6 @@ export interface Routine {
   totalDurationSeconds: number;
   /** Ordered list of phases executing sequentially */
   phases: Phase[];
+  /** Origin source of the routine */
+  source: 'builtin' | 'custom';
 }

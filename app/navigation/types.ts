@@ -7,6 +7,7 @@ export type RootStackParamList = {
   ActiveSession: undefined;
   History: undefined;
   Settings: undefined;
+  RoutineBuilder: { routineId?: string };
 };
 
 export type HomeScreenNavigationProp = NativeStackNavigationProp<
@@ -34,6 +35,11 @@ export type SettingsScreenNavigationProp = NativeStackNavigationProp<
   'Settings'
 >;
 
+export type RoutineBuilderScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'RoutineBuilder'
+>;
+
 export type HomeScreenRouteProp = RouteProp<RootStackParamList, 'Home'>;
 export type RoutineDetailScreenRouteProp = RouteProp<
   RootStackParamList,
@@ -45,3 +51,7 @@ export type ActiveSessionScreenRouteProp = RouteProp<
 >;
 export type HistoryScreenRouteProp = RouteProp<RootStackParamList, 'History'>;
 export type SettingsScreenRouteProp = RouteProp<RootStackParamList, 'Settings'>;
+export type RoutineBuilderScreenRouteProp = RouteProp<
+  RootStackParamList,
+  'RoutineBuilder'
+>;

@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SessionRecord } from '../models/SessionHistory';
+import { Routine } from '../models/Routine';
 
 export interface AppSettings {
   muteTechniqueNames: boolean;
@@ -8,6 +9,7 @@ export interface AppSettings {
 const STORAGE_KEYS = {
   SETTINGS: 'pranayama_app_settings_v1',
   HISTORY: 'pranayama_session_history_v1',
+  CUSTOM_ROUTINES: 'pranayama_custom_routines_v1',
 };
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -74,5 +76,52 @@ export const clearSessionHistory = async (): Promise<void> => {
     await AsyncStorage.removeItem(STORAGE_KEYS.HISTORY);
   } catch (error) {
     console.error('Failed to clear session history:', error);
+  }
+};
+
+/**
+ * Load all custom routines from persistent storage.
+ */
+export const loadCustomRoutines = async (): Promise<Routine[]> => {
+  try {
+    const raw = await AsyncStorage.getItem(STORAGE_KEYS.CUSTOM_ROUTINES);
+    if (!raw) {
+      return [];
+    }
+    return JSON.parse(raw) as Routine[];
+  } catch (error) {
+    console.error('Failed to load custom routines from storage:', error);
+    return [];
+  }
+};
+
+/**
+ * Save a custom routine (inserts or updates).
+ */
+export const saveCustomRoutine = async (routine: Routine): Promise<void> => {
+  try {
+    const routines = await loadCustomRoutines();
+    const index = routines.findIndex((r) => r.id === routine.id);
+    if (index >= 0) {
+      routines[index] = routine;
+    } else {
+      routines.push(routine);
+    }
+    await AsyncStorage.setItem(STORAGE_KEYS.CUSTOM_ROUTINES, JSON.stringify(routines));
+  } catch (error) {
+    console.error('Failed to save custom routine to storage:', error);
+  }
+};
+
+/**
+ * Delete a custom routine by ID.
+ */
+export const deleteCustomRoutine = async (id: string): Promise<void> => {
+  try {
+    const routines = await loadCustomRoutines();
+    const updated = routines.filter((r) => r.id !== id);
+    await AsyncStorage.setItem(STORAGE_KEYS.CUSTOM_ROUTINES, JSON.stringify(updated));
+  } catch (error) {
+    console.error('Failed to delete custom routine from storage:', error);
   }
 };

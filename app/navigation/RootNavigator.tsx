@@ -7,6 +7,7 @@ import { RoutineDetailScreen } from '../screens/RoutineDetailScreen/RoutineDetai
 import { ActiveSessionScreen } from '../screens/ActiveSessionScreen/ActiveSessionScreen';
 import { HistoryScreen } from '../screens/HistoryScreen/HistoryScreen';
 import { SettingsScreen } from '../screens/SettingsScreen/SettingsScreen';
+import { RoutineBuilderScreen } from '../screens/RoutineBuilderScreen/RoutineBuilderScreen';
 import { theme } from '../constants/theme';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -53,6 +54,13 @@ export const RootNavigator: React.FC = () => {
           name="Settings"
           component={SettingsScreen}
           options={{ title: 'Settings' }}
+        />
+        <Stack.Screen
+          name="RoutineBuilder"
+          component={RoutineBuilderScreen}
+          options={({ route }) => ({
+            title: route.params?.routineId ? 'Edit Routine' : 'Create Routine',
+          })}
         />
       </Stack.Navigator>
     </NavigationContainer>

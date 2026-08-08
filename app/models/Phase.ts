@@ -13,7 +13,8 @@ export type PhaseType =
   | 'meditation'
   | 'pranayama'
   | 'witness'
-  | 'ending';
+  | 'ending'
+  | 'custom';
 
 /**
  * Category of audio attached to a phase.
@@ -21,8 +22,9 @@ export type PhaseType =
  * - 'technique-name': mutable via muteTechniqueNames setting
  * - 'bell': always plays, non-mutable
  * - 'ending': always plays, non-mutable
+ * - 'custom': user-provided audio, always plays, non-mutable
  */
-export type AudioCategory = 'technique-name' | 'bell' | 'ending';
+export type AudioCategory = 'technique-name' | 'bell' | 'ending' | 'custom';
 
 export interface PhaseAudio {
   /** Reference to audio asset */
@@ -42,8 +44,8 @@ export interface Phase {
   label: string;
   /** Phase duration in seconds */
   durationSeconds: number;
-  /** Full-screen background image (used only when type === 'pranayama') */
-  image?: ImageSourcePropType;
+  /** Full-screen background image (used only when type === 'pranayama' or when custom routine has an image) */
+  image?: ImageSourcePropType | string;
   /** Audio cue configuration for phase start */
   audio?: PhaseAudio;
 }

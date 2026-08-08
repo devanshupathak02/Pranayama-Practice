@@ -56,13 +56,14 @@ Total routine length: 10s + 60s + (7 technique durations + 7×35s witness) + 300
 
 ## Explicitly out of scope for v1
 
-- User accounts / cloud sync
-- User-built custom routines / editing the routine's structure (v1 ships with "Pranayama" as a fixed, non-editable routine; only phase durations might be adjustable, not structure)
-- Multiple routines to choose from (v1 = exactly one)
+- User accounts / cloud sync (custom routines are stored locally on-device only, not synced)
 - Apple Health / Google Fit integration
 - Social features, sharing, streak leaderboards
+- Sharing custom routines between users/devices
 
 These aren't rejected forever — they're deferred so v1 ships. Record any future decision to add them in `decisions.md`.
+
+**Note:** user-built custom routines are now IN scope — see `06-custom-routines.md` for the full spec. This supersedes the earlier restriction against user-built routines.
 
 ## Target user
 

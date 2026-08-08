@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
 import { HomeScreenNavigationProp } from '../../navigation/types';
-import { ROUTINES } from '../../data/routines';
 import { useSessionStore } from '../../store/sessionStore';
+import { useRoutineStore } from '../../store/routineStore';
 import { Routine } from '../../models/Routine';
 import { theme } from '../../constants/theme';
 
@@ -12,12 +12,14 @@ interface Props {
 
 export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const { initSettings, isSettingsLoaded } = useSessionStore();
+  const { routines, loadRoutines } = useRoutineStore();
 
   useEffect(() => {
     if (!isSettingsLoaded) {
       initSettings();
     }
-  }, [isSettingsLoaded, initSettings]);
+    loadRoutines();
+  }, [isSettingsLoaded, initSettings, loadRoutines]);
 
   const handleSelectRoutine = (routineId: string) => {
     navigation.navigate('RoutineDetail', { routineId });
@@ -39,7 +41,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* D10: Render routine cards dynamically from ROUTINES array */}
         <View style={styles.routineList}>
-          {ROUTINES.map((routine: Routine) => {
+          {routines.map((routine: Routine) => {
             const mins = Math.floor(routine.totalDurationSeconds / 60);
             const secs = routine.totalDurationSeconds % 60;
 
@@ -51,18 +53,35 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                 activeOpacity={0.8}
               >
                 <View style={styles.cardHeader}>
-                  <Text style={styles.routineName}>{routine.name}</Text>
+                  <View style={styles.routineNameRow}>
+                    <Text style={styles.routineName}>{routine.name}</Text>
+                    {routine.source === 'custom' && (
+                      <View style={styles.customBadge}>
+                        <Text style={styles.customBadgeText}>Custom</Text>
+                      </View>
+                    )}
+                  </View>
                   <View style={styles.badge}>
                     <Text style={styles.badgeText}>{mins}m {secs > 0 ? `${secs}s` : ''}</Text>
                   </View>
                 </View>
-                <Text style={styles.routineDescription}>{routine.description}</Text>
+                {!!routine.description && (
+                  <Text style={styles.routineDescription}>{routine.description}</Text>
+                )}
                 <Text style={styles.phaseCountText}>
                   {routine.phases.length} Phases • Audio Guided
                 </Text>
               </TouchableOpacity>
             );
           })}
+
+          <TouchableOpacity
+            style={styles.createCard}
+            onPress={() => navigation.navigate('RoutineBuilder', {})}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.createCardText}>+ Create Custom Routine</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.creditContainer}>
@@ -129,11 +148,48 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 8,
+    gap: 8,
+  },
+  routineNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flex: 1,
+    flexWrap: 'wrap',
   },
   routineName: {
     fontSize: 22,
     fontWeight: '600',
     color: theme.accentOnTint,
+  },
+  customBadge: {
+    backgroundColor: theme.accent,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  customBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  createCard: {
+    backgroundColor: 'transparent',
+    borderRadius: 16,
+    padding: 24,
+    borderWidth: 2,
+    borderStyle: 'dashed',
+    borderColor: theme.borderAccent,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+  },
+  createCardText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.accent,
   },
   badge: {
     backgroundColor: 'rgba(216, 169, 59, 0.2)', // borderAccent with 20% opacity
