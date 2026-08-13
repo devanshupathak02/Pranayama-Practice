@@ -26,31 +26,26 @@ Every popular interval timer (Tabata, HIIT apps) is built for a person watching 
 | App launch time | Under 2 seconds |
 | Works in dark mode | No — v1 uses a single light, warm theme (see 05-design-system.md). Dark mode is not required for v1. |
 
-## The v1 routine: "Pranayama"
+## The v1 builtin routines: three fixed sets
 
-This is the one and only routine shipped in v1, defined as a fixed, ordered sequence of phases:
+The original single "Pranayama" routine (18 fixed phases, ~34.5 min) is **removed entirely**. It's replaced by **three separate builtin routines** — same six pranayama techniques in all three, different durations per set, per the client's latest spreadsheet. Full phase-by-phase data lives in `04-routine-data.md` — this section just covers the shape.
 
+Each set follows the same phase pattern:
 ```
-1. Preparation                          — 10 sec
-2. Meditation (Pranav, top)              — 1 min  (60 sec)
-3. Bhastrika Pranayam (Bellows Breath)   — 2 min  (120 sec) → Witness/Normal Breath (35 sec)
-4. Kapalbhati Pranayam                   — 5 min  (300 sec) → Witness/Normal Breath (35 sec)
-5. Bahya Pranayam                        — 2 min  (120 sec) → Witness/Normal Breath (35 sec)
-6. Ujjayi Pranayam                       — 2 min  (120 sec) → Witness/Normal Breath (35 sec)
-7. Anulom Vilom Pranayam                 — 5 min  (300 sec) → Witness/Normal Breath (35 sec)
-8. Bhramari Pranayam                     — 3 min  (180 sec) → Witness/Normal Breath (35 sec)
-9. Udgeeth Pranayam (chant Om ×5)        — 4 min  (240 sec) → Witness/Normal Breath (35 sec)
-10. Pranav (meditation, end)              — 5 min  (300 sec)
-11. Completion bell rings
+Settle in / Meditation
+Chant Om 3 Times           (visual only, no audio)
+[ Technique → Normal Breath / Witness (1 min) ] × 6 techniques
+  (Bhastrika, Kapalbhati, Bahya, Ujjayi, Anulom Vilom, Bhramari — same order in all 3 sets)
+Chant Om 5 Times            (visual only, no audio)
+Meditation (closing)
+Shavasana
+Completion bell
 ```
+18 phases total per routine (same count as the old routine, different content). All three sets are `source: "builtin"`, non-editable — same rule as before, just three of them instead of one.
 
-Preparation (10 sec) and the first Meditation/Pranav (1 min) happen once, at the very start, with no witness pause between them. From item 3 onward, every pranayama technique is followed by a fixed 35-second Normal Breath / Witness pause — same duration for all seven techniques regardless of the technique's own length. The final Pranav meditation (5 min) is **not** followed by a witness pause — the completion bell rings immediately once it ends.
+**Asset reuse:** since all three sets use the same six techniques, they share the exact same image and audio files per technique — no new assets needed beyond what's already named for Bhastrika/Kapalbhati/Bahya/Ujjayi/Anulom Vilom/Bhramari. Only duration numbers differ between sets.
 
-**Assumption flagged:** the client's instructions didn't explicitly say whether a witness pause follows the closing Pranav meditation before the bell. This spec assumes **no** — bell fires right when Pranav ends. If that's wrong, this is a one-line change in the routine data file, not a structural one.
-
-Total routine length: 10s + 60s + (7 technique durations + 7×35s witness) + 300s (closing Pranav) ≈ 34 min 30 sec.
-
-**Audio mute rule:** the app has one settings toggle — "mute pranayama technique names" — which only affects the spoken technique-name audio in the 7 pranayama phases. It does **not** affect the witness-phase bell or the final completion bell; those always play regardless of that setting.
+**Audio mute rule (unchanged):** the app has one settings toggle — "mute pranayama technique names" — which only affects the spoken technique-name audio in the 6 pranayama phases per routine. It does **not** affect the witness-phase bell or the final completion bell; those always play regardless of that setting. "Chant Om 3/5 Times" phases have no audio at all (visual only), same treatment the original Om Chant had.
 
 **Key structural implication:** a routine is not a live user-configured interval list — it's closer to a **content playlist**: an ordered array of phase objects, each with a `type`, a `duration`, and optional `image` + `audioFile` fields. The engine doesn't care what a phase "means" — it just plays phases in order. All the meaning (which image, which audio, which technique) lives in data, not in engine logic.
 

@@ -58,11 +58,13 @@ Every entry below is a decision an AI coding agent (or a future contributor) mus
 
 ---
 
-### D6a: v1 ships one fixed routine, defined as data, not built live by the user
+### D6a: v1 ships three fixed builtin routines, defined as data, not built live by the user
 
-**Reason:** The client needs a specific, produced sequence (prep → chant → meditation → [pranayama technique + witness] × N) with real media assets (images, pre-recorded audio) attached to specific phases. This isn't something a user configures — it's content the app ships with. Modeling it as a plain data array (`Routine.phases: Phase[]`) keeps the TimerEngine completely unaware of what a "pranayama" or "witness" phase means — it just plays phases in order. All meaning lives in `data/pranayamaRoutine.ts`, not in engine or UI logic.
+**Reason:** The client needs three produced sequences (35/46/60-min sets, same six techniques, different durations) with real media assets attached to specific phases. This isn't something a user configures — it's content the app ships with. Modeling each as a plain data array (`Routine.phases: Phase[]`) keeps the TimerEngine completely unaware of what any phase "means" — it just plays phases in order. All meaning lives in `data/` routine files, not in engine or UI logic.
 
-**Implementation rule:** Do not hardcode phase order, technique names, or durations inside components or the engine. They live in one data file so the routine can be edited without touching logic.
+**Updated:** the original single "Pranayama" routine (18 phases, ~34.5 min) has been fully removed and replaced by three separate routines — see `04-routine-data.md` for the complete phase-by-phase data. This is not an addition alongside the old routine; the old one is gone.
+
+**Implementation rule:** Do not hardcode phase order, technique names, or durations inside components or the engine. They live in data files so routines can be edited without touching logic. `BUILTIN_ROUTINES` now contains three entries instead of one.
 
 **Status:** Accepted
 
@@ -104,3 +106,26 @@ Every entry below is a decision an AI coding agent (or a future contributor) mus
 **Implementation rule:** Settings stores `muteTechniqueNames: boolean` specifically — not a generic `audioEnabled` boolean. AudioService reads `phase.audio.category` and only checks this flag when `category === "technique-name"`.
 
 **Status:** Critical — do not simplify to a single mute-all toggle.
+
+---
+
+### D10: Data model must stay multi-routine-ready — routine list UI now built in v1
+
+**Reason:** The client will add more routine bundles soon after launch. Originally this decision only asked for the data plumbing to be ready (array-based `ROUTINES`, no selection UI yet). That's now changed: the client wants the routine-card list built now, so adding future bundles requires zero UI rework — just adding entries to `ROUTINES`.
+
+**Updated flow:**
+```
+HomeScreen           → renders one card per entry in ROUTINES (name + total duration)
+        ↓ (tap a card)
+RoutineDetailScreen  → shows the selected routine's info + "Begin Session" button
+        ↓ (tap Begin Session)
+ActiveSessionScreen  → unchanged, runs the routine
+```
+
+**Implementation rule:**
+- HomeScreen renders `ROUTINES.map(...)` as tappable cards — even though `ROUTINES` currently has exactly one entry, the UI must not special-case "just show the one routine directly." It must render a list/grid, so a second entry added later needs no HomeScreen changes.
+- Each card navigates to `RoutineDetailScreen` with the selected `routineId` as a nav param — do not navigate directly to `ActiveSessionScreen` from a card tap.
+- `RoutineDetailScreen` looks up the routine from `ROUTINES` by `routineId`, displays its name and total duration (sum of `phases[].durationSeconds`), and only calls `sessionStore.startSession(routineId)` when "Begin Session" is tapped.
+- The screen folder previously named `SessionConfigScreen` should be repurposed/renamed to `RoutineDetailScreen` — it is not a config screen, it's a detail/confirmation screen before starting.
+
+**Status:** Accepted — supersedes the "no selection UI yet" clause of the original D10.

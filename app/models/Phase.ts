@@ -14,6 +14,8 @@ export type PhaseType =
   | 'pranayama'
   | 'witness'
   | 'ending'
+  | 'chant'
+  | 'shavasana'
   | 'custom';
 
 /**
