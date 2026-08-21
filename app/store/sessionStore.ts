@@ -77,11 +77,14 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
     // Fire-and-forget: session starts regardless of permission outcome.
     console.log('[sessionStore] Requesting notification permission for startSession...');
     NotificationService.requestPermissions().then((granted) => {
-      console.log('[sessionStore] Notification permission result:', granted);
       if (granted) {
         const firstPhase = targetRoutine.phases[0];
-        console.log('[sessionStore] Triggering initial NotificationService.showOrUpdate for phase:', firstPhase.label);
-        NotificationService.showOrUpdate(firstPhase, firstPhase.durationSeconds, false);
+        NotificationService.showOrUpdate(
+          firstPhase,
+          firstPhase.durationSeconds,
+          targetRoutine.totalDurationSeconds,
+          false
+        );
       }
     });
 
@@ -96,13 +99,28 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
           totalSecondsRemaining: state.totalSecondsRemaining,
           totalElapsedSeconds: state.totalElapsedSeconds,
         });
+
+        // Real-time live update in notification center & lock screen (like Blinkit / Live tracking)
+        if (state.currentPhase && state.status === 'RUNNING') {
+          NotificationService.showOrUpdate(
+            state.currentPhase,
+            state.currentPhaseSecondsRemaining,
+            state.totalSecondsRemaining,
+            false
+          );
+        }
       },
       onPhaseChange: (phase, _index) => {
         // Audio cue (D8)
         audioService.playPhaseAudio(phase, get().muteTechniqueNames);
         // Update persistent notification with new phase (D15).
-        // No-op if permission was denied.
-        NotificationService.showOrUpdate(phase, phase.durationSeconds, false);
+        const state = get();
+        NotificationService.showOrUpdate(
+          phase,
+          phase.durationSeconds,
+          state.totalSecondsRemaining,
+          false
+        );
       },
       onComplete: () => {
         const activeRoutine = get().activeRoutine;
@@ -146,9 +164,14 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
     if (timerEngine) {
       timerEngine.pause();
       // Update notification to show paused state (D15)
-      const { currentPhase, currentPhaseSecondsRemaining } = get();
+      const { currentPhase, currentPhaseSecondsRemaining, totalSecondsRemaining } = get();
       if (currentPhase) {
-        NotificationService.showOrUpdate(currentPhase, currentPhaseSecondsRemaining, true);
+        NotificationService.showOrUpdate(
+          currentPhase,
+          currentPhaseSecondsRemaining,
+          totalSecondsRemaining,
+          true
+        );
       }
     }
   },
@@ -157,9 +180,14 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
     if (timerEngine) {
       timerEngine.resume();
       // Update notification back to active state (D15)
-      const { currentPhase, currentPhaseSecondsRemaining } = get();
+      const { currentPhase, currentPhaseSecondsRemaining, totalSecondsRemaining } = get();
       if (currentPhase) {
-        NotificationService.showOrUpdate(currentPhase, currentPhaseSecondsRemaining, false);
+        NotificationService.showOrUpdate(
+          currentPhase,
+          currentPhaseSecondsRemaining,
+          totalSecondsRemaining,
+          false
+        );
       }
     }
   },

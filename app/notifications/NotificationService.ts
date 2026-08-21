@@ -28,11 +28,9 @@ export const NotificationService = {
     try {
       Notifications.setNotificationHandler({
         handleNotification: async () => {
-          console.log('[NotificationService] handleNotification triggered');
           return {
-            shouldShowAlert: true,
-            shouldShowBanner: true,
-            shouldShowList: true,
+            shouldShowBanner: false, // Suppress heads-up popup banner while actively using the app
+            shouldShowList: true,   // Keep notification card visible in notification center & lock screen
             shouldPlaySound: false,
             shouldSetBadge: false,
           };
@@ -64,19 +62,15 @@ export const NotificationService = {
     console.log('[NotificationService] requestPermissions() called. Current cached state:', _permissionGranted);
     try {
       if (_permissionGranted !== null) {
-        console.log('[NotificationService] Returning cached permission status:', _permissionGranted);
         return _permissionGranted;
       }
 
       const { status: existing } = await Notifications.getPermissionsAsync();
-      console.log('[NotificationService] Existing permission status:', existing);
       if (existing === 'granted') {
         _permissionGranted = true;
-        console.log('[NotificationService] Permission already granted.');
         return true;
       }
 
-      console.log('[NotificationService] Requesting permission from user...');
       const { status } = await Notifications.requestPermissionsAsync({
         ios: {
           allowAlert: true,
@@ -86,7 +80,6 @@ export const NotificationService = {
       });
 
       _permissionGranted = status === 'granted';
-      console.log('[NotificationService] Permission request result status:', status, 'Granted:', _permissionGranted);
       return _permissionGranted;
     } catch (e) {
       console.error('[NotificationService] Error requesting notification permissions:', e);
@@ -96,32 +89,26 @@ export const NotificationService = {
   },
 
   /**
-   * Show or update the persistent session notification.
+   * Show or update the persistent session notification with real-time live ticking.
    */
   async showOrUpdate(
     phase: Phase,
-    remainingSeconds: number,
+    phaseRemainingSeconds: number,
+    totalSecondsRemaining: number,
     isPaused: boolean,
   ): Promise<void> {
-    console.log(
-      `[NotificationService] showOrUpdate() called | phase="${phase.label}", remaining=${remainingSeconds}s, isPaused=${isPaused}, permissionGranted=${_permissionGranted}`
-    );
-
-    if (!_permissionGranted) {
-      console.warn('[NotificationService] Skipping showOrUpdate() — _permissionGranted is falsy:', _permissionGranted);
-      return;
-    }
+    if (!_permissionGranted) return;
 
     const title = isPaused
       ? `[Paused] ${phase.label}`
-      : phase.label;
+      : `🧘 ${phase.label}`;
 
     const body = isPaused
-      ? `${formatMMSS(remainingSeconds)} remaining — tap to resume`
-      : `${formatMMSS(remainingSeconds)} left in phase • Pranayama`;
+      ? `Phase: ${formatMMSS(phaseRemainingSeconds)} • Total: ${formatMMSS(totalSecondsRemaining)} remaining`
+      : `Phase: ${formatMMSS(phaseRemainingSeconds)} remaining  |  Total: ${formatMMSS(totalSecondsRemaining)}`;
 
     try {
-      const notificationId = await Notifications.scheduleNotificationAsync({
+      await Notifications.scheduleNotificationAsync({
         identifier: SESSION_NOTIFICATION_IDENTIFIER,
         content: {
           title,
@@ -135,7 +122,6 @@ export const NotificationService = {
         },
         trigger: Platform.OS === 'android' ? { channelId: SESSION_NOTIFICATION_IDENTIFIER } : null,
       });
-      console.log(`[NotificationService] Notification scheduled successfully! ID="${notificationId}"`);
     } catch (e) {
       console.error('[NotificationService] Failed to schedule/update notification:', e);
     }
@@ -145,11 +131,9 @@ export const NotificationService = {
    * Dismiss the session notification.
    */
   async dismiss(): Promise<void> {
-    console.log('[NotificationService] dismiss() called');
     try {
       await Notifications.dismissNotificationAsync(SESSION_NOTIFICATION_IDENTIFIER);
       await Notifications.cancelScheduledNotificationAsync(SESSION_NOTIFICATION_IDENTIFIER);
-      console.log('[NotificationService] Notification dismissed successfully.');
     } catch (e) {
       console.warn('[NotificationService] Error in dismiss():', e);
     }
