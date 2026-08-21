@@ -7,6 +7,7 @@ export interface TimerState {
   currentPhaseIndex: number;
   currentPhase: Phase | null;
   currentPhaseSecondsRemaining: number;
+  totalSecondsRemaining: number;
   totalElapsedSeconds: number;
 }
 

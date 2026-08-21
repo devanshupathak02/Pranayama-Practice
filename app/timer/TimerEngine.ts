@@ -107,12 +107,19 @@ export class TimerEngine {
   public getState(): TimerState {
     const currentPhase = this.phases[this.currentPhaseIndex] || null;
 
+    let subsequentPhasesDuration = 0;
+    for (let i = this.currentPhaseIndex + 1; i < this.phases.length; i++) {
+      subsequentPhasesDuration += this.phases[i].durationSeconds;
+    }
+
     if (this.status === 'IDLE' || !this.phaseStartedAtMs || !currentPhase) {
+      const currentPhaseSecondsRemaining = currentPhase ? currentPhase.durationSeconds : 0;
       return {
         status: this.status,
         currentPhaseIndex: this.currentPhaseIndex,
         currentPhase,
-        currentPhaseSecondsRemaining: currentPhase ? currentPhase.durationSeconds : 0,
+        currentPhaseSecondsRemaining,
+        totalSecondsRemaining: currentPhaseSecondsRemaining + subsequentPhasesDuration,
         totalElapsedSeconds: 0,
       };
     }
@@ -139,6 +146,7 @@ export class TimerEngine {
       currentPhaseIndex: this.currentPhaseIndex,
       currentPhase,
       currentPhaseSecondsRemaining: remainingPhaseSeconds,
+      totalSecondsRemaining: remainingPhaseSeconds + subsequentPhasesDuration,
       totalElapsedSeconds: Math.floor(totalElapsedMs / 1000),
     };
   }

@@ -8,6 +8,7 @@ import { audioService } from '../audio/AudioService';
 import { loadSettings, saveSettings } from '../storage/db';
 import { useHistoryStore } from './historyStore';
 import { SessionRecord } from '../models/SessionHistory';
+import { NotificationService } from '../notifications/NotificationService';
 
 interface SessionStoreState {
   // Routine & Timer State
@@ -16,6 +17,7 @@ interface SessionStoreState {
   currentPhaseIndex: number;
   currentPhase: Phase | null;
   currentPhaseSecondsRemaining: number;
+  totalSecondsRemaining: number;
   totalElapsedSeconds: number;
 
   // Settings State (D8, D9a)
@@ -41,6 +43,7 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
   currentPhaseIndex: 0,
   currentPhase: ROUTINES[0]?.phases[0] || null,
   currentPhaseSecondsRemaining: ROUTINES[0]?.phases[0]?.durationSeconds || 0,
+  totalSecondsRemaining: ROUTINES[0]?.totalDurationSeconds || 0,
   totalElapsedSeconds: 0,
 
   muteTechniqueNames: false,
@@ -70,6 +73,15 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
       timerEngine = new TimerEngine();
     }
 
+    // Request notification permission at session start (once, cached — D15).
+    // Fire-and-forget: session starts regardless of permission outcome.
+    NotificationService.requestPermissions().then((granted) => {
+      if (granted) {
+        const firstPhase = targetRoutine.phases[0];
+        NotificationService.showOrUpdate(firstPhase, firstPhase.durationSeconds, false);
+      }
+    });
+
     timerEngine.setPhases(targetRoutine.phases);
     timerEngine.setCallbacks({
       onTick: (state) => {
@@ -78,11 +90,16 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
           currentPhaseIndex: state.currentPhaseIndex,
           currentPhase: state.currentPhase,
           currentPhaseSecondsRemaining: state.currentPhaseSecondsRemaining,
+          totalSecondsRemaining: state.totalSecondsRemaining,
           totalElapsedSeconds: state.totalElapsedSeconds,
         });
       },
       onPhaseChange: (phase, _index) => {
+        // Audio cue (D8)
         audioService.playPhaseAudio(phase, get().muteTechniqueNames);
+        // Update persistent notification with new phase (D15).
+        // No-op if permission was denied.
+        NotificationService.showOrUpdate(phase, phase.durationSeconds, false);
       },
       onComplete: () => {
         const activeRoutine = get().activeRoutine;
@@ -101,6 +118,8 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
         }
 
         set({ status: 'COMPLETED' });
+        // Dismiss notification on session complete (D15)
+        NotificationService.dismiss();
       },
       onStatusChange: (status) => {
         set({ status });
@@ -112,6 +131,7 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
       currentPhaseIndex: 0,
       currentPhase: targetRoutine.phases[0],
       currentPhaseSecondsRemaining: targetRoutine.phases[0].durationSeconds,
+      totalSecondsRemaining: targetRoutine.totalDurationSeconds,
       totalElapsedSeconds: 0,
       status: 'RUNNING',
     });
@@ -122,12 +142,22 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
   pauseSession: () => {
     if (timerEngine) {
       timerEngine.pause();
+      // Update notification to show paused state (D15)
+      const { currentPhase, currentPhaseSecondsRemaining } = get();
+      if (currentPhase) {
+        NotificationService.showOrUpdate(currentPhase, currentPhaseSecondsRemaining, true);
+      }
     }
   },
 
   resumeSession: () => {
     if (timerEngine) {
       timerEngine.resume();
+      // Update notification back to active state (D15)
+      const { currentPhase, currentPhaseSecondsRemaining } = get();
+      if (currentPhase) {
+        NotificationService.showOrUpdate(currentPhase, currentPhaseSecondsRemaining, false);
+      }
     }
   },
 
@@ -136,12 +166,16 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
       timerEngine.reset();
     }
     audioService.stopCurrentPlayer();
+    // Dismiss notification on manual exit (D15)
+    NotificationService.dismiss();
+
     const routine = get().activeRoutine || ROUTINES[0];
     set({
       status: 'IDLE',
       currentPhaseIndex: 0,
       currentPhase: routine.phases[0] || null,
       currentPhaseSecondsRemaining: routine.phases[0]?.durationSeconds || 0,
+      totalSecondsRemaining: routine?.totalDurationSeconds || 0,
       totalElapsedSeconds: 0,
     });
   },

@@ -23,6 +23,7 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
     currentPhaseIndex,
     currentPhase,
     currentPhaseSecondsRemaining,
+    totalSecondsRemaining,
     totalElapsedSeconds,
     pauseSession,
     resumeSession,
@@ -112,14 +113,16 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
         {formatMMSS(currentPhaseSecondsRemaining)}
       </Text>
 
-      <Text
-        style={[
-          styles.totalElapsed,
-          { color: hasImage ? 'rgba(255,255,255,0.6)' : theme.textSecondary }
-        ]}
-      >
-        Session Time: {formatMMSS(totalElapsedSeconds)}
-      </Text>
+      <View style={styles.sessionTimesRow}>
+        <View style={styles.sessionTimeBadge}>
+          <Text style={[styles.sessionTimeLabel, { color: hasImage ? 'rgba(255,255,255,0.6)' : theme.textSecondary }]}>
+            Time Remaining
+          </Text>
+          <Text style={[styles.sessionTimeValue, { color: hasImage ? '#FFFFFF' : theme.accent }]}>
+            {formatMMSS(totalSecondsRemaining)}
+          </Text>
+        </View>
+      </View>
 
       <View style={styles.controlsRow}>
         <TouchableOpacity
@@ -220,9 +223,27 @@ const styles = StyleSheet.create({
     letterSpacing: 4,
     marginVertical: 12,
   },
-  totalElapsed: {
-    fontSize: 14,
+  sessionTimesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 40,
+    marginTop: 4,
+  },
+  sessionTimeBadge: {
+    alignItems: 'center',
+    paddingHorizontal: 16,
+  },
+  sessionTimeLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 2,
+  },
+  sessionTimeValue: {
+    fontSize: 18,
+    fontWeight: '600',
   },
   controlsRow: {
     flexDirection: 'row',
