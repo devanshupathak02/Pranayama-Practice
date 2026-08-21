@@ -75,9 +75,12 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
 
     // Request notification permission at session start (once, cached — D15).
     // Fire-and-forget: session starts regardless of permission outcome.
+    console.log('[sessionStore] Requesting notification permission for startSession...');
     NotificationService.requestPermissions().then((granted) => {
+      console.log('[sessionStore] Notification permission result:', granted);
       if (granted) {
         const firstPhase = targetRoutine.phases[0];
+        console.log('[sessionStore] Triggering initial NotificationService.showOrUpdate for phase:', firstPhase.label);
         NotificationService.showOrUpdate(firstPhase, firstPhase.durationSeconds, false);
       }
     });

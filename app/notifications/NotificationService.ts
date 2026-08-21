@@ -13,21 +13,6 @@ function formatMMSS(totalSeconds: number): string {
 
 /**
  * Persistent session notification service (D15).
- *
- * Platform behavior:
- * - Android: sticky (non-dismissable) notification. expo-notifications does not expose
- *   Android's native usesChronometer field, so we cannot get a live OS-ticking countdown.
- *   Instead, we update the notification on every phase change with the new phase name
- *   and remaining time. Behavior is the same as iOS — phase-change updates only.
- *   NOTE: This is the correct achievable behavior within expo-notifications' API surface.
- *   If native usesChronometer is needed in future, it would require a bare workflow or
- *   a native module — document that separately (D15).
- *
- * - iOS: same phase-change update pattern. Not a live tick (no Live Activities needed).
- *
- * Permission:
- * - Requested once on first session start, never at app launch.
- * - If denied: all methods become no-ops, session runs normally (D15).
  */
 
 /** Cached permission state. null = not yet requested this app session. */
@@ -36,75 +21,96 @@ let _permissionGranted: boolean | null = null;
 export const NotificationService = {
   /**
    * Configure the in-app notification handler and create Android channel.
-   * Call once on app start (e.g. in App.tsx or store init).
+   * Call once on app start.
    */
   async init(): Promise<void> {
-    Notifications.setNotificationHandler({
-      handleNotification: async () => ({
-        shouldShowAlert: false, // suppress in-app banners while app is foregrounded
-        shouldShowBanner: false,
-        shouldShowList: false,
-        shouldPlaySound: false,
-        shouldSetBadge: false,
-      }),
-    });
-
-    if (Platform.OS === 'android') {
-      await Notifications.setNotificationChannelAsync(SESSION_NOTIFICATION_IDENTIFIER, {
-        name: 'Session Timer',
-        importance: Notifications.AndroidImportance.LOW, // silent, no sound or vibrate on updates
-        sound: null,
-        vibrationPattern: null,
-        enableVibrate: false,
+    console.log('[NotificationService] init() called');
+    try {
+      Notifications.setNotificationHandler({
+        handleNotification: async () => {
+          console.log('[NotificationService] handleNotification triggered');
+          return {
+            shouldShowAlert: true,
+            shouldShowBanner: true,
+            shouldShowList: true,
+            shouldPlaySound: false,
+            shouldSetBadge: false,
+          };
+        },
       });
+
+      if (Platform.OS === 'android') {
+        console.log('[NotificationService] Creating Android notification channel...');
+        const channelResult = await Notifications.setNotificationChannelAsync(SESSION_NOTIFICATION_IDENTIFIER, {
+          name: 'Session Timer',
+          importance: Notifications.AndroidImportance.DEFAULT,
+          lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+          sound: null,
+          vibrationPattern: null,
+          enableVibrate: false,
+          showBadge: false,
+        });
+        console.log('[NotificationService] Android channel creation result:', channelResult);
+      }
+    } catch (e) {
+      console.error('[NotificationService] Error in init():', e);
     }
   },
 
   /**
    * Request notification permission at session start (once only, cached).
-   * Returns true if granted, false if denied.
-   * Callers must check the return value before relying on notifications.
    */
   async requestPermissions(): Promise<boolean> {
-    if (_permissionGranted !== null) {
+    console.log('[NotificationService] requestPermissions() called. Current cached state:', _permissionGranted);
+    try {
+      if (_permissionGranted !== null) {
+        console.log('[NotificationService] Returning cached permission status:', _permissionGranted);
+        return _permissionGranted;
+      }
+
+      const { status: existing } = await Notifications.getPermissionsAsync();
+      console.log('[NotificationService] Existing permission status:', existing);
+      if (existing === 'granted') {
+        _permissionGranted = true;
+        console.log('[NotificationService] Permission already granted.');
+        return true;
+      }
+
+      console.log('[NotificationService] Requesting permission from user...');
+      const { status } = await Notifications.requestPermissionsAsync({
+        ios: {
+          allowAlert: true,
+          allowBadge: false,
+          allowSound: false,
+        },
+      });
+
+      _permissionGranted = status === 'granted';
+      console.log('[NotificationService] Permission request result status:', status, 'Granted:', _permissionGranted);
       return _permissionGranted;
+    } catch (e) {
+      console.error('[NotificationService] Error requesting notification permissions:', e);
+      _permissionGranted = false;
+      return false;
     }
-
-    const { status: existing } = await Notifications.getPermissionsAsync();
-    if (existing === 'granted') {
-      _permissionGranted = true;
-      return true;
-    }
-
-    const { status } = await Notifications.requestPermissionsAsync({
-      ios: {
-        allowAlert: true,
-        allowBadge: false,
-        allowSound: false,
-      },
-    });
-
-    _permissionGranted = status === 'granted';
-    return _permissionGranted;
   },
 
   /**
    * Show or update the persistent session notification.
-   *
-   * Call at:
-   * - Session start (initial phase)
-   * - Every phase change (natural or skip)
-   * - Pause (to show paused state)
-   * - Resume (to restore active state)
-   *
-   * If permission was denied, this is a no-op.
    */
   async showOrUpdate(
     phase: Phase,
     remainingSeconds: number,
     isPaused: boolean,
   ): Promise<void> {
-    if (!_permissionGranted) return;
+    console.log(
+      `[NotificationService] showOrUpdate() called | phase="${phase.label}", remaining=${remainingSeconds}s, isPaused=${isPaused}, permissionGranted=${_permissionGranted}`
+    );
+
+    if (!_permissionGranted) {
+      console.warn('[NotificationService] Skipping showOrUpdate() — _permissionGranted is falsy:', _permissionGranted);
+      return;
+    }
 
     const title = isPaused
       ? `[Paused] ${phase.label}`
@@ -115,7 +121,7 @@ export const NotificationService = {
       : `${formatMMSS(remainingSeconds)} left in phase • Pranayama`;
 
     try {
-      await Notifications.scheduleNotificationAsync({
+      const notificationId = await Notifications.scheduleNotificationAsync({
         identifier: SESSION_NOTIFICATION_IDENTIFIER,
         content: {
           title,
@@ -125,30 +131,32 @@ export const NotificationService = {
           sticky: true,        // Android only: non-dismissable (setOngoing)
           autoDismiss: false,  // Android only: don't auto-dismiss on tap
           vibrate: [],         // suppress vibration on updates
+          priority: Notifications.AndroidNotificationPriority.DEFAULT,
         },
-        trigger: null, // deliver immediately
+        trigger: Platform.OS === 'android' ? { channelId: SESSION_NOTIFICATION_IDENTIFIER } : null,
       });
+      console.log(`[NotificationService] Notification scheduled successfully! ID="${notificationId}"`);
     } catch (e) {
-      // Notification failures must never crash or interrupt the session (D15)
-      console.warn('[NotificationService] Failed to update notification:', e);
+      console.error('[NotificationService] Failed to schedule/update notification:', e);
     }
   },
 
   /**
    * Dismiss the session notification.
-   * Call on session completion or manual exit.
    */
   async dismiss(): Promise<void> {
+    console.log('[NotificationService] dismiss() called');
     try {
       await Notifications.dismissNotificationAsync(SESSION_NOTIFICATION_IDENTIFIER);
       await Notifications.cancelScheduledNotificationAsync(SESSION_NOTIFICATION_IDENTIFIER);
-    } catch {
-      // Ignore dismissal errors — session is already ending
+      console.log('[NotificationService] Notification dismissed successfully.');
+    } catch (e) {
+      console.warn('[NotificationService] Error in dismiss():', e);
     }
   },
 
   /**
-   * Reset the cached permission state. For testing only.
+   * Reset cached permission state. For testing.
    */
   _resetForTesting(): void {
     _permissionGranted = null;

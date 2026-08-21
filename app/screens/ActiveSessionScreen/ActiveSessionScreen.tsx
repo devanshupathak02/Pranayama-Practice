@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
+import { useKeepAwake } from 'expo-keep-awake';
 import { ActiveSessionScreenNavigationProp } from '../../navigation/types';
 import { useSessionStore } from '../../store/sessionStore';
 import { PhaseIndicator } from '../../components/PhaseIndicator/PhaseIndicator';
@@ -17,6 +18,8 @@ const formatMMSS = (totalSeconds: number): string => {
 };
 
 export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
+  useKeepAwake();
+
   const {
     activeRoutine,
     status,
