@@ -1,4 +1,5 @@
 import React from 'react';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types';
@@ -11,6 +12,19 @@ import { RoutineBuilderScreen } from '../screens/RoutineBuilderScreen/RoutineBui
 import { theme } from '../constants/theme';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+const HeaderTitle: React.FC = () => {
+  return (
+    <View style={styles.headerTitleContainer}>
+      <Image
+        source={require('../../assets/images/still-mountain-logo.png')}
+        style={styles.headerLogo}
+        resizeMode="contain"
+      />
+      <Text style={styles.headerTitleText}>Pranayama Timer</Text>
+    </View>
+  );
+};
 
 export const RootNavigator: React.FC = () => {
   return (
@@ -33,7 +47,10 @@ export const RootNavigator: React.FC = () => {
         <Stack.Screen
           name="Home"
           component={HomeScreen}
-          options={{ title: 'Pranayama Timer' }}
+          options={{
+            headerTitle: () => <HeaderTitle />,
+            headerTitleAlign: 'left',
+          }}
         />
         <Stack.Screen
           name="RoutineDetail"
@@ -66,3 +83,21 @@ export const RootNavigator: React.FC = () => {
     </NavigationContainer>
   );
 };
+
+const styles = StyleSheet.create({
+  headerTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerLogo: {
+    width: 24,
+    height: 24,
+    marginRight: 8,
+  },
+  headerTitleText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: theme.textPrimary,
+  },
+});
+

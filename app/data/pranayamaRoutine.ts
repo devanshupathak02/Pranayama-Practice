@@ -20,8 +20,8 @@ const ANULOM_VILOM_AUDIO = require('../../assets/audio/pranayama/anulom_vilom_na
 const BHRAMARI_IMAGE = require('../../assets/images/pranayama/bhramari.png');
 const BHRAMARI_AUDIO = require('../../assets/audio/pranayama/bhramari_name.mp3');
 
-const WITNESS_BELL = require('../../assets/audio/bell/witness_bell.mp3');
-const COMPLETION_BELL = require('../../assets/audio/bell/completion_bell.mp3');
+const WITNESS_BELL = require('../../assets/audio/bell/Bell1.mp3');
+const COMPLETION_BELL = require('../../assets/audio/bell/Boxing Bell.mp3');
 
 // ==========================================
 // ROUTINE 1: 35 MINUTE PRACTICE (set-35)
@@ -592,6 +592,7 @@ export const SET_35_ROUTINE: Routine = {
   totalDurationSeconds: sumDuration(SET_35_PHASES),
   phases: SET_35_PHASES,
   source: 'builtin',
+  category: 'pranayama',
 };
 
 export const SET_46_ROUTINE: Routine = {
@@ -601,6 +602,7 @@ export const SET_46_ROUTINE: Routine = {
   totalDurationSeconds: sumDuration(SET_46_PHASES),
   phases: SET_46_PHASES,
   source: 'builtin',
+  category: 'pranayama',
 };
 
 export const SET_60_ROUTINE: Routine = {
@@ -610,6 +612,7 @@ export const SET_60_ROUTINE: Routine = {
   totalDurationSeconds: sumDuration(SET_60_PHASES),
   phases: SET_60_PHASES,
   source: 'builtin',
+  category: 'pranayama',
 };
 
 export const BUILTIN_ROUTINES: Routine[] = [

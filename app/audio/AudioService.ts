@@ -1,5 +1,6 @@
 import { createAudioPlayer, AudioModule, AudioPlayer } from 'expo-audio';
 import { Phase } from '../models/Phase';
+import { WITNESS_SOUND_OPTIONS, DEFAULT_WITNESS_SOUND_ID } from '../constants/sounds';
 
 /**
  * Decoupled AudioService managing audio playback using expo-audio.
@@ -32,13 +33,17 @@ class AudioService {
    *
    * @param phase Target phase
    * @param muteTechniqueNames Scoped mute setting (silences only 'technique-name' category)
+   * @param witnessSoundId Configured transition sound for Normal breath / Witness phases
    */
   public async playPhaseAudio(
     phase: Phase,
-    muteTechniqueNames: boolean
+    muteTechniqueNames: boolean,
+    witnessSoundId?: string
   ): Promise<void> {
-    const audio = phase.audio;
+    // Always stop and clean up any existing active player before starting a new track
+    this.stop();
 
+    const audio = phase.audio;
     if (!audio || !audio.file) {
       return;
     }
@@ -48,12 +53,19 @@ class AudioService {
       return;
     }
 
-    try {
-      // Clean up any previously active player
-      this.stopCurrentPlayer();
+    // Resolve audio source: use configured witnessSoundId ONLY for witness/transition bells
+    let soundFile = audio.file;
+    if (phase.type === 'witness' || audio.category === 'bell') {
+      const selectedId = witnessSoundId || DEFAULT_WITNESS_SOUND_ID;
+      const soundOption = WITNESS_SOUND_OPTIONS.find((opt) => opt.id === selectedId);
+      if (soundOption && soundOption.asset) {
+        soundFile = soundOption.asset;
+      }
+    }
 
+    try {
       // Rule 3: Audio plays ONCE at phase start, not looped for duration
-      const player = createAudioPlayer(audio.file);
+      const player = createAudioPlayer(soundFile);
       player.loop = false;
       player.volume = 1.0;
       this.activePlayer = player;
@@ -65,7 +77,76 @@ class AudioService {
     }
   }
 
-  public stopCurrentPlayer(): void {
+  /**
+   * Previews a sound asset once. Stops any currently active player.
+   */
+  public async previewSound(assetSource: number): Promise<void> {
+    this.stop();
+    try {
+      const player = createAudioPlayer(assetSource);
+      player.loop = false;
+      player.volume = 1.0;
+      this.activePlayer = player;
+      player.play();
+    } catch (error) {
+      console.error('[AudioService] Error previewing sound:', error);
+    }
+  }
+
+  /**
+   * Stops any sound preview or currently playing audio.
+   */
+  public stopPreview(): void {
+    this.stop();
+  }
+
+  /**
+   * Plays the completion bell (Boxing Bell.mp3) when a session finishes.
+   */
+  public async playCompletionBell(): Promise<void> {
+    this.stop();
+    try {
+      const completionBellAsset = require('../../assets/audio/bell/Boxing Bell.mp3');
+      const player = createAudioPlayer(completionBellAsset);
+      player.loop = false;
+      player.volume = 1.0;
+      this.activePlayer = player;
+      player.play();
+    } catch (error) {
+      console.error('[AudioService] Error playing completion bell:', error);
+    }
+  }
+
+  /**
+   * Pauses the currently active audio player if playing.
+   */
+  public pause(): void {
+    if (this.activePlayer) {
+      try {
+        this.activePlayer.pause();
+      } catch (error) {
+        console.error('[AudioService] Error pausing audio player:', error);
+      }
+    }
+  }
+
+  /**
+   * Resumes playback of the currently active audio player if paused.
+   */
+  public resume(): void {
+    if (this.activePlayer) {
+      try {
+        this.activePlayer.play();
+      } catch (error) {
+        console.error('[AudioService] Error resuming audio player:', error);
+      }
+    }
+  }
+
+  /**
+   * Stops and disposes the currently active audio player.
+   */
+  public stop(): void {
     if (this.activePlayer) {
       try {
         this.activePlayer.pause();
@@ -78,6 +159,14 @@ class AudioService {
       this.activePlayer = null;
     }
   }
+
+  /**
+   * Alias for stop() for backwards compatibility.
+   */
+  public stopCurrentPlayer(): void {
+    this.stop();
+  }
 }
 
 export const audioService = new AudioService();
+

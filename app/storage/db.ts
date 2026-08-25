@@ -1,9 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SessionRecord } from '../models/SessionHistory';
 import { Routine } from '../models/Routine';
+import { DEFAULT_WITNESS_SOUND_ID } from '../constants/sounds';
 
 export interface AppSettings {
   muteTechniqueNames: boolean;
+  witnessSoundId: string;
 }
 
 const STORAGE_KEYS = {
@@ -14,6 +16,7 @@ const STORAGE_KEYS = {
 
 const DEFAULT_SETTINGS: AppSettings = {
   muteTechniqueNames: false,
+  witnessSoundId: DEFAULT_WITNESS_SOUND_ID,
 };
 
 /**
@@ -33,6 +36,10 @@ export const loadSettings = async (): Promise<AppSettings> => {
         typeof parsed.muteTechniqueNames === 'boolean'
           ? parsed.muteTechniqueNames
           : DEFAULT_SETTINGS.muteTechniqueNames,
+      witnessSoundId:
+        typeof parsed.witnessSoundId === 'string'
+          ? parsed.witnessSoundId
+          : DEFAULT_SETTINGS.witnessSoundId,
     };
   } catch (error) {
     console.error('Failed to load settings from storage:', error);

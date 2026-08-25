@@ -13,4 +13,6 @@ export interface Routine {
   phases: Phase[];
   /** Origin source of the routine */
   source: 'builtin' | 'custom';
+  /** Category tag for segmented tab filtering */
+  category?: 'pranayama' | 'yoga-nidra';
 }

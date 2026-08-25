@@ -35,16 +35,32 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
   } = useSessionStore();
 
   const handleTogglePlayPause = () => {
-    if (status === 'RUNNING') {
-      pauseSession();
-    } else if (status === 'PAUSED') {
-      resumeSession();
+    try {
+      if (status === 'RUNNING') {
+        pauseSession();
+      } else if (status === 'PAUSED') {
+        resumeSession();
+      }
+    } catch (error) {
+      console.error('[ActiveSessionScreen] Error toggling play/pause:', error);
     }
   };
 
   const handleExitSession = () => {
-    resetSession();
+    try {
+      resetSession();
+    } catch (error) {
+      console.error('[ActiveSessionScreen] Error exiting session:', error);
+    }
     navigation.navigate('Home');
+  };
+
+  const handleSkipPhase = () => {
+    try {
+      skipPhase();
+    } catch (error) {
+      console.error('[ActiveSessionScreen] Error skipping phase:', error);
+    }
   };
 
   const hasImage = !!currentPhase?.image;
@@ -136,7 +152,7 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
               borderColor: hasImage ? 'rgba(255,255,255,0.2)' : theme.border,
             }
           ]}
-          onPress={skipPhase}
+          onPress={handleSkipPhase}
           activeOpacity={0.7}
         >
           <Text

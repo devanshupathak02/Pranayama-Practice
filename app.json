@@ -27,18 +27,17 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FAF7F2"
       },
-      "userInterfaceStyle": "light"
+      "userInterfaceStyle": "light",
+      "permissions": [
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_SPECIAL_USE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      [
-        "expo-notifications",
-        {
-          "color": "#7C5C3B"
-        }
-      ]
+      "./plugins/withNotifeeSpecialUse.js"
     ],
     "extra": {
       "eas": {

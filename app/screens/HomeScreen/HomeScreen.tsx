@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
 import { HomeScreenNavigationProp } from '../../navigation/types';
 import { useSessionStore } from '../../store/sessionStore';
 import { useRoutineStore } from '../../store/routineStore';
 import { Routine } from '../../models/Routine';
 import { theme } from '../../constants/theme';
+import { SegmentedControl, TabCategory } from '../../components/SegmentedControl';
 
 interface Props {
   navigation: HomeScreenNavigationProp;
@@ -13,6 +14,7 @@ interface Props {
 export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const { initSettings, isSettingsLoaded } = useSessionStore();
   const { routines, loadRoutines } = useRoutineStore();
+  const [selectedTab, setSelectedTab] = useState<TabCategory>('pranayama');
 
   useEffect(() => {
     if (!isSettingsLoaded) {
@@ -33,15 +35,27 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('Settings');
   };
 
+  const displayedRoutines = routines.filter((routine) => {
+    if (selectedTab === 'pranayama') {
+      return routine.category === 'pranayama' || !routine.category;
+    }
+    return routine.category === 'yoga-nidra';
+  });
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.headerTitle}>Pranayama Timer</Text>
+        <Text style={styles.headerTitle}>Pranayama Practice</Text>
         <Text style={styles.headerSubtitle}>Select a breathing routine to practice</Text>
 
-        {/* D10: Render routine cards dynamically from ROUTINES array */}
+        <SegmentedControl
+          selectedTab={selectedTab}
+          onTabChange={setSelectedTab}
+        />
+
+        {/* D10: Render routine cards dynamically from routines array */}
         <View style={styles.routineList}>
-          {routines.map((routine: Routine) => {
+          {displayedRoutines.map((routine: Routine) => {
             const mins = Math.floor(routine.totalDurationSeconds / 60);
             const secs = routine.totalDurationSeconds % 60;
 
@@ -69,19 +83,21 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                   <Text style={styles.routineDescription}>{routine.description}</Text>
                 )}
                 <Text style={styles.phaseCountText}>
-                  {routine.phases.length} Phases • Audio Guided
+                  {routine.phases.length} {routine.phases.length === 1 ? 'Phase' : 'Phases'} • Audio Guided
                 </Text>
               </TouchableOpacity>
             );
           })}
 
-          <TouchableOpacity
-            style={styles.createCard}
-            onPress={() => navigation.navigate('RoutineBuilder', {})}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.createCardText}>+ Create Custom Routine</Text>
-          </TouchableOpacity>
+          {selectedTab === 'pranayama' && (
+            <TouchableOpacity
+              style={styles.createCard}
+              onPress={() => navigation.navigate('RoutineBuilder', {})}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.createCardText}>+ Create Custom Routine</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         <View style={styles.creditContainer}>

@@ -1,7 +1,10 @@
 import { create } from 'zustand';
 import { Routine } from '../models/Routine';
-import { BUILTIN_ROUTINES } from '../data/pranayamaRoutine';
+import { BUILTIN_ROUTINES as PRANAYAMA_ROUTINES } from '../data/pranayamaRoutine';
+import { YOGA_NIDRA_ROUTINES } from '../data/yogaNidraRoutines';
 import { loadCustomRoutines, saveCustomRoutine, deleteCustomRoutine } from '../storage/db';
+
+const ALL_BUILTIN_ROUTINES: Routine[] = [...PRANAYAMA_ROUTINES, ...YOGA_NIDRA_ROUTINES];
 
 interface RoutineState {
   routines: Routine[];
@@ -12,14 +15,14 @@ interface RoutineState {
 }
 
 export const useRoutineStore = create<RoutineState>((set) => ({
-  routines: BUILTIN_ROUTINES,
+  routines: ALL_BUILTIN_ROUTINES,
   isLoading: false,
 
   loadRoutines: async () => {
     set({ isLoading: true });
     try {
       const custom = await loadCustomRoutines();
-      set({ routines: [...BUILTIN_ROUTINES, ...custom] });
+      set({ routines: [...ALL_BUILTIN_ROUTINES, ...custom] });
     } catch (error) {
       console.error('Failed to load custom routines into store:', error);
     } finally {
@@ -31,7 +34,7 @@ export const useRoutineStore = create<RoutineState>((set) => ({
     try {
       await saveCustomRoutine(routine);
       const custom = await loadCustomRoutines();
-      set({ routines: [...BUILTIN_ROUTINES, ...custom] });
+      set({ routines: [...ALL_BUILTIN_ROUTINES, ...custom] });
     } catch (error) {
       console.error('Failed to save routine in store:', error);
     }
@@ -41,7 +44,7 @@ export const useRoutineStore = create<RoutineState>((set) => ({
     try {
       await deleteCustomRoutine(id);
       const custom = await loadCustomRoutines();
-      set({ routines: [...BUILTIN_ROUTINES, ...custom] });
+      set({ routines: [...ALL_BUILTIN_ROUTINES, ...custom] });
     } catch (error) {
       console.error('Failed to delete routine in store:', error);
     }
