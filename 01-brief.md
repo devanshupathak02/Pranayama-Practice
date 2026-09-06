@@ -45,7 +45,7 @@ Completion bell
 
 **Asset reuse:** since all three sets use the same six techniques, they share the exact same image and audio files per technique — no new assets needed beyond what's already named for Bhastrika/Kapalbhati/Bahya/Ujjayi/Anulom Vilom/Bhramari. Only duration numbers differ between sets.
 
-**Audio mute rule (unchanged):** the app has one settings toggle — "mute pranayama technique names" — which only affects the spoken technique-name audio in the 6 pranayama phases per routine. It does **not** affect the witness-phase bell or the final completion bell; those always play regardless of that setting. "Chant Om 3/5 Times" phases have no audio at all (visual only), same treatment the original Om Chant had.
+**Audio mute rule (updated again):** the app has one settings toggle — "mute pranayama technique names" — which only affects the spoken technique-name audio in the 6 pranayama phases per routine. Every OTHER phase type (witness, chant, meditation, preparation, shavasana) gets a `category: "bell"` audio cue (same bell asset), always playing regardless of the mute setting. Only the pranayama phases (spoken technique names) and the final completion phase (distinct ending bell) are exceptions to "bell for everything else." Silence now only exists during the pranayama phases themselves if muted — everything else always has a bell.
 
 **Key structural implication:** a routine is not a live user-configured interval list — it's closer to a **content playlist**: an ordered array of phase objects, each with a `type`, a `duration`, and optional `image` + `audioFile` fields. The engine doesn't care what a phase "means" — it just plays phases in order. All the meaning (which image, which audio, which technique) lives in data, not in engine logic.
 

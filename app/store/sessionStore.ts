@@ -36,6 +36,7 @@ interface SessionStoreState {
   resumeSession: () => void;
   resetSession: () => void;
   skipPhase: () => void;
+  previousPhase: () => void;
 }
 
 // Module-level TimerEngine instance (D5: pure TS engine)
@@ -93,6 +94,9 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
     // Stop any existing audio before starting session
     audioService.stop();
 
+    // D18: Play session-start bell once at session lifecycle start
+    audioService.playStartBell();
+
     if (!timerEngine) {
       timerEngine = new TimerEngine();
     }
@@ -141,9 +145,10 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
         }
       },
       onPhaseChange: (phase, _index) => {
-        // Audio cue (D8) — stop active audio before attempting play for new phase
-        audioService.stop();
-        audioService.playPhaseAudio(phase, get().muteTechniqueNames, get().witnessSoundId);
+        // Audio cue (D8) — play audio for phase if defined
+        if (phase.audio?.file) {
+          audioService.playPhaseAudio(phase, get().muteTechniqueNames, get().witnessSoundId);
+        }
         // Immediate notification update on phase change (D15/D16)
         const state = get();
         lastNotificationUpdateMs = Date.now();
@@ -254,6 +259,13 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
     audioService.stop();
     if (timerEngine) {
       timerEngine.skipPhase();
+    }
+  },
+
+  previousPhase: () => {
+    audioService.stop();
+    if (timerEngine) {
+      timerEngine.previousPhase();
     }
   },
 }));

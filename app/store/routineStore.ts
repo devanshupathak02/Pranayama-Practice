@@ -42,11 +42,16 @@ export const useRoutineStore = create<RoutineState>((set) => ({
 
   deleteRoutine: async (id: string) => {
     try {
+      set((state) => ({
+        routines: state.routines.filter((r) => r.id !== id),
+      }));
       await deleteCustomRoutine(id);
       const custom = await loadCustomRoutines();
       set({ routines: [...ALL_BUILTIN_ROUTINES, ...custom] });
     } catch (error) {
       console.error('Failed to delete routine in store:', error);
+      const custom = await loadCustomRoutines();
+      set({ routines: [...ALL_BUILTIN_ROUTINES, ...custom] });
     }
   },
 }));

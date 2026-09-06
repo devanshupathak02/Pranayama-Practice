@@ -26,6 +26,26 @@ export const getRoutineById = (id: string): Routine | undefined => {
   return useRoutineStore.getState().routines.find((routine) => routine.id === id);
 };
 
+const BUILTIN_IDS = new Set([
+  'set-35',
+  'set-15',
+  'set-10',
+  'yoga-nidra-emotional-healing-wave',
+  'yoga-nidra-diabetes-herb',
+  'yoga-nidra-rejuvenation',
+  'yoga-nidra-sleep-wave',
+]);
+
+/**
+ * Check if a routine is a custom user-created routine.
+ */
+export const isCustomRoutine = (routine?: Routine | null): boolean => {
+  if (!routine) return false;
+  if (routine.source === 'custom') return true;
+  if (routine.source === 'builtin') return false;
+  return !BUILTIN_IDS.has(routine.id);
+};
+
 /**
  * Primary routine used for v1.
  */

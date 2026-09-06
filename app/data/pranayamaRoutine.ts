@@ -33,12 +33,22 @@ export const SET_35_PHASES: Phase[] = [
     type: 'meditation',
     label: 'Settle in / Meditation',
     durationSeconds: 120, // 2 min
+    audio: {
+      file: WITNESS_BELL,
+      category: 'bell',
+      playOnce: true,
+    },
   },
   {
     id: 'set-35-chant-3',
     type: 'chant',
     label: 'Chant Om 3 Times',
     durationSeconds: 60, // 1 min
+    audio: {
+      file: WITNESS_BELL,
+      category: 'bell',
+      playOnce: true,
+    },
   },
   {
     id: 'set-35-bhastrika',
@@ -183,18 +193,33 @@ export const SET_35_PHASES: Phase[] = [
     type: 'chant',
     label: 'Chant Om 5 Times',
     durationSeconds: 120, // 2 min
+    audio: {
+      file: WITNESS_BELL,
+      category: 'bell',
+      playOnce: true,
+    },
   },
   {
     id: 'set-35-meditation-close',
     type: 'meditation',
     label: 'Meditation (closing)',
     durationSeconds: 180, // 3 min
+    audio: {
+      file: WITNESS_BELL,
+      category: 'bell',
+      playOnce: true,
+    },
   },
   {
     id: 'set-35-shavasana',
     type: 'shavasana',
     label: 'Shavasana',
     durationSeconds: 180, // 3 min
+    audio: {
+      file: WITNESS_BELL,
+      category: 'bell',
+      playOnce: true,
+    },
   },
   {
     id: 'set-35-completion',
@@ -219,12 +244,22 @@ export const SET_46_PHASES: Phase[] = [
     type: 'meditation',
     label: 'Settle in / Meditation',
     durationSeconds: 240, // 4 min
+    audio: {
+      file: WITNESS_BELL,
+      category: 'bell',
+      playOnce: true,
+    },
   },
   {
     id: 'set-46-chant-3',
     type: 'chant',
     label: 'Chant Om 3 Times',
     durationSeconds: 60, // 1 min
+    audio: {
+      file: WITNESS_BELL,
+      category: 'bell',
+      playOnce: true,
+    },
   },
   {
     id: 'set-46-bhastrika',
@@ -369,18 +404,33 @@ export const SET_46_PHASES: Phase[] = [
     type: 'chant',
     label: 'Chant Om 5 Times',
     durationSeconds: 120, // 2 min
+    audio: {
+      file: WITNESS_BELL,
+      category: 'bell',
+      playOnce: true,
+    },
   },
   {
     id: 'set-46-meditation-close',
     type: 'meditation',
     label: 'Meditation (closing)',
     durationSeconds: 180, // 3 min
+    audio: {
+      file: WITNESS_BELL,
+      category: 'bell',
+      playOnce: true,
+    },
   },
   {
     id: 'set-46-shavasana',
     type: 'shavasana',
     label: 'Shavasana',
     durationSeconds: 180, // 3 min
+    audio: {
+      file: WITNESS_BELL,
+      category: 'bell',
+      playOnce: true,
+    },
   },
   {
     id: 'set-46-completion',
@@ -405,12 +455,22 @@ export const SET_60_PHASES: Phase[] = [
     type: 'meditation',
     label: 'Settle in / Meditation',
     durationSeconds: 300, // 5 min
+    audio: {
+      file: WITNESS_BELL,
+      category: 'bell',
+      playOnce: true,
+    },
   },
   {
     id: 'set-60-chant-3',
     type: 'chant',
     label: 'Chant Om 3 Times',
     durationSeconds: 120, // 2 min
+    audio: {
+      file: WITNESS_BELL,
+      category: 'bell',
+      playOnce: true,
+    },
   },
   {
     id: 'set-60-bhastrika',
@@ -555,18 +615,33 @@ export const SET_60_PHASES: Phase[] = [
     type: 'chant',
     label: 'Chant Om 5 Times',
     durationSeconds: 180, // 3 min
+    audio: {
+      file: WITNESS_BELL,
+      category: 'bell',
+      playOnce: true,
+    },
   },
   {
     id: 'set-60-meditation-close',
     type: 'meditation',
     label: 'Meditation (closing)',
     durationSeconds: 240, // 4 min
+    audio: {
+      file: WITNESS_BELL,
+      category: 'bell',
+      playOnce: true,
+    },
   },
   {
     id: 'set-60-shavasana',
     type: 'shavasana',
     label: 'Shavasana',
     durationSeconds: 300, // 5 min
+    audio: {
+      file: WITNESS_BELL,
+      category: 'bell',
+      playOnce: true,
+    },
   },
   {
     id: 'set-60-completion',

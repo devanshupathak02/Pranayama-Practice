@@ -104,6 +104,18 @@ export class TimerEngine {
     this.advanceToNextPhase();
   }
 
+  public previousPhase(): void {
+    if (this.status !== 'RUNNING' && this.status !== 'PAUSED') {
+      return;
+    }
+
+    if (this.currentPhaseIndex <= 0) {
+      return;
+    }
+
+    this.goToPreviousPhase();
+  }
+
   public getState(): TimerState {
     const currentPhase = this.phases[this.currentPhaseIndex] || null;
 
@@ -173,6 +185,16 @@ export class TimerEngine {
     }
   }
 
+  private resetPhaseTimers(): void {
+    const now = Date.now();
+    if (this.status === 'PAUSED' && this.pausedAtMs) {
+      this.totalPausedAccumulatedMs += (now - this.pausedAtMs);
+      this.pausedAtMs = now;
+    }
+    this.phaseStartedAtMs = now;
+    this.currentPhasePausedAccumulatedMs = 0;
+  }
+
   private advanceToNextPhase(): void {
     const nextIndex = this.currentPhaseIndex + 1;
 
@@ -188,8 +210,20 @@ export class TimerEngine {
     }
 
     this.currentPhaseIndex = nextIndex;
-    this.phaseStartedAtMs = Date.now();
-    this.currentPhasePausedAccumulatedMs = 0;
+    this.resetPhaseTimers();
+
+    this.notifyPhaseChange();
+    this.notifyTick();
+  }
+
+  private goToPreviousPhase(): void {
+    const prevIndex = this.currentPhaseIndex - 1;
+    if (prevIndex < 0) {
+      return;
+    }
+
+    this.currentPhaseIndex = prevIndex;
+    this.resetPhaseTimers();
 
     this.notifyPhaseChange();
     this.notifyTick();

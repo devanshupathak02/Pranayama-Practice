@@ -7,10 +7,11 @@ The old single "Pranayama" routine is **removed entirely**. This file is the com
 - All three are `source: "builtin"`, non-editable by users.
 - Same six pranayama techniques, same order, in every routine: Bhastrika → Kapalbhati → Bahya → Ujjayi → Anulom Vilom → Bhramari.
 - Every technique is followed by a **1-minute** Normal Breath / Witness pause (not 35 sec — that was the old routine's number, this is different and explicit in the client's data).
-- "Chant Om 3 Times" and "Chant Om 5 Times" are **visual only, no audio** — same treatment as the original Om Chant phase.
-- Technique phases (`pranayama` type) keep the same behavior as before: full-screen image + spoken technique name once at phase start, mutable via the existing `muteTechniqueNames` setting.
-- `Settle in / Meditation`, `Meditation` (closing), and `Shavasana` are all timer-only, no audio, no image — calm view, same as `meditation` phases always were.
-- Completion bell fires immediately after Shavasana ends, same as before.
+- "Chant Om 3 Times" and "Chant Om 5 Times" phases have a `category: "bell"` audio cue (same transition bell asset).
+- Technique phases (`pranayama` type) keep their own spoken technique name once at phase start, mutable via the existing `muteTechniqueNames` setting.
+- `Settle in / Meditation`, `Meditation` (closing), and `Shavasana` all have a `category: "bell"` audio cue (same transition bell asset).
+- Every non-pranayama, non-ending phase (witness, chant, meditation, shavasana) plays the transition bell regardless of the `muteTechniqueNames` toggle.
+- Completion bell fires immediately when the completion phase is reached (ending category).
 - **Asset reuse:** image/audio files for the six techniques are identical across all three routines — reuse the same files already named (e.g. `bhastrika.png` / `bhastrika_name.mp3`, etc.), don't create per-routine duplicates.
 
 ## New phase types needed

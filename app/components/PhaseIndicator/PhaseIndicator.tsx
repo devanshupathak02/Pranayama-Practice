@@ -84,8 +84,10 @@ const styles = StyleSheet.create({
   },
   phaseLabel: {
     fontSize: 24,
+    lineHeight: 30,
     fontWeight: '600',
     textAlign: 'center',
     paddingHorizontal: 16,
+    minHeight: 60,
   },
 });

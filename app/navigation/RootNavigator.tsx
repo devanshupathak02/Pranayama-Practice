@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from './types';
 import { HomeScreen } from '../screens/HomeScreen/HomeScreen';
 import { RoutineDetailScreen } from '../screens/RoutineDetailScreen/RoutineDetailScreen';
@@ -47,10 +48,22 @@ export const RootNavigator: React.FC = () => {
         <Stack.Screen
           name="Home"
           component={HomeScreen}
-          options={{
+          options={({ navigation }) => ({
             headerTitle: () => <HeaderTitle />,
             headerTitleAlign: 'left',
-          }}
+            headerRight: () => (
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Settings')}
+                style={styles.headerSettingsButton}
+                activeOpacity={0.7}
+                accessibilityLabel="Settings"
+                accessibilityRole="button"
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              >
+                <Ionicons name="settings-outline" size={23} color={theme.textPrimary} />
+              </TouchableOpacity>
+            ),
+          })}
         />
         <Stack.Screen
           name="RoutineDetail"
@@ -98,6 +111,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: theme.textPrimary,
+  },
+  headerSettingsButton: {
+    padding: 6,
+    marginRight: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

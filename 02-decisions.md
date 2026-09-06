@@ -212,3 +212,13 @@ ActiveSessionScreen  → unchanged, runs the routine
 [MM:SS remaining]        ← native chronometer, ticks live
 [MM:SS] left in session   ← updates on phase change
 ```
+
+---
+
+### D18: Session-start bell — reuses the same completion bell audio, triggered by lifecycle not phase data
+
+**Reason:** Sessions currently start in total silence — no audio plays until the first witness bell, which feels dead. Fix: play the same bell sound already used for session completion (`category: "ending"`) once at the very start of every session too.
+
+**Implementation rule:** this is triggered directly from `sessionStore.startSession()` as a lifecycle event — NOT added as `audio` data on each routine's first phase. This is deliberate: doing it at the lifecycle level means it automatically applies to every routine, including builtin sets AND any user-created custom routine, without needing to edit routine data or expect users to add it themselves when building a custom routine. Reuse the exact same audio file already used for the completion/`ending` category — don't create a duplicate asset.
+
+**Status:** Accepted

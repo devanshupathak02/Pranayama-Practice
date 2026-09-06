@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Platform, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { HomeScreenNavigationProp } from '../../navigation/types';
 import { useSessionStore } from '../../store/sessionStore';
 import { useRoutineStore } from '../../store/routineStore';
 import { Routine } from '../../models/Routine';
+import { isCustomRoutine } from '../../data/routines';
 import { theme } from '../../constants/theme';
 import { SegmentedControl, TabCategory } from '../../components/SegmentedControl';
 
@@ -13,7 +15,7 @@ interface Props {
 
 export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const { initSettings, isSettingsLoaded } = useSessionStore();
-  const { routines, loadRoutines } = useRoutineStore();
+  const { routines, loadRoutines, deleteRoutine } = useRoutineStore();
   const [selectedTab, setSelectedTab] = useState<TabCategory>('pranayama');
 
   useEffect(() => {
@@ -31,8 +33,41 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('History');
   };
 
-  const handleOpenSettings = () => {
-    navigation.navigate('Settings');
+  const handleCreateRoutine = () => {
+    navigation.navigate('RoutineBuilder', {});
+  };
+
+  const handleDeleteCustomRoutine = (routine: Routine) => {
+    const executeDelete = async () => {
+      try {
+        await deleteRoutine(routine.id);
+      } catch (error) {
+        console.error('Error deleting routine:', error);
+      }
+    };
+
+    if (Platform.OS === 'web') {
+      const confirmed = typeof window !== 'undefined'
+        ? window.confirm(`Are you sure you want to delete "${routine.name}"? This action cannot be undone.`)
+        : true;
+      if (confirmed) {
+        executeDelete();
+      }
+      return;
+    }
+
+    Alert.alert(
+      'Delete Routine',
+      `Are you sure you want to delete "${routine.name}"? This action cannot be undone.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: executeDelete,
+        },
+      ]
+    );
   };
 
   const displayedRoutines = routines.filter((routine) => {
@@ -58,6 +93,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
           {displayedRoutines.map((routine: Routine) => {
             const mins = Math.floor(routine.totalDurationSeconds / 60);
             const secs = routine.totalDurationSeconds % 60;
+            const isCustom = isCustomRoutine(routine);
 
             return (
               <TouchableOpacity
@@ -69,14 +105,30 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                 <View style={styles.cardHeader}>
                   <View style={styles.routineNameRow}>
                     <Text style={styles.routineName}>{routine.name}</Text>
-                    {routine.source === 'custom' && (
+                    {isCustom && (
                       <View style={styles.customBadge}>
                         <Text style={styles.customBadgeText}>Custom</Text>
                       </View>
                     )}
                   </View>
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{mins}m {secs > 0 ? `${secs}s` : ''}</Text>
+                  <View style={styles.cardHeaderRight}>
+                    <View style={styles.badge}>
+                      <Text style={styles.badgeText}>{mins}m {secs > 0 ? `${secs}s` : ''}</Text>
+                    </View>
+                    {isCustom && (
+                      <TouchableOpacity
+                        style={styles.cardDeleteButton}
+                        onPress={(e) => {
+                          e.stopPropagation?.();
+                          handleDeleteCustomRoutine(routine);
+                        }}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        accessibilityLabel={`Delete ${routine.name}`}
+                        accessibilityRole="button"
+                      >
+                        <Ionicons name="trash-outline" size={16} color={theme.danger} />
+                      </TouchableOpacity>
+                    )}
                   </View>
                 </View>
                 {!!routine.description && (
@@ -88,16 +140,6 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
               </TouchableOpacity>
             );
           })}
-
-          {selectedTab === 'pranayama' && (
-            <TouchableOpacity
-              style={styles.createCard}
-              onPress={() => navigation.navigate('RoutineBuilder', {})}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.createCardText}>+ Create Custom Routine</Text>
-            </TouchableOpacity>
-          )}
         </View>
 
         <View style={styles.creditContainer}>
@@ -111,12 +153,26 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
       </ScrollView>
 
       <View style={styles.footerRow}>
-        <TouchableOpacity style={styles.textButton} onPress={handleOpenHistory}>
-          <Text style={styles.textButtonText}>History</Text>
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={handleOpenHistory}
+          activeOpacity={0.7}
+          accessibilityLabel="Session History"
+          accessibilityRole="button"
+        >
+          <Ionicons name="time-outline" size={20} color={theme.textSecondary} />
+          <Text style={styles.navButtonText}>History</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.textButton} onPress={handleOpenSettings}>
-          <Text style={styles.textButtonText}>Settings</Text>
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={handleCreateRoutine}
+          activeOpacity={0.7}
+          accessibilityLabel="Create Custom Routine"
+          accessibilityRole="button"
+        >
+          <Ionicons name="add" size={24} color={theme.textSecondary} />
+          <Text style={styles.navButtonText}>Create Routine</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -191,21 +247,17 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
-  createCard: {
-    backgroundColor: 'transparent',
-    borderRadius: 16,
-    padding: 24,
-    borderWidth: 2,
-    borderStyle: 'dashed',
-    borderColor: theme.borderAccent,
+  cardHeaderRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  cardDeleteButton: {
+    padding: 6,
+    backgroundColor: 'rgba(81, 26, 5, 0.08)',
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 8,
-  },
-  createCardText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: theme.accent,
   },
   badge: {
     backgroundColor: 'rgba(216, 169, 59, 0.2)', // borderAccent with 20% opacity
@@ -235,18 +287,25 @@ const styles = StyleSheet.create({
   footerRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingVertical: 16,
+    alignItems: 'center',
+    paddingVertical: 12,
     borderTopWidth: 1,
     borderTopColor: theme.border,
     backgroundColor: theme.background,
   },
-  textButton: {
-    padding: 12,
+  navButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    gap: 6,
   },
-  textButtonText: {
+  navButtonText: {
     color: theme.textSecondary,
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   creditContainer: {
     flexDirection: 'row',

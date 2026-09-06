@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
 import { useKeepAwake } from 'expo-keep-awake';
+import { Ionicons } from '@expo/vector-icons';
 import { ActiveSessionScreenNavigationProp } from '../../navigation/types';
 import { useSessionStore } from '../../store/sessionStore';
 import { PhaseIndicator } from '../../components/PhaseIndicator/PhaseIndicator';
@@ -32,6 +33,7 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
     resumeSession,
     resetSession,
     skipPhase,
+    previousPhase,
   } = useSessionStore();
 
   const handleTogglePlayPause = () => {
@@ -63,6 +65,16 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
+  const handlePreviousPhase = () => {
+    try {
+      if (currentPhaseIndex > 0) {
+        previousPhase();
+      }
+    } catch (error) {
+      console.error('[ActiveSessionScreen] Error returning to previous phase:', error);
+    }
+  };
+
   const hasImage = !!currentPhase?.image;
   const imageSource = typeof currentPhase?.image === 'string'
     ? { uri: currentPhase.image }
@@ -70,6 +82,7 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
   const totalPhases = activeRoutine?.phases.length || 18;
   const totalRoutineDuration = activeRoutine?.totalDurationSeconds || 2070;
   const isCompleted = status === 'COMPLETED';
+  const isFirstPhase = currentPhaseIndex === 0;
 
   // Calculate routine progress percentage
   const progressRatio = Math.min(
@@ -117,11 +130,9 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
         totalPhases={totalPhases}
       />
 
-      {!hasImage && (
-        <View style={styles.circleContainer}>
-          <BreathingCircle isPaused={status === 'PAUSED'} />
-        </View>
-      )}
+      <View style={styles.circleContainer}>
+        {!hasImage && <BreathingCircle isPaused={status === 'PAUSED'} />}
+      </View>
 
       <Text
         style={[
@@ -144,6 +155,54 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
       </View>
 
       <View style={styles.controlsRow}>
+        {/* Previous Button */}
+        <TouchableOpacity
+          style={[
+            styles.controlButtonSecondary,
+            {
+              backgroundColor: hasImage ? 'rgba(255,255,255,0.1)' : theme.surface,
+              borderColor: hasImage ? 'rgba(255,255,255,0.2)' : theme.border,
+              opacity: isFirstPhase ? 0.35 : 1,
+            }
+          ]}
+          onPress={handlePreviousPhase}
+          disabled={isFirstPhase}
+          activeOpacity={0.7}
+        >
+          <Ionicons
+            name="play-skip-back"
+            size={14}
+            color={hasImage ? '#FFFFFF' : theme.textSecondary}
+            style={{ marginRight: 4 }}
+          />
+          <Text
+            style={[
+              styles.controlTextSecondary,
+              { color: hasImage ? '#FFFFFF' : theme.textSecondary }
+            ]}
+          >
+            Prev
+          </Text>
+        </TouchableOpacity>
+
+        {/* Play/Pause Button */}
+        <TouchableOpacity
+          style={styles.controlButtonPrimary}
+          onPress={handleTogglePlayPause}
+          activeOpacity={0.8}
+        >
+          <Ionicons
+            name={status === 'RUNNING' ? 'pause' : 'play'}
+            size={16}
+            color="#FFFFFF"
+            style={{ marginRight: 6 }}
+          />
+          <Text style={styles.controlTextPrimary}>
+            {status === 'RUNNING' ? 'Pause' : 'Resume'}
+          </Text>
+        </TouchableOpacity>
+
+        {/* Skip Button */}
         <TouchableOpacity
           style={[
             styles.controlButtonSecondary,
@@ -158,23 +217,19 @@ export const ActiveSessionScreen: React.FC<Props> = ({ navigation }) => {
           <Text
             style={[
               styles.controlTextSecondary,
-              { color: hasImage ? '#FFFFFF' : theme.textSecondary }
+              { color: hasImage ? '#FFFFFF' : theme.textSecondary, marginRight: 4 }
             ]}
           >
             Skip
           </Text>
+          <Ionicons
+            name="play-skip-forward"
+            size={14}
+            color={hasImage ? '#FFFFFF' : theme.textSecondary}
+          />
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.controlButtonPrimary}
-          onPress={handleTogglePlayPause}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.controlTextPrimary}>
-            {status === 'RUNNING' ? 'Pause' : 'Resume'}
-          </Text>
-        </TouchableOpacity>
-
+        {/* End Button */}
         <TouchableOpacity
           style={[
             styles.controlButtonDanger,
@@ -216,7 +271,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 16,
   },
   progressBarContainer: {
     position: 'absolute',
@@ -234,19 +289,23 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   circleContainer: {
-    marginVertical: 20,
+    width: 220,
+    height: 220,
+    marginVertical: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   timerDisplay: {
     fontSize: 72,
     fontWeight: '200',
     letterSpacing: 4,
-    marginVertical: 12,
+    marginVertical: 8,
   },
   sessionTimesRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 40,
+    marginBottom: 32,
     marginTop: 4,
   },
   sessionTimeBadge: {
@@ -255,53 +314,62 @@ const styles = StyleSheet.create({
   },
   sessionTimeLabel: {
     fontSize: 12,
-    fontWeight: '500',
+    fontWeight: '600',
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 2,
+    letterSpacing: 0.8,
+    marginBottom: 4,
   },
   sessionTimeValue: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 32,
+    fontWeight: '700',
+    letterSpacing: 1.5,
   },
   controlsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     width: '100%',
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
+    gap: 8,
   },
   controlButtonPrimary: {
     backgroundColor: theme.accent,
-    paddingVertical: 16,
-    paddingHorizontal: 36,
-    borderRadius: 30,
-    minWidth: 120,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 26,
   },
   controlTextPrimary: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
   },
   controlButtonSecondary: {
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 22,
     borderWidth: 1,
   },
   controlTextSecondary: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500',
   },
   controlButtonDanger: {
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 22,
     borderWidth: 1,
   },
   controlTextDanger: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500',
   },
   completedEmoji: {

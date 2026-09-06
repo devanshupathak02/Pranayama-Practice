@@ -42,7 +42,7 @@ export const YOGA_NIDRA_DIABETES_HERB: Routine = {
       label: 'Diabetes Care & Health Guided Session',
       durationSeconds: 1800,
       audio: {
-        file: DIABETES_HERB_AUDIO,
+        file: SLEEP_WAVE_AUDIO,
         category: 'ending',
         playOnce: true,
       },
@@ -86,7 +86,7 @@ export const YOGA_NIDRA_SLEEP_WAVE: Routine = {
       label: 'Sleep Wave Guided Session',
       durationSeconds: 1451,
       audio: {
-        file: SLEEP_WAVE_AUDIO,
+        file: DIABETES_HERB_AUDIO,
         category: 'ending',
         playOnce: true,
       },

@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, Platform } from 'react-native';
 import {
   RoutineDetailScreenNavigationProp,
   RoutineDetailScreenRouteProp,
 } from '../../navigation/types';
-import { getRoutineById } from '../../data/routines';
+import { getRoutineById, isCustomRoutine } from '../../data/routines';
 import { useSessionStore } from '../../store/sessionStore';
 import { useRoutineStore } from '../../store/routineStore';
 import { Phase } from '../../models/Phase';
@@ -17,9 +17,11 @@ interface Props {
 
 export const RoutineDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const { routineId } = route.params;
-  const routine = getRoutineById(routineId);
+  const { routines, deleteRoutine } = useRoutineStore();
+  const routine = routines.find((r) => r.id === routineId) || getRoutineById(routineId);
   const { startSession } = useSessionStore();
-  const { deleteRoutine } = useRoutineStore();
+
+  const isCustom = isCustomRoutine(routine);
 
   const handleStartSession = () => {
     if (routine) {
@@ -30,6 +32,26 @@ export const RoutineDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const handleDelete = () => {
     if (!routine) return;
+
+    const executeDelete = async () => {
+      try {
+        await deleteRoutine(routine.id);
+      } catch (error) {
+        console.error('Error deleting routine:', error);
+      }
+      navigation.navigate('Home');
+    };
+
+    if (Platform.OS === 'web') {
+      const confirmed = typeof window !== 'undefined'
+        ? window.confirm(`Are you sure you want to delete "${routine.name}"? This action cannot be undone.`)
+        : true;
+      if (confirmed) {
+        executeDelete();
+      }
+      return;
+    }
+
     Alert.alert(
       'Delete Routine',
       `Are you sure you want to delete "${routine.name}"? This action cannot be undone.`,
@@ -38,17 +60,18 @@ export const RoutineDetailScreen: React.FC<Props> = ({ navigation, route }) => {
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: async () => {
-            await deleteRoutine(routine.id);
-            navigation.navigate('Home');
-          },
+          onPress: executeDelete,
         },
       ]
     );
   };
 
   const handleBack = () => {
-    navigation.goBack();
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    } else {
+      navigation.navigate('Home');
+    }
   };
 
   if (!routine) {
@@ -89,7 +112,7 @@ export const RoutineDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       <TouchableOpacity
         style={[
           styles.primaryButton,
-          routine.source === 'custom' && { marginBottom: 12 }
+          isCustom && { marginBottom: 12 }
         ]}
         onPress={handleStartSession}
         activeOpacity={0.8}
@@ -97,7 +120,7 @@ export const RoutineDetailScreen: React.FC<Props> = ({ navigation, route }) => {
         <Text style={styles.primaryButtonText}>Begin Session</Text>
       </TouchableOpacity>
 
-      {routine.source === 'custom' && (
+      {isCustom && (
         <View style={styles.actionsRow}>
           <TouchableOpacity
             style={styles.editButton}

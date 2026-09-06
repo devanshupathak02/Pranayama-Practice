@@ -40,9 +40,6 @@ class AudioService {
     muteTechniqueNames: boolean,
     witnessSoundId?: string
   ): Promise<void> {
-    // Always stop and clean up any existing active player before starting a new track
-    this.stop();
-
     const audio = phase.audio;
     if (!audio || !audio.file) {
       return;
@@ -52,6 +49,9 @@ class AudioService {
     if (audio.category === 'technique-name' && muteTechniqueNames) {
       return;
     }
+
+    // Always stop and clean up any existing active player before starting a new track
+    this.stop();
 
     // Resolve audio source: use configured witnessSoundId ONLY for witness/transition bells
     let soundFile = audio.file;
@@ -98,6 +98,23 @@ class AudioService {
    */
   public stopPreview(): void {
     this.stop();
+  }
+
+  /**
+   * Plays the session start bell (reuses the same Boxing Bell.mp3 completion bell asset - D18).
+   */
+  public async playStartBell(): Promise<void> {
+    this.stop();
+    try {
+      const startBellAsset = require('../../assets/audio/bell/Boxing Bell.mp3');
+      const player = createAudioPlayer(startBellAsset);
+      player.loop = false;
+      player.volume = 1.0;
+      this.activePlayer = player;
+      player.play();
+    } catch (error) {
+      console.error('[AudioService] Error playing session start bell:', error);
+    }
   }
 
   /**
