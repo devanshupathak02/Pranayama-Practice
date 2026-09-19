@@ -2,13 +2,19 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 
 export type RootStackParamList = {
-  Home: undefined;
+  Landing: undefined;
+  Home: { initialTab?: 'pranayama' | 'yoga-nidra' } | undefined;
   RoutineDetail: { routineId: string };
   ActiveSession: undefined;
   History: undefined;
   Settings: undefined;
   RoutineBuilder: { routineId?: string };
 };
+
+export type LandingScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'Landing'
+>;
 
 export type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -40,6 +46,7 @@ export type RoutineBuilderScreenNavigationProp = NativeStackNavigationProp<
   'RoutineBuilder'
 >;
 
+export type LandingScreenRouteProp = RouteProp<RootStackParamList, 'Landing'>;
 export type HomeScreenRouteProp = RouteProp<RootStackParamList, 'Home'>;
 export type RoutineDetailScreenRouteProp = RouteProp<
   RootStackParamList,

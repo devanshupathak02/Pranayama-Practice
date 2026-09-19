@@ -1,6 +1,5 @@
 import { Platform } from 'react-native';
 import { Routine } from '../models/Routine';
-import { Phase } from '../models/Phase';
 import { storage } from '../storage/db';
 
 const DEVICE_ID_KEY = 'web_push_device_id';

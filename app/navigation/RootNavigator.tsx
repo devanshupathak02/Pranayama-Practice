@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from './types';
+import { LandingScreen } from '../screens/LandingScreen/LandingScreen';
 import { HomeScreen } from '../screens/HomeScreen/HomeScreen';
 import { RoutineDetailScreen } from '../screens/RoutineDetailScreen/RoutineDetailScreen';
 import { ActiveSessionScreen } from '../screens/ActiveSessionScreen/ActiveSessionScreen';
@@ -27,11 +28,24 @@ const HeaderTitle: React.FC = () => {
   );
 };
 
+const SectionHeaderTitle: React.FC<{ title: string }> = ({ title }) => {
+  return (
+    <View style={styles.headerTitleContainer}>
+      <Image
+        source={require('../../assets/images/still-mountain-logo.png')}
+        style={styles.headerLogo}
+        resizeMode="contain"
+      />
+      <Text style={styles.headerTitleText}>{title}</Text>
+    </View>
+  );
+};
+
 export const RootNavigator: React.FC = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Home"
+        initialRouteName="Landing"
         screenOptions={{
           headerStyle: {
             backgroundColor: theme.background,
@@ -46,8 +60,8 @@ export const RootNavigator: React.FC = () => {
         }}
       >
         <Stack.Screen
-          name="Home"
-          component={HomeScreen}
+          name="Landing"
+          component={LandingScreen}
           options={({ navigation }) => ({
             headerTitle: () => <HeaderTitle />,
             headerTitleAlign: 'left',
@@ -64,6 +78,29 @@ export const RootNavigator: React.FC = () => {
               </TouchableOpacity>
             ),
           })}
+        />
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={({ route, navigation }) => {
+            const sectionTitle = route.params?.initialTab === 'yoga-nidra' ? 'Yoga Nidra' : 'Pranayama';
+            return {
+              headerTitle: () => <SectionHeaderTitle title={sectionTitle} />,
+              headerTitleAlign: 'left',
+              headerRight: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('Settings')}
+                  style={styles.headerSettingsButton}
+                  activeOpacity={0.7}
+                  accessibilityLabel="Settings"
+                  accessibilityRole="button"
+                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                >
+                  <Ionicons name="settings-outline" size={23} color={theme.textPrimary} />
+                </TouchableOpacity>
+              ),
+            };
+          }}
         />
         <Stack.Screen
           name="RoutineDetail"

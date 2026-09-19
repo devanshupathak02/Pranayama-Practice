@@ -1,23 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Platform, Alert } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { HomeScreenNavigationProp } from '../../navigation/types';
+import { HomeScreenNavigationProp, HomeScreenRouteProp } from '../../navigation/types';
 import { useSessionStore } from '../../store/sessionStore';
 import { useRoutineStore } from '../../store/routineStore';
 import { Routine } from '../../models/Routine';
 import { isCustomRoutine } from '../../data/routines';
 import { theme } from '../../constants/theme';
-import { SegmentedControl, TabCategory } from '../../components/SegmentedControl';
-import { AddToHomeScreenBanner } from '../../components/AddToHomeScreenBanner';
 
 interface Props {
   navigation: HomeScreenNavigationProp;
+  route: HomeScreenRouteProp;
 }
 
-export const HomeScreen: React.FC<Props> = ({ navigation }) => {
+export const HomeScreen: React.FC<Props> = ({ navigation, route }) => {
   const { initSettings, isSettingsLoaded } = useSessionStore();
   const { routines, loadRoutines, deleteRoutine } = useRoutineStore();
-  const [selectedTab, setSelectedTab] = useState<TabCategory>('pranayama');
+  const category = route.params?.initialTab || 'pranayama';
 
   useEffect(() => {
     if (!isSettingsLoaded) {
@@ -72,7 +71,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const displayedRoutines = routines.filter((routine) => {
-    if (selectedTab === 'pranayama') {
+    if (category === 'pranayama') {
       return routine.category === 'pranayama' || !routine.category;
     }
     return routine.category === 'yoga-nidra';
@@ -81,18 +80,6 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.brandHeaderContainer}>
-          <Text style={styles.brandHeaderTitle}>STILL MOUNTAIN</Text>
-          <Text style={styles.brandHeaderSubtitle}>Wellness Retreat</Text>
-        </View>
-        <Text style={styles.headerSubtitle}>Select a breathing routine to practice</Text>
-        <AddToHomeScreenBanner />
-
-        <SegmentedControl
-          selectedTab={selectedTab}
-          onTabChange={setSelectedTab}
-        />
-
         {/* D10: Render routine cards dynamically from routines array */}
         <View style={styles.routineList}>
           {displayedRoutines.map((routine: Routine) => {
@@ -146,15 +133,6 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
             );
           })}
         </View>
-
-        <View style={styles.creditContainer}>
-          <Text style={styles.creditText}>Powered by</Text>
-          <Image
-            source={require('../../../assets/images/still-mountain-lockup.png')}
-            style={styles.creditImage}
-            resizeMode="contain"
-          />
-        </View>
       </ScrollView>
 
       <View style={styles.footerRow}>
@@ -190,41 +168,9 @@ const styles = StyleSheet.create({
     backgroundColor: theme.background,
   },
   scrollContent: {
-    paddingTop: 40,
+    paddingTop: 20,
     paddingHorizontal: 20,
     paddingBottom: 24,
-  },
-  brandHeaderContainer: {
-    marginBottom: 6,
-  },
-  brandHeaderTitle: {
-    fontFamily: Platform.select({
-      ios: 'Georgia',
-      android: 'serif',
-      web: "'Cinzel', 'Georgia', 'Times New Roman', serif",
-    }),
-    fontSize: 26,
-    fontWeight: '700',
-    color: theme.textPrimary,
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-  },
-  brandHeaderSubtitle: {
-    fontFamily: Platform.select({
-      ios: 'System',
-      android: 'sans-serif',
-      web: "'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    }),
-    fontSize: 15,
-    fontWeight: '500',
-    color: theme.textSecondary,
-    letterSpacing: 0.5,
-    marginTop: 2,
-  },
-  headerSubtitle: {
-    fontSize: 13,
-    color: theme.textMuted,
-    marginBottom: 24,
   },
   routineList: {
     gap: 16,
@@ -332,22 +278,5 @@ const styles = StyleSheet.create({
     color: theme.textSecondary,
     fontSize: 14,
     fontWeight: '600',
-  },
-  creditContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 32,
-    marginBottom: 8,
-    opacity: 0.7,
-  },
-  creditText: {
-    fontSize: 12,
-    color: theme.textSecondary,
-    marginRight: 6,
-  },
-  creditImage: {
-    width: 60,
-    height: 45,
   },
 });
