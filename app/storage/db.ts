@@ -1,4 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
+import { indexedDBStorage } from './indexedDBStorage';
 import { SessionRecord } from '../models/SessionHistory';
 import { Routine } from '../models/Routine';
 import { DEFAULT_WITNESS_SOUND_ID } from '../constants/sounds';
@@ -7,6 +9,9 @@ export interface AppSettings {
   muteTechniqueNames: boolean;
   witnessSoundId: string;
 }
+
+const storageClient = Platform.OS === 'web' ? indexedDBStorage : AsyncStorage;
+export const storage = storageClient;
 
 const STORAGE_KEYS = {
   SETTINGS: 'pranayama_app_settings_v1',
@@ -20,13 +25,14 @@ const DEFAULT_SETTINGS: AppSettings = {
 };
 
 /**
- * Low-level AsyncStorage wrapper for persistent storage (D4).
+ * Low-level storage wrapper for persistent storage (D4 / D21).
+ * Uses IndexedDB on Web and AsyncStorage on Native.
  * All methods wrap storage calls in try/catch to degrade gracefully.
  */
 
 export const loadSettings = async (): Promise<AppSettings> => {
   try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEYS.SETTINGS);
+    const raw = await storageClient.getItem(STORAGE_KEYS.SETTINGS);
     if (!raw) {
       return DEFAULT_SETTINGS;
     }
@@ -49,7 +55,7 @@ export const loadSettings = async (): Promise<AppSettings> => {
 
 export const saveSettings = async (settings: AppSettings): Promise<void> => {
   try {
-    await AsyncStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
+    await storageClient.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
   } catch (error) {
     console.error('Failed to save settings to storage:', error);
   }
@@ -57,7 +63,7 @@ export const saveSettings = async (settings: AppSettings): Promise<void> => {
 
 export const loadSessionHistory = async (): Promise<SessionRecord[]> => {
   try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEYS.HISTORY);
+    const raw = await storageClient.getItem(STORAGE_KEYS.HISTORY);
     if (!raw) {
       return [];
     }
@@ -72,7 +78,7 @@ export const saveSessionRecord = async (record: SessionRecord): Promise<void> =>
   try {
     const existing = await loadSessionHistory();
     const updated = [record, ...existing];
-    await AsyncStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(updated));
+    await storageClient.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(updated));
   } catch (error) {
     console.error('Failed to save session record to storage:', error);
   }
@@ -80,7 +86,7 @@ export const saveSessionRecord = async (record: SessionRecord): Promise<void> =>
 
 export const clearSessionHistory = async (): Promise<void> => {
   try {
-    await AsyncStorage.removeItem(STORAGE_KEYS.HISTORY);
+    await storageClient.removeItem(STORAGE_KEYS.HISTORY);
   } catch (error) {
     console.error('Failed to clear session history:', error);
   }
@@ -91,7 +97,7 @@ export const clearSessionHistory = async (): Promise<void> => {
  */
 export const loadCustomRoutines = async (): Promise<Routine[]> => {
   try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEYS.CUSTOM_ROUTINES);
+    const raw = await storageClient.getItem(STORAGE_KEYS.CUSTOM_ROUTINES);
     if (!raw) {
       return [];
     }
@@ -114,7 +120,7 @@ export const saveCustomRoutine = async (routine: Routine): Promise<void> => {
     } else {
       routines.push(routine);
     }
-    await AsyncStorage.setItem(STORAGE_KEYS.CUSTOM_ROUTINES, JSON.stringify(routines));
+    await storageClient.setItem(STORAGE_KEYS.CUSTOM_ROUTINES, JSON.stringify(routines));
   } catch (error) {
     console.error('Failed to save custom routine to storage:', error);
   }
@@ -127,7 +133,7 @@ export const deleteCustomRoutine = async (id: string): Promise<void> => {
   try {
     const routines = await loadCustomRoutines();
     const updated = routines.filter((r) => r.id !== id);
-    await AsyncStorage.setItem(STORAGE_KEYS.CUSTOM_ROUTINES, JSON.stringify(updated));
+    await storageClient.setItem(STORAGE_KEYS.CUSTOM_ROUTINES, JSON.stringify(updated));
   } catch (error) {
     console.error('Failed to delete custom routine from storage:', error);
   }

@@ -222,3 +222,17 @@ ActiveSessionScreen  → unchanged, runs the routine
 **Implementation rule:** this is triggered directly from `sessionStore.startSession()` as a lifecycle event — NOT added as `audio` data on each routine's first phase. This is deliberate: doing it at the lifecycle level means it automatically applies to every routine, including builtin sets AND any user-created custom routine, without needing to edit routine data or expect users to add it themselves when building a custom routine. Reuse the exact same audio file already used for the completion/`ending` category — don't create a duplicate asset.
 
 **Status:** Accepted
+
+---
+
+### D22: Single-repo code sharing architecture via unified Expo project with platform adapters
+
+**Reason:** The app needs to support both the existing native app and the new PWA in the same repository without duplicating `TimerEngine`, Zustand stores (`sessionStore`, `routineStore`, `historyStore`), routine datasets, or UI components. A monorepo introduces package linking, symlink, and bundler sync overhead, while separate repositories duplicate business logic.
+
+**Architecture:**
+- **Shared Core:** `TimerEngine`, Zustand stores, routine data (`app/data/routines.ts`), models, and React Native Web UI components live in a single unified codebase.
+- **Platform Adapters:** Platform-divergent modules (storage, audio, media pickers, notifications) use platform adapter abstractions / `.web.ts` and `.native.ts` extensions.
+- **PWA Assets:** Dedicated `web/` directory for PWA `manifest.json`, service worker, and icons.
+- **Web Push Backend:** Dedicated `server/` (or `api/`) directory for Upstash QStash webhook endpoints and Web Push dispatch (Phase D).
+
+**Status:** Accepted

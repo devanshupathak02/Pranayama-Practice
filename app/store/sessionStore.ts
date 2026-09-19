@@ -15,6 +15,7 @@ import { NotificationService } from '../notifications/NotificationService';
 interface SessionStoreState {
   // Routine & Timer State
   activeRoutine: Routine | null;
+  sessionId: string | null;
   status: TimerStatus;
   currentPhaseIndex: number;
   currentPhase: Phase | null;
@@ -48,6 +49,7 @@ const NOTIFICATION_UPDATE_INTERVAL_MS = Platform.OS === 'android' ? 1500 : 5000;
 
 export const useSessionStore = create<SessionStoreState>((set, get) => ({
   activeRoutine: ROUTINES[0],
+  sessionId: null,
   status: 'IDLE',
   currentPhaseIndex: 0,
   currentPhase: ROUTINES[0]?.phases[0] || null,
@@ -91,6 +93,8 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
       return;
     }
 
+    const newSessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+
     // Stop any existing audio before starting session
     audioService.stop();
 
@@ -104,9 +108,8 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
     lastNotificationUpdateMs = Date.now();
 
     // Request notification permission at session start (once, cached — D15).
-    // Fire-and-forget: session starts regardless of permission outcome.
     console.log('[sessionStore] Requesting notification permission for startSession...');
-    NotificationService.requestPermissions().then((granted) => {
+    NotificationService.requestPermissions().then((granted: boolean) => {
       if (granted) {
         const firstPhase = targetRoutine.phases[0];
         NotificationService.showOrUpdate(
@@ -115,7 +118,16 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
           targetRoutine.totalDurationSeconds,
           false
         );
+        // Schedule Web Push notifications for upcoming phase boundaries & completion (D20)
+        NotificationService.schedulePushes(
+          targetRoutine,
+          0,
+          firstPhase.durationSeconds,
+          newSessionId
+        );
       }
+    }).catch((err: any) => {
+      console.warn('[sessionStore] NotificationService requestPermissions failed silently:', err);
     });
 
     timerEngine.setPhases(targetRoutine.phases);
@@ -188,6 +200,7 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
 
     set({
       activeRoutine: targetRoutine,
+      sessionId: newSessionId,
       currentPhaseIndex: 0,
       currentPhase: targetRoutine.phases[0],
       currentPhaseSecondsRemaining: targetRoutine.phases[0].durationSeconds,
@@ -203,8 +216,12 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
     if (timerEngine) {
       timerEngine.pause();
       audioService.pause();
+      // Cancel pending Web Push messages while paused (D20)
+      const { sessionId, currentPhase, currentPhaseSecondsRemaining, totalSecondsRemaining } = get();
+      if (sessionId) {
+        NotificationService.cancelPushes(sessionId, 'PAUSED');
+      }
       // Update notification immediately to show paused state with Resume action (D16)
-      const { currentPhase, currentPhaseSecondsRemaining, totalSecondsRemaining } = get();
       if (currentPhase) {
         lastNotificationUpdateMs = Date.now();
         NotificationService.showOrUpdate(
@@ -221,8 +238,17 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
     if (timerEngine) {
       timerEngine.resume();
       audioService.resume();
+      // Reschedule pending Web Push messages with updated remaining times (D20)
+      const { activeRoutine, currentPhaseIndex, currentPhaseSecondsRemaining, sessionId, currentPhase, totalSecondsRemaining } = get();
+      if (activeRoutine && sessionId) {
+        NotificationService.schedulePushes(
+          activeRoutine,
+          currentPhaseIndex,
+          currentPhaseSecondsRemaining,
+          sessionId
+        );
+      }
       // Update notification immediately back to active state with Pause action (D16)
-      const { currentPhase, currentPhaseSecondsRemaining, totalSecondsRemaining } = get();
       if (currentPhase) {
         lastNotificationUpdateMs = Date.now();
         NotificationService.showOrUpdate(
@@ -241,12 +267,13 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
     }
     audioService.stop();
     lastNotificationUpdateMs = 0;
-    // Dismiss notification on manual exit (D15/D16)
+    // Dismiss notification & cancel server pushes on manual exit (D15/D16/D20)
     NotificationService.dismiss();
 
     const routine = get().activeRoutine || ROUTINES[0];
     set({
       status: 'IDLE',
+      sessionId: null,
       currentPhaseIndex: 0,
       currentPhase: routine.phases[0] || null,
       currentPhaseSecondsRemaining: routine.phases[0]?.durationSeconds || 0,
@@ -259,6 +286,15 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
     audioService.stop();
     if (timerEngine) {
       timerEngine.skipPhase();
+      const { activeRoutine, currentPhaseIndex, currentPhaseSecondsRemaining, sessionId } = get();
+      if (activeRoutine && sessionId) {
+        NotificationService.schedulePushes(
+          activeRoutine,
+          currentPhaseIndex,
+          currentPhaseSecondsRemaining,
+          sessionId
+        );
+      }
     }
   },
 
@@ -266,6 +302,15 @@ export const useSessionStore = create<SessionStoreState>((set, get) => ({
     audioService.stop();
     if (timerEngine) {
       timerEngine.previousPhase();
+      const { activeRoutine, currentPhaseIndex, currentPhaseSecondsRemaining, sessionId } = get();
+      if (activeRoutine && sessionId) {
+        NotificationService.schedulePushes(
+          activeRoutine,
+          currentPhaseIndex,
+          currentPhaseSecondsRemaining,
+          sessionId
+        );
+      }
     }
   },
 }));

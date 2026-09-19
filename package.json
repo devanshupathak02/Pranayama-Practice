@@ -7,6 +7,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
+    "export:web": "node scripts/generate-pwa-icons.cjs && expo export -p web && node scripts/post-export-pwa.cjs",
+    "serve:pwa": "node server/dev-server.cjs",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
@@ -14,6 +16,8 @@
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.10.1",
+    "@upstash/qstash": "^2.11.3",
+    "@upstash/redis": "^1.38.4",
     "expo": "~54.0.0",
     "expo-audio": "~1.1.1",
     "expo-document-picker": "~14.0.8",
@@ -28,6 +32,7 @@
     "react-native-safe-area-context": "~5.6.0",
     "react-native-screens": "~4.16.0",
     "react-native-web": "^0.21.0",
+    "web-push": "^3.6.7",
     "zustand": "^5.0.14"
   },
   "devDependencies": {
@@ -35,6 +40,7 @@
     "@types/prop-types": "^15.7.14",
     "@types/react": "~19.1.10",
     "babel-preset-expo": "~54.0.12",
+    "localtunnel": "^2.0.2",
     "pngjs": "^7.0.0",
     "typescript": "~5.9.2"
   },

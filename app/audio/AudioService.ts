@@ -1,20 +1,25 @@
+import { Platform } from 'react-native';
 import { createAudioPlayer, AudioModule, AudioPlayer } from 'expo-audio';
 import { Phase } from '../models/Phase';
 import { WITNESS_SOUND_OPTIONS, DEFAULT_WITNESS_SOUND_ID } from '../constants/sounds';
+import { webAudioEngine } from './webAudioEngine';
 
 /**
- * Decoupled AudioService managing audio playback using expo-audio.
- * Configured for background audio playback on iOS and Android.
+ * Decoupled AudioService managing audio playback.
+ * On Web: delegates to WebAudioEngine (Web Audio API buffer cache + Promise-safe HTML5 audio).
+ * On Native (iOS/Android): uses expo-audio configured for background audio playback.
  * Respects scoped audio muting (D8, D9a) and single-play audio cues (04-routine-data.md Rule 3).
  */
 class AudioService {
   private activePlayer: AudioPlayer | null = null;
 
   constructor() {
-    this.initAudioMode();
+    if (Platform.OS !== 'web') {
+      this.initNativeAudioMode();
+    }
   }
 
-  private async initAudioMode(): Promise<void> {
+  private async initNativeAudioMode(): Promise<void> {
     try {
       if (AudioModule && typeof AudioModule.setAudioModeAsync === 'function') {
         await AudioModule.setAudioModeAsync({
@@ -30,16 +35,16 @@ class AudioService {
 
   /**
    * Plays the audio cue for a phase if applicable.
-   *
-   * @param phase Target phase
-   * @param muteTechniqueNames Scoped mute setting (silences only 'technique-name' category)
-   * @param witnessSoundId Configured transition sound for Normal breath / Witness phases
    */
   public async playPhaseAudio(
     phase: Phase,
     muteTechniqueNames: boolean,
     witnessSoundId?: string
   ): Promise<void> {
+    if (Platform.OS === 'web') {
+      return webAudioEngine.playPhaseAudio(phase, muteTechniqueNames, witnessSoundId);
+    }
+
     const audio = phase.audio;
     if (!audio || !audio.file) {
       return;
@@ -80,7 +85,11 @@ class AudioService {
   /**
    * Previews a sound asset once. Stops any currently active player.
    */
-  public async previewSound(assetSource: number): Promise<void> {
+  public async previewSound(assetSource: any): Promise<void> {
+    if (Platform.OS === 'web') {
+      return webAudioEngine.playSound(assetSource, 1.0);
+    }
+
     this.stop();
     try {
       const player = createAudioPlayer(assetSource);
@@ -104,6 +113,10 @@ class AudioService {
    * Plays the session start bell (reuses the same Boxing Bell.mp3 completion bell asset - D18).
    */
   public async playStartBell(): Promise<void> {
+    if (Platform.OS === 'web') {
+      return webAudioEngine.playStartBell();
+    }
+
     this.stop();
     try {
       const startBellAsset = require('../../assets/audio/bell/Boxing Bell.mp3');
@@ -121,6 +134,10 @@ class AudioService {
    * Plays the completion bell (Boxing Bell.mp3) when a session finishes.
    */
   public async playCompletionBell(): Promise<void> {
+    if (Platform.OS === 'web') {
+      return webAudioEngine.playCompletionBell();
+    }
+
     this.stop();
     try {
       const completionBellAsset = require('../../assets/audio/bell/Boxing Bell.mp3');
@@ -138,6 +155,10 @@ class AudioService {
    * Pauses the currently active audio player if playing.
    */
   public pause(): void {
+    if (Platform.OS === 'web') {
+      return webAudioEngine.pause();
+    }
+
     if (this.activePlayer) {
       try {
         this.activePlayer.pause();
@@ -151,6 +172,10 @@ class AudioService {
    * Resumes playback of the currently active audio player if paused.
    */
   public resume(): void {
+    if (Platform.OS === 'web') {
+      return webAudioEngine.resume();
+    }
+
     if (this.activePlayer) {
       try {
         this.activePlayer.play();
@@ -164,6 +189,10 @@ class AudioService {
    * Stops and disposes the currently active audio player.
    */
   public stop(): void {
+    if (Platform.OS === 'web') {
+      return webAudioEngine.stop();
+    }
+
     if (this.activePlayer) {
       try {
         this.activePlayer.pause();
@@ -186,4 +215,5 @@ class AudioService {
 }
 
 export const audioService = new AudioService();
+
 

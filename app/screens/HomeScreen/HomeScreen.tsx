@@ -8,6 +8,7 @@ import { Routine } from '../../models/Routine';
 import { isCustomRoutine } from '../../data/routines';
 import { theme } from '../../constants/theme';
 import { SegmentedControl, TabCategory } from '../../components/SegmentedControl';
+import { AddToHomeScreenBanner } from '../../components/AddToHomeScreenBanner';
 
 interface Props {
   navigation: HomeScreenNavigationProp;
@@ -80,8 +81,12 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.headerTitle}>Pranayama Practice</Text>
+        <View style={styles.brandHeaderContainer}>
+          <Text style={styles.brandHeaderTitle}>STILL MOUNTAIN</Text>
+          <Text style={styles.brandHeaderSubtitle}>Wellness Retreat</Text>
+        </View>
         <Text style={styles.headerSubtitle}>Select a breathing routine to practice</Text>
+        <AddToHomeScreenBanner />
 
         <SegmentedControl
           selectedTab={selectedTab}
@@ -189,15 +194,36 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 24,
   },
-  headerTitle: {
-    fontSize: 32,
-    fontWeight: '600',
+  brandHeaderContainer: {
+    marginBottom: 6,
+  },
+  brandHeaderTitle: {
+    fontFamily: Platform.select({
+      ios: 'Georgia',
+      android: 'serif',
+      web: "'Cinzel', 'Georgia', 'Times New Roman', serif",
+    }),
+    fontSize: 26,
+    fontWeight: '700',
     color: theme.textPrimary,
-    marginBottom: 4,
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+  },
+  brandHeaderSubtitle: {
+    fontFamily: Platform.select({
+      ios: 'System',
+      android: 'sans-serif',
+      web: "'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    }),
+    fontSize: 15,
+    fontWeight: '500',
+    color: theme.textSecondary,
+    letterSpacing: 0.5,
+    marginTop: 2,
   },
   headerSubtitle: {
-    fontSize: 14,
-    color: theme.textSecondary,
+    fontSize: 13,
+    color: theme.textMuted,
     marginBottom: 24,
   },
   routineList: {
