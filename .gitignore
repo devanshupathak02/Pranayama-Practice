@@ -19,3 +19,8 @@ Thumbs.db
 .env.local
 .env.*.local
 !.env.example
+
+# website
+website/.next/
+website/node_modules/
+

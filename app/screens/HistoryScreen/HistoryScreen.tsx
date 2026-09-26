@@ -128,10 +128,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     borderColor: theme.border,
-    shadowColor: 'rgba(120, 90, 40, 1)',
+    shadowColor: 'rgba(9, 40, 50, 1)',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 20,
+    shadowOpacity: 0.04,
+    shadowRadius: 12,
     elevation: 2,
   },
   recordHeader: {
@@ -142,12 +142,12 @@ const styles = StyleSheet.create({
   },
   routineTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
     color: theme.textPrimary,
   },
   durationText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
     color: theme.accent,
   },
   dateText: {
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: '700',
     color: theme.textPrimary,
     marginBottom: 8,
   },
@@ -188,6 +188,6 @@ const styles = StyleSheet.create({
   backButtonText: {
     color: theme.textPrimary,
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
   },
 });

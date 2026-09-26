@@ -66,15 +66,19 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: 'rgba(186, 117, 23, 0.15)', // accent color at 0.15 opacity
+    backgroundColor: 'rgba(255, 92, 35, 0.12)', // soft Atomic Orange halo
     borderWidth: 2,
-    borderColor: 'rgba(216, 169, 59, 0.4)', // borderAccent color at 0.4 opacity
+    borderColor: 'rgba(142, 224, 247, 0.8)', // Ice Blue border glow
   },
   innerCircle: {
     width: 140,
     height: 140,
     borderRadius: 70,
     backgroundColor: theme.accent,
-    opacity: 1.0,
+    shadowColor: theme.accent,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 6,
   },
 });

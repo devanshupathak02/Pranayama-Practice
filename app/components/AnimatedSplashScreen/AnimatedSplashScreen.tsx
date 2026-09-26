@@ -65,7 +65,7 @@ export const AnimatedSplashScreen: React.FC<Props> = ({ onFinish }) => {
   return (
     <Animated.View style={[styles.overlay, { opacity: screenOpacity }]} pointerEvents="none">
       <View style={styles.centerContainer}>
-        {/* Outer radiant gold glow ring */}
+        {/* Outer radiant Ice Cream Blue glow ring */}
         <Animated.View
           style={[
             styles.outerGlowRing,
@@ -76,7 +76,7 @@ export const AnimatedSplashScreen: React.FC<Props> = ({ onFinish }) => {
           ]}
         />
 
-        {/* Breathing Circle outer ring using amber accent (#BA7517 / #D8A93B) */}
+        {/* Breathing Circle outer ring using Atomic Orange & Ice Blue */}
         <Animated.View
           style={[
             styles.outerRing,
@@ -87,7 +87,7 @@ export const AnimatedSplashScreen: React.FC<Props> = ({ onFinish }) => {
           ]}
         />
 
-        {/* Inner circle with warm amber border and rich contrast */}
+        {/* Inner circle with crisp Ice Cream Blue core and Atomic Orange border */}
         <Animated.View
           style={[
             styles.innerCircle,
@@ -122,7 +122,7 @@ export const AnimatedSplashScreen: React.FC<Props> = ({ onFinish }) => {
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: theme.background, // #FAF7F2 warm cream
+    backgroundColor: theme.background,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 99999,
@@ -139,28 +139,28 @@ const styles = StyleSheet.create({
     width: 320,
     height: 320,
     borderRadius: 160,
-    backgroundColor: 'rgba(216, 169, 59, 0.22)', // borderAccent gold glow
+    backgroundColor: 'rgba(200, 243, 255, 0.45)', // Ice Cream Blue radiant glow
   },
   outerRing: {
     position: 'absolute',
     width: 270,
     height: 270,
     borderRadius: 135,
-    backgroundColor: 'rgba(186, 117, 23, 0.22)', // accent amber fill
-    borderWidth: 3,
-    borderColor: theme.borderAccent, // #D8A93B
+    backgroundColor: 'rgba(255, 92, 35, 0.12)', // Atomic Orange halo
+    borderWidth: 2,
+    borderColor: theme.borderAccent, // Ice Blue accent
   },
   innerCircle: {
     position: 'absolute',
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: '#FAF2E4', // rich warm tinted core
+    backgroundColor: theme.surfaceTinted, // Ice Cream Blue core
     borderWidth: 3,
-    borderColor: theme.accent, // #BA7517 rich amber
+    borderColor: theme.accent, // Atomic Orange rim
     shadowColor: theme.accent,
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.35,
+    shadowOpacity: 0.25,
     shadowRadius: 24,
     elevation: 8,
   },

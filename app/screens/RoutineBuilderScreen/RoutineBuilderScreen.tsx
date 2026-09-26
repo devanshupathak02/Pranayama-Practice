@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   addPhaseButtonHeader: {
-    backgroundColor: 'rgba(186, 117, 23, 0.1)',
+    backgroundColor: 'rgba(255, 92, 35, 0.12)',
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 8,
@@ -451,7 +451,7 @@ const styles = StyleSheet.create({
   addPhaseButtonHeaderText: {
     color: theme.accent,
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   phaseCard: {
     backgroundColor: theme.surface,
@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
     borderColor: theme.border,
     padding: 16,
     marginBottom: 16,
-    shadowColor: 'rgba(120, 90, 40, 1)',
+    shadowColor: 'rgba(9, 40, 50, 1)',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.04,
     shadowRadius: 10,
@@ -477,7 +477,7 @@ const styles = StyleSheet.create({
   },
   phaseCardTitle: {
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: '700',
     color: theme.accent,
   },
   phaseCardControls: {
@@ -505,7 +505,7 @@ const styles = StyleSheet.create({
   deletePhaseButton: {
     width: 32,
     height: 32,
-    backgroundColor: 'rgba(81, 26, 5, 0.08)',
+    backgroundColor: 'rgba(239, 68, 68, 0.12)',
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
@@ -600,7 +600,7 @@ const styles = StyleSheet.create({
   addPhaseButtonBottom: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: theme.borderAccent,
+    borderColor: theme.accent,
     borderStyle: 'dashed',
     borderRadius: 12,
     paddingVertical: 16,
@@ -610,7 +610,7 @@ const styles = StyleSheet.create({
   addPhaseButtonBottomText: {
     color: theme.accent,
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   saveActionsRow: {
     flexDirection: 'row',

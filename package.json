@@ -10,6 +10,8 @@
     "build": "npm run export:web",
     "export:web": "node scripts/generate-pwa-icons.cjs && expo export -p web && node scripts/post-export-pwa.cjs",
     "serve:pwa": "node server/dev-server.cjs",
+    "website:dev": "npm run dev --prefix website",
+    "website:build": "npm run build --prefix website",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

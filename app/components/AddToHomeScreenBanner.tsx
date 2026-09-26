@@ -58,11 +58,11 @@ export const AddToHomeScreenBanner: React.FC = () => {
         <View style={styles.textContainer}>
           <Text style={styles.bannerTitle}>Enable Background Reminders</Text>
           <Text style={styles.bannerText}>
-            Tap <Ionicons name="share-outline" size={12} color={theme.textPrimary} /> then <Text style={styles.boldText}>"Add to Home Screen"</Text> so session alerts can reach you when your phone is locked.
+            Tap <Ionicons name="share-outline" size={12} color={theme.accentOnTint} /> then <Text style={styles.boldText}>"Add to Home Screen"</Text> so session alerts can reach you when your phone is locked.
           </Text>
         </View>
         <TouchableOpacity style={styles.closeButton} onPress={handleDismiss} activeOpacity={0.7}>
-          <Ionicons name="close" size={18} color={theme.textSecondary} />
+          <Ionicons name="close" size={18} color={theme.accentOnTint} />
         </TouchableOpacity>
       </View>
     </View>
@@ -71,18 +71,18 @@ export const AddToHomeScreenBanner: React.FC = () => {
 
 const styles = StyleSheet.create({
   bannerContainer: {
-    backgroundColor: '#F3EDE2',
+    backgroundColor: theme.surfaceTinted,
     borderWidth: 1,
-    borderColor: '#E6D7C3',
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
+    borderColor: theme.borderAccent,
+    borderRadius: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
     marginBottom: 16,
     marginHorizontal: 4,
-    shadowColor: '#511A05',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowColor: 'rgba(9, 40, 50, 1)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
     elevation: 2,
   },
   contentRow: {
@@ -90,15 +90,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconCircle: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: '#FAF7F2',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: theme.surface,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
     borderWidth: 1,
-    borderColor: '#E6D7C3',
+    borderColor: theme.borderAccent,
   },
   textContainer: {
     flex: 1,
@@ -108,18 +108,19 @@ const styles = StyleSheet.create({
     fontFamily: Platform.select({ web: 'Cinzel, Georgia, serif', default: 'serif' }),
     fontSize: 13,
     fontWeight: '700',
-    color: theme.textPrimary,
+    color: theme.accentOnTint,
     marginBottom: 2,
   },
   bannerText: {
     fontFamily: Platform.select({ web: 'Montserrat, system-ui, sans-serif', default: 'sans-serif' }),
     fontSize: 12,
     lineHeight: 16,
-    color: theme.textSecondary,
+    color: theme.accentOnTint,
+    opacity: 0.9,
   },
   boldText: {
-    fontWeight: '600',
-    color: theme.textPrimary,
+    fontWeight: '700',
+    color: theme.accentOnTint,
   },
   closeButton: {
     padding: 6,

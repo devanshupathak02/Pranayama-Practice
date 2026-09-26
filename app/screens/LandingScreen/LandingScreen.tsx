@@ -78,7 +78,7 @@ export const LandingScreen: React.FC<Props> = ({ navigation }) => {
                   </Text>
                 </View>
                 <View style={styles.arrowCircle}>
-                  <Ionicons name="chevron-forward" size={20} color={theme.accentOnTint} />
+                  <Ionicons name="chevron-forward" size={20} color="#FFFFFF" />
                 </View>
               </View>
             </TouchableOpacity>
@@ -104,7 +104,7 @@ export const LandingScreen: React.FC<Props> = ({ navigation }) => {
                   </Text>
                 </View>
                 <View style={styles.arrowCircle}>
-                  <Ionicons name="chevron-forward" size={20} color={theme.accentOnTint} />
+                  <Ionicons name="chevron-forward" size={20} color="#FFFFFF" />
                 </View>
               </View>
             </TouchableOpacity>
@@ -201,10 +201,10 @@ const styles = StyleSheet.create({
     padding: 20,
     borderWidth: 1,
     borderColor: theme.borderAccent,
-    shadowColor: 'rgba(120, 90, 40, 1)',
+    shadowColor: 'rgba(9, 40, 50, 1)',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
-    shadowRadius: 20,
+    shadowRadius: 16,
     elevation: 2,
   },
   cardContentRow: {
@@ -225,35 +225,41 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 22,
-    fontWeight: '600',
+    fontWeight: '700',
     color: theme.accentOnTint,
   },
   categoryBadge: {
-    backgroundColor: 'rgba(216, 169, 59, 0.22)',
+    backgroundColor: 'rgba(255, 92, 35, 0.14)',
     paddingHorizontal: 10,
     paddingVertical: 3,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: theme.borderAccent,
+    borderColor: 'rgba(255, 92, 35, 0.35)',
   },
   categoryBadgeText: {
-    color: theme.accentOnTint,
+    color: theme.accent,
     fontSize: 11,
-    fontWeight: '600',
+    fontWeight: '700',
+    letterSpacing: 0.3,
   },
   cardDescription: {
     fontSize: 14,
     color: theme.accentOnTint,
-    opacity: 0.9,
+    opacity: 0.88,
     lineHeight: 20,
   },
   arrowCircle: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(216, 169, 59, 0.25)',
+    backgroundColor: theme.accent,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: theme.accent,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 3,
   },
   creditContainer: {
     flexDirection: 'row',

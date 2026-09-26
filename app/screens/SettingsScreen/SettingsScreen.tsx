@@ -187,10 +187,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.border,
     marginBottom: 24,
-    shadowColor: 'rgba(120, 90, 40, 1)',
+    shadowColor: 'rgba(9, 40, 50, 1)',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 20,
+    shadowOpacity: 0.04,
+    shadowRadius: 12,
     elevation: 2,
   },
   settingTextContainer: {
@@ -241,6 +241,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
+    backgroundColor: theme.surface,
   },
   radioIndicatorInner: {
     width: 10,

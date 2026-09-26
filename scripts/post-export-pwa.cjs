@@ -44,12 +44,12 @@ if (fs.existsSync(indexPath)) {
 
   const pwaHeadTags = `
     <!-- PWA & iOS Meta Tags (Phase C) -->
-    <meta name="theme-color" content="#FAF7F2" />
+    <meta name="theme-color" content="#F8FAFC" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Pranayama" />
     <meta name="application-name" content="Pranayama Timer" />
-    <meta name="msapplication-TileColor" content="#FAF7F2" />
+    <meta name="msapplication-TileColor" content="#F8FAFC" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="shortcut icon" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />

@@ -1,19 +1,19 @@
-// Design System — Light, Warm, Premium Theme
-// This replaces the dark navy default theme.
+// Design System — Atomic Orange & Ice Cream Blue
+// Modern, bold, editorial, and premium visual identity
 
-export const background = '#FAF7F2';
+export const background = '#F8FAFC';
 export const surface = '#FFFFFF';
-export const surfaceTinted = '#FAEEDA';
-export const border = '#EFE8DA';
-export const borderAccent = '#D8A93B';
-export const textPrimary = '#2C2416';
-export const textSecondary = '#6B5D4F';
-export const textMuted = '#9C8F7D';
-export const accent = '#BA7517';
-export const accentHover = '#8B5A0F';
-export const accentOnTint = '#412402';
-export const success = '#3B6D11';
-export const danger = '#511A05'; // Deep dark maroon/burgundy from logo
+export const surfaceTinted = '#C8F3FF';
+export const border = '#E2E8F0';
+export const borderAccent = '#8EE0F7';
+export const textPrimary = '#111827';
+export const textSecondary = '#4B5563';
+export const textMuted = '#94A3B8';
+export const accent = '#FF5C23';
+export const accentHover = '#E04B14';
+export const accentOnTint = '#092832';
+export const success = '#10B981';
+export const danger = '#EF4444';
 
 export const theme = {
   background,

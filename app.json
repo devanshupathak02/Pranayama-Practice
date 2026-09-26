@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#FAF7F2"
+      "backgroundColor": "#F8FAFC"
     },
     "ios": {
       "bundleIdentifier": "com.pranayama.timer",
@@ -25,7 +25,7 @@
       "package": "com.pranayama.timer",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FAF7F2"
+        "backgroundColor": "#F8FAFC"
       },
       "userInterfaceStyle": "light",
       "permissions": [

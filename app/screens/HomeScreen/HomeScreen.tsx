@@ -181,10 +181,10 @@ const styles = StyleSheet.create({
     padding: 20,
     borderWidth: 1,
     borderColor: theme.borderAccent,
-    shadowColor: 'rgba(120, 90, 40, 1)',
+    shadowColor: 'rgba(9, 40, 50, 1)',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
-    shadowRadius: 20,
+    shadowRadius: 16,
     elevation: 2,
   },
   cardHeader: {
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
   },
   routineName: {
     fontSize: 22,
-    fontWeight: '600',
+    fontWeight: '700',
     color: theme.accentOnTint,
   },
   customBadge: {
@@ -226,13 +226,13 @@ const styles = StyleSheet.create({
   },
   cardDeleteButton: {
     padding: 6,
-    backgroundColor: 'rgba(81, 26, 5, 0.08)',
+    backgroundColor: 'rgba(239, 68, 68, 0.12)',
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
   badge: {
-    backgroundColor: 'rgba(216, 169, 59, 0.2)', // borderAccent with 20% opacity
+    backgroundColor: theme.surface,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 999,
@@ -242,28 +242,29 @@ const styles = StyleSheet.create({
   badgeText: {
     color: theme.accentOnTint,
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   routineDescription: {
     fontSize: 14,
     color: theme.accentOnTint,
     lineHeight: 20,
     marginBottom: 16,
-    opacity: 0.9,
+    opacity: 0.88,
   },
   phaseCountText: {
     fontSize: 12,
     fontWeight: '600',
     color: theme.accentOnTint,
+    opacity: 0.9,
   },
   footerRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 14,
     borderTopWidth: 1,
     borderTopColor: theme.border,
-    backgroundColor: theme.background,
+    backgroundColor: theme.surface,
   },
   navButton: {
     flexDirection: 'row',
