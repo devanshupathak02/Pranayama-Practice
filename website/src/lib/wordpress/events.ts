@@ -15,7 +15,7 @@ export interface WpCourseItem {
 /**
  * Normalize raw WordPress Course/Workshop into frontend Event model
  */
-export function normalizeWpCourse(item: WpCourseItem, index: number = 0): Event {
+export function normalizeWpCourse(item: WpCourseItem): Event {
   const title = decodeHtmlEntities(item.title?.rendered || "Still Mountain Course / Masterclass");
   const rawContent = item.content?.rendered || item.excerpt?.rendered || "";
   const cleanDescription =
@@ -52,5 +52,5 @@ export async function getEvents(options: { limit?: number } = {}): Promise<Event
     return options.limit ? EVENTS.slice(0, options.limit) : EVENTS;
   }
 
-  return wpCourses.map((c, idx) => normalizeWpCourse(c, idx));
+  return wpCourses.map((c) => normalizeWpCourse(c));
 }

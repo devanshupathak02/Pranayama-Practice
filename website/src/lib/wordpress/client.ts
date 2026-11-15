@@ -95,8 +95,9 @@ export async function fetchWP<T>(
 
     const data: T = await res.json();
     return data;
-  } catch (error: any) {
-    console.warn(`[WordPress API] Network or fetch error for endpoint "${endpoint}":`, error?.message || error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`[WordPress API] Network or fetch error for endpoint "${endpoint}":`, message);
     return null;
   }
 }

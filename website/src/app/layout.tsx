@@ -1,9 +1,15 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { siteConfig } from "@/config/site";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { PwaManager } from "@/components/PwaManager";
 
+export const viewport: Viewport = {
+  themeColor: "#263F35",
+  width: "device-width",
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
   title: {
@@ -13,16 +19,21 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   keywords: [
     "Pranayama",
-    "Breathing Timer",
-    "Yoga Nidra",
+    "Pranayama Timer",
+    "Conscious Breathing",
     "Still Mountain Wellness Retreat",
-    "Breathwork App",
+    "SMWR",
+    "Breathwork Journal",
     "Kumbhaka",
-    "Meditation Retreats",
-    "Himalayan Yoga"
+    "Anulom Vilom",
+    "Kapalbhati",
+    "Ujjayi",
+    "Bhramari",
+    "Yoga Nidra",
+    "Himalayan Yoga Lineage",
   ],
-  authors: [{ name: "Still Mountain Wellness Retreat" }],
-  creator: "Still Mountain",
+  authors: [{ name: "Still Mountain Wellness Retreat", url: siteConfig.orgUrl }],
+  creator: "Still Mountain Wellness Retreat",
   metadataBase: new URL(siteConfig.url),
   openGraph: {
     type: "website",
@@ -38,7 +49,8 @@ export const metadata: Metadata = {
     description: siteConfig.description,
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: "/favicon.png",
+    apple: "/apple-touch-icon.png",
   },
 };
 
@@ -47,12 +59,34 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: siteConfig.name,
+    alternateName: "Still Mountain Pranayama Platform",
+    url: siteConfig.url,
+    description: siteConfig.description,
+    publisher: {
+      "@type": "Organization",
+      name: "Still Mountain Wellness Retreat",
+      url: siteConfig.orgUrl,
+      logo: `${siteConfig.url}/images/still-mountain-logo.png`,
+    },
+  };
+
   return (
-    <html lang="en" className="h-full antialiased">
-      <body className="min-h-full flex flex-col bg-[#F8FAFC] text-slate-900 selection:bg-[#C8F3FF] selection:text-[#092832]">
+    <html lang="en" className="h-full antialiased scroll-smooth">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
+      <body className="min-h-full flex flex-col bg-[#EDE8DC] text-[#263F35] selection:bg-[#82947A] selection:text-[#FAF7F2]">
         <Navbar />
-        <main className="flex-1 pt-20">{children}</main>
+        <main className="flex-1">{children}</main>
         <Footer />
+        <PwaManager />
       </body>
     </html>
   );

@@ -1,3 +1,47 @@
+export interface PranayamaPractice {
+  id: string;
+  name: string;
+  sanskritName: string;
+  englishName: string;
+  shortDescription: string;
+  fullDescription: string;
+  beginnerFriendly: boolean;
+  difficulty: "Beginner" | "Intermediate" | "All Levels";
+  durationMinutes: number;
+  image: string;
+  articleSlug?: string;
+  focus: string;
+  instructions: string[];
+  contraindications?: string;
+}
+
+export interface Article {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  publishedAt: string;
+  readingTime: string;
+  category: string;
+  author: {
+    name: string;
+    role: string;
+    avatar: string;
+  };
+  featuredImage: string;
+  tags: string[];
+}
+
+export interface PracticeFeature {
+  id: string;
+  title: string;
+  tagline: string;
+  description: string;
+  badge: string;
+  iconName: string;
+}
+
 export interface Retreat {
   id: string;
   slug: string;
@@ -25,24 +69,6 @@ export interface Retreat {
   };
 }
 
-export interface Article {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string;
-  content: string; // Structured / HTML-ready for future WordPress content.rendered
-  publishedAt: string;
-  readingTime: string;
-  category: string;
-  author: {
-    name: string;
-    role: string;
-    avatar: string;
-  };
-  featuredImage: string;
-  tags: string[];
-}
-
 export interface Event {
   id: string;
   slug: string;
@@ -55,13 +81,4 @@ export interface Event {
   description: string;
   rsvpUrl?: string;
   capacity?: string;
-}
-
-export interface PracticeFeature {
-  id: string;
-  title: string;
-  tagline: string;
-  description: string;
-  badge: string;
-  iconName: string;
 }

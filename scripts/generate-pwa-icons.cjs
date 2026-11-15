@@ -13,8 +13,8 @@ if (!fs.existsSync(WEB_DIR)) {
   fs.mkdirSync(WEB_DIR, { recursive: true });
 }
 
-// Design system background color: #F8FAFC
-const BG_COLOR = { r: 248, g: 250, b: 252, a: 255 };
+// Design system background color: #EDE8DC (Warm Ivory)
+const BG_COLOR = { r: 237, g: 232, b: 220, a: 255 };
 
 /**
  * Bilinear interpolation resize from transparent source PNG to target PNG with optional scale and background fill.

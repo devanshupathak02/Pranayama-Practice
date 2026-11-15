@@ -1,117 +1,196 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { siteConfig } from "@/config/site";
-import { Sparkles, ArrowUpRight, ArrowRight, ShieldCheck, Heart, Wind, Mountain } from "lucide-react";
+import Image from "next/image";
+import { ArrowUpRight, ArrowRight, Mountain, Wind, ShieldCheck, Heart } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "About the Lineage & Practice",
+  title: "About SMWR & Still Mountain Pranayama | Connection & Philosophy",
   description:
-    "Learn about Still Mountain's dedication to classical pranayama, authentic breath ratios, and closed-eye meditation.",
+    "Learn about the relationship between Still Mountain Wellness Retreat (smwr.org) and our digital pranayama platform.",
 };
 
 export default function AboutPage() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 space-y-20">
-      {/* 1. About Hero */}
-      <div className="max-w-3xl space-y-6">
-        <span className="bg-[#C8F3FF] text-[#092832] border border-[#8EE0F7] px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
-          Our Lineage & Philosophy
-        </span>
-        <h1 className="font-serif font-extrabold text-4xl sm:text-6xl text-slate-950 leading-tight">
-          Breath as a Sacred Instrument for Inner Stillness.
-        </h1>
-        <p className="text-slate-600 text-lg sm:text-xl leading-relaxed">
-          Still Mountain was founded as a quiet refuge for practitioners seeking authentic, classical breathwork without digital distractions, performance metrics, or superficial fitness adaptations.
-        </p>
-      </div>
-
-      {/* 2. Visual Storytelling Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-        <div className="lg:col-span-6 relative h-80 sm:h-96 rounded-3xl overflow-hidden shadow-xl border border-slate-200">
-          <img
-            src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=80"
-            alt="Practitioner seated in silent meditation"
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <div className="lg:col-span-6 bg-gradient-to-br from-[#C8F3FF]/40 to-white p-8 sm:p-10 rounded-3xl border border-[#8EE0F7] space-y-4">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#FF5C23]">
-            The Core Practice
-          </span>
-          <h2 className="font-serif font-bold text-2xl sm:text-3xl text-slate-950">
-            Why Eyes-Closed Practice Demands Dedicated Audio Guidance
-          </h2>
-          <p className="text-slate-700 text-sm sm:text-base leading-relaxed">
-            During genuine pranayama, the senses are drawn inward (*pratyahara*). When a timer forces you to repeatedly open your eyes to check how many seconds remain, the delicate parasympathetic balance is interrupted.
-          </p>
-          <p className="text-slate-700 text-sm sm:text-base leading-relaxed">
-            We built our PWA to solve this exact dilemma: quiet singing bowls and voice cues guide every phase transition while your phone rests face-down and your consciousness remains within.
-          </p>
-        </div>
-      </div>
-
-      {/* 3. Three Pillars */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="bg-white p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-[#C8F3FF] border border-[#8EE0F7] flex items-center justify-center">
-            <Wind className="w-6 h-6 text-[#FF5C23]" />
+    <div className="pt-28 sm:pt-36 pb-20 space-y-20 sm:space-y-28">
+      {/* 1. Header */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl space-y-5">
+          <div className="inline-flex items-center gap-2 bg-[#FAF7F2] text-[#263F35] border border-[#D6C6A5] px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase">
+            <Mountain className="w-3.5 h-3.5 text-[#82947A]" />
+            <span>Still Mountain Wellness Retreat</span>
           </div>
-          <h3 className="font-serif font-bold text-xl text-slate-950">Six Classical Techniques</h3>
-          <p className="text-slate-600 text-sm leading-relaxed">
-            From the activating warmth of Bhastrika and Kapalbhati to the cooling nectar of Sheetali and the harmonic vibration of Bhramari, each technique has an exact physiological purpose.
+
+          <h1 className="font-serif font-bold text-4xl sm:text-5xl lg:text-6xl text-[#263F35] leading-tight">
+            Rooted in Himalayan Tradition. Made for Everyday Life.
+          </h1>
+
+          <p className="text-[#355245] text-lg sm:text-xl leading-relaxed font-normal">
+            Still Mountain Pranayama is an educational and digital wellness initiative operated under the Still Mountain Wellness Retreat (SMWR) brand.
           </p>
         </div>
+      </section>
 
-        <div className="bg-white p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-[#C8F3FF] border border-[#8EE0F7] flex items-center justify-center">
-            <Mountain className="w-6 h-6 text-[#FF5C23]" />
+      {/* 2. The Two Platforms / Relationship */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-[#FAF7F2] border border-[#D6C6A5] rounded-3xl p-8 sm:p-12 lg:p-16 space-y-10">
+          <div className="max-w-3xl space-y-3">
+            <span className="text-xs font-semibold uppercase tracking-widest text-[#82947A] block">
+              Our Dual Mission
+            </span>
+            <h2 className="font-serif font-bold text-3xl sm:text-4xl text-[#263F35]">
+              How Our Platforms Complement Each Other
+            </h2>
+            <p className="text-[#355245] text-base leading-relaxed">
+              To preserve clarity and purpose, Still Mountain maintains two dedicated spaces:
+            </p>
           </div>
-          <h3 className="font-serif font-bold text-xl text-slate-950">The Witness Pause</h3>
-          <p className="text-slate-600 text-sm leading-relaxed">
-            Every intensive technique is followed by a 1-minute non-doing pause, allowing subtle vital currents to harmonize and spontaneous breath suspension (*kumbhaka*) to emerge.
-          </p>
-        </div>
 
-        <div className="bg-white p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-[#C8F3FF] border border-[#8EE0F7] flex items-center justify-center">
-            <ShieldCheck className="w-6 h-6 text-[#FF5C23]" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Main Website Card */}
+            <div className="bg-[#EDE8DC] p-8 rounded-2xl border border-[#D6C6A5] space-y-4 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-[#82947A] uppercase tracking-wider">
+                    Institutional Sanctuary
+                  </span>
+                  <span className="text-xs font-serif italic text-[#263F35]">smwr.org</span>
+                </div>
+                <h3 className="font-serif font-bold text-2xl text-[#263F35]">
+                  Still Mountain Wellness Retreat
+                </h3>
+                <p className="text-sm text-[#355245] leading-relaxed">
+                  The primary home of our physical retreat center and sanctuary. Promotes residential retreats, master teachers, wellness immersions, noble silence periods, and the foundational philosophy of our ashram.
+                </p>
+              </div>
+
+              <div className="pt-4 border-t border-[#D6C6A5]/50">
+                <a
+                  href="https://smwr.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-[#263F35] hover:text-[#82947A] transition-colors"
+                >
+                  <span>Visit Main Retreat Center at smwr.org</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+
+            {/* This Platform Card */}
+            <div className="bg-[#EDE8DC] p-8 rounded-2xl border border-[#82947A]/60 space-y-4 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-[#263F35] uppercase tracking-wider">
+                    Digital Practice Instrument
+                  </span>
+                  <span className="text-xs font-serif italic text-[#82947A]">This Platform</span>
+                </div>
+                <h3 className="font-serif font-bold text-2xl text-[#263F35]">
+                  Still Mountain Pranayama
+                </h3>
+                <p className="text-sm text-[#355245] leading-relaxed">
+                  Dedicated strictly to the study, science, and practice of conscious breathing. Hosts educational publications, research essays on autonomic health, and the free Pranayama Timer application.
+                </p>
+              </div>
+
+              <div className="pt-4 border-t border-[#D6C6A5]/50">
+                <Link
+                  href="/practice"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-[#263F35] hover:text-[#82947A] transition-colors"
+                >
+                  <span>Open Pranayama Timer</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </div>
           </div>
-          <h3 className="font-serif font-bold text-xl text-slate-950">Respect for Privacy</h3>
-          <p className="text-slate-600 text-sm leading-relaxed">
-            Your daily sadhana is sacred and personal. We do not track your practice, require accounts, or monetize your attention.
-          </p>
         </div>
-      </div>
+      </section>
 
-      {/* 4. Organization Linkage & CTA */}
-      <div className="bg-slate-900 text-white rounded-3xl p-8 sm:p-12 lg:p-16 text-center space-y-6">
-        <h2 className="font-serif font-bold text-3xl sm:text-4xl text-white">
-          Begin Your Daily Sadhana Today
-        </h2>
-        <p className="text-slate-300 text-base sm:text-lg max-w-2xl mx-auto">
-          Access the full 35, 46, and 60-minute classical routines directly from your browser. Install on your mobile home screen in seconds.
-        </p>
-        <div className="pt-2 flex flex-wrap items-center justify-center gap-4">
-          <a
-            href={siteConfig.pwaUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-[#FF5C23] hover:bg-[#E04B14] text-white px-8 py-4 rounded-2xl font-bold text-base shadow-xl shadow-[#FF5C23]/30 transition-all"
-          >
-            <Sparkles className="w-5 h-5" />
-            <span>Launch Free App</span>
-            <ArrowUpRight className="w-5 h-5" />
-          </a>
-          <Link
-            href="/retreats"
-            className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-7 py-4 rounded-2xl font-bold text-base border border-white/20 transition-all"
-          >
-            <span>View In-Person Retreats</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+      {/* 3. Philosophy & Lineage */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          <div className="lg:col-span-6 relative h-80 sm:h-96 rounded-3xl overflow-hidden bg-[#FAF7F2] border border-[#D6C6A5]">
+            <Image
+              src="https://images.unsplash.com/photo-1545389336-cf090694435e?auto=format&fit=crop&w=1000&q=80"
+              alt="Himalayan mountain sanctuary"
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover"
+            />
+          </div>
+
+          <div className="lg:col-span-6 space-y-5">
+            <span className="text-xs font-semibold uppercase tracking-widest text-[#82947A] block">
+              Core Philosophy
+            </span>
+            <h2 className="font-serif font-bold text-3xl sm:text-4xl text-[#263F35] leading-tight">
+              A Quiet Refuge From Digital Velocity.
+            </h2>
+            <p className="text-[#355245] text-base leading-relaxed">
+              At Still Mountain, we view pranayama not as another biometric habit to optimize or display on a dashboard, but as a sacred return to effortless presence.
+            </p>
+            <p className="text-[#355245] text-base leading-relaxed">
+              When breath is smoothed and prolonged without force, mental turbulence naturally settles. We believe that regular, quiet daily breathing practice is the most direct, accessible vehicle for cultivating lasting calm in the modern world.
+            </p>
+
+            <div className="pt-3 flex flex-wrap items-center gap-4">
+              <a
+                href="https://smwr.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-[#263F35] hover:bg-[#1A2D25] text-[#FAF7F2] px-6 py-3 rounded-xl font-medium text-sm transition-colors"
+              >
+                <span>Explore smwr.org</span>
+                <ArrowUpRight className="w-4 h-4 text-[#D6C6A5]" />
+              </a>
+
+              <Link
+                href="/learn"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-[#263F35] hover:text-[#82947A] transition-colors"
+              >
+                <span>Read technique guides &rarr;</span>
+              </Link>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
+
+      {/* 4. Three Guiding Principles */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="bg-[#FAF7F2] p-8 rounded-3xl border border-[#D6C6A5] space-y-3">
+            <div className="w-11 h-11 rounded-2xl bg-[#EDE8DC] border border-[#D6C6A5] flex items-center justify-center">
+              <Wind className="w-5 h-5 text-[#263F35]" />
+            </div>
+            <h3 className="font-serif font-bold text-xl text-[#263F35]">Closed-Eye Practice</h3>
+            <p className="text-sm text-[#355245] leading-relaxed">
+              Pranayama draws attention inward (*pratyahara*). Our timer is designed to be experienced with your eyes closed, guided by quiet temple bells.
+            </p>
+          </div>
+
+          <div className="bg-[#FAF7F2] p-8 rounded-3xl border border-[#D6C6A5] space-y-3">
+            <div className="w-11 h-11 rounded-2xl bg-[#EDE8DC] border border-[#D6C6A5] flex items-center justify-center">
+              <ShieldCheck className="w-5 h-5 text-[#263F35]" />
+            </div>
+            <h3 className="font-serif font-bold text-xl text-[#263F35]">Ancient Lineage</h3>
+            <p className="text-sm text-[#355245] leading-relaxed">
+              Sequences adhere strictly to traditional Hatha yoga canons: 6 classic stages, balanced ratios, and essential witness pauses between intense rounds.
+            </p>
+          </div>
+
+          <div className="bg-[#FAF7F2] p-8 rounded-3xl border border-[#D6C6A5] space-y-3">
+            <div className="w-11 h-11 rounded-2xl bg-[#EDE8DC] border border-[#D6C6A5] flex items-center justify-center">
+              <Heart className="w-5 h-5 text-[#263F35]" />
+            </div>
+            <h3 className="font-serif font-bold text-xl text-[#263F35]">Free & Unfettered</h3>
+            <p className="text-sm text-[#355245] leading-relaxed">
+              No subscription paywalls, no tracking algorithms, and no account barrier. Breathwork belongs to all sincere practitioners unconditionally.
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

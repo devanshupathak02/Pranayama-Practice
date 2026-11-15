@@ -1,26 +1,35 @@
 {
-  "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
     "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": true,
-    "noImplicitThis": true,
-    "alwaysStrict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "allowSyntheticDefaultImports": true,
+    "noEmit": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
-  },
-  "ts-node": {
-    "compilerOptions": {
-      "module": "commonjs"
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "baseUrl": "./website",
+    "typeRoots": [
+      "./website/node_modules/@types"
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
     }
-  }
+  },
+  "include": [
+    "scripts/**/*",
+    "website/next-env.d.ts",
+    "website/**/*.ts",
+    "website/**/*.tsx",
+    "website/.next/types/**/*.ts",
+    "website/.next/dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "website/node_modules"
+  ]
 }
-

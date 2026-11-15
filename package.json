@@ -1,51 +1,25 @@
 {
-  "name": "pranayama-timer",
+  "name": "pranayama-times",
   "version": "1.0.0",
-  "main": "expo/AppEntry.js",
+  "description": "Pranayama Times — Digital Wellness Platform & Breathing Timer PWA",
+  "private": true,
   "scripts": {
-    "start": "expo start",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
-    "web": "expo start --web",
-    "build": "npm run export:web",
-    "export:web": "node scripts/generate-pwa-icons.cjs && expo export -p web && node scripts/post-export-pwa.cjs",
-    "serve:pwa": "node server/dev-server.cjs",
+    "dev": "npm run dev --prefix website",
+    "build": "npm run build --prefix website",
+    "start": "npm run start --prefix website",
+    "lint": "npm run lint --prefix website",
+    "type-check": "npm run type-check --prefix website",
     "website:dev": "npm run dev --prefix website",
     "website:build": "npm run build --prefix website",
-    "type-check": "tsc --noEmit"
+    "generate:icons": "node scripts/generate-pwa-icons.cjs"
   },
   "dependencies": {
-    "@notifee/react-native": "^9.1.4",
-    "@react-native-async-storage/async-storage": "2.2.0",
-    "@react-navigation/native": "^6.1.18",
-    "@react-navigation/native-stack": "^6.10.1",
     "@upstash/qstash": "^2.11.3",
     "@upstash/redis": "^1.38.4",
-    "expo": "~54.0.0",
-    "expo-audio": "~1.1.1",
-    "expo-document-picker": "~14.0.8",
-    "expo-file-system": "~19.0.23",
-    "expo-image-picker": "~17.0.11",
-    "expo-keep-awake": "~15.0.8",
-    "expo-notifications": "~0.32.17",
-    "expo-status-bar": "~3.0.9",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "react-native": "0.81.5",
-    "react-native-safe-area-context": "~5.6.0",
-    "react-native-screens": "~4.16.0",
-    "react-native-web": "^0.21.0",
-    "web-push": "^3.6.7",
-    "zustand": "^5.0.14"
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.0",
-    "@types/prop-types": "^15.7.14",
-    "@types/react": "~19.1.10",
-    "babel-preset-expo": "~54.0.12",
-    "localtunnel": "^2.0.2",
     "pngjs": "^7.0.0",
     "typescript": "~5.9.2"
-  },
-  "private": true
+  }
 }

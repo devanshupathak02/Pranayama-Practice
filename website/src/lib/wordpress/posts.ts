@@ -45,8 +45,29 @@ const DEFAULT_AVATARS = [
   "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
 ];
 
+// Topics explicitly excluded from Still Mountain Pranayama editorial publication
+const EXCLUDED_TOPIC_REGEX = /\b(fertility|infertility|conception|pregnancy|sexual|libido|aphrodisiac|vajikarana|erectile|postpartum|pcos|menstrual)\b/i;
+
 /**
- * Normalize raw WordPress Post into frontend Article model
+ * Clean & validate author name — prevents email addresses, usernames, or admin handles
+ */
+function sanitizeAuthorName(rawName?: string): string {
+  if (!rawName) return "Still Mountain Editorial Faculty";
+  const trimmed = rawName.trim();
+  if (
+    trimmed.includes("@") ||
+    /^\d+$/.test(trimmed) ||
+    trimmed.toLowerCase() === "admin" ||
+    trimmed.toLowerCase() === "root" ||
+    trimmed.length < 2
+  ) {
+    return "Still Mountain Editorial Faculty";
+  }
+  return decodeHtmlEntities(trimmed);
+}
+
+/**
+ * Normalize raw WordPress Post into frontend Article model with strict editorial checks
  */
 export function normalizeWpPost(item: WpPostItem, index: number = 0): Article {
   const authorObj = item._embedded?.author?.[0];
@@ -57,7 +78,10 @@ export function normalizeWpPost(item: WpPostItem, index: number = 0): Article {
   const categoryTerm = terms.flat().find((t) => t.taxonomy === "category");
   const tagTerms = terms.flat().filter((t) => t.taxonomy === "post_tag");
 
-  const categoryName = categoryTerm ? decodeHtmlEntities(categoryTerm.name) : "Breathwork & Sadhana";
+  const categoryName = categoryTerm
+    ? decodeHtmlEntities(categoryTerm.name)
+    : "Breath Science";
+
   const tags = tagTerms.length > 0
     ? tagTerms.map((t) => decodeHtmlEntities(t.name).toLowerCase())
     : ["pranayama", "stillness", "breathwork"];
@@ -67,8 +91,8 @@ export function normalizeWpPost(item: WpPostItem, index: number = 0): Article {
     mediaObj?.source_url ||
     DEFAULT_ARTICLE_IMAGES[index % DEFAULT_ARTICLE_IMAGES.length];
 
-  // Author resolution
-  const authorName = authorObj?.name || "Still Mountain Faculty";
+  // Author resolution with email protection
+  const authorName = sanitizeAuthorName(authorObj?.name);
   const avatarUrl =
     authorObj?.avatar_urls?.["96"] ||
     authorObj?.avatar_urls?.["48"] ||
@@ -77,18 +101,23 @@ export function normalizeWpPost(item: WpPostItem, index: number = 0): Article {
   const rawExcerpt = item.excerpt?.rendered || "";
   const rawContent = item.content?.rendered || "";
 
+  let publishedAt = formatWpDate(item.date);
+  if (!publishedAt || publishedAt === "Invalid Date") {
+    publishedAt = "Recent Publication";
+  }
+
   return {
     id: String(item.id),
     slug: item.slug,
     title: decodeHtmlEntities(item.title?.rendered || "Untitled Article"),
     excerpt: decodeHtmlEntities(stripHtml(rawExcerpt)) || "Read this essay from Still Mountain Sanctuary.",
     content: rawContent || `<p>${decodeHtmlEntities(stripHtml(rawExcerpt))}</p>`,
-    publishedAt: formatWpDate(item.date),
+    publishedAt,
     readingTime: calculateReadingTime(rawContent || rawExcerpt),
     category: categoryName,
     author: {
       name: authorName,
-      role: "Resident Teacher & Sadhaka",
+      role: "Still Mountain Faculty",
       avatar: avatarUrl,
     },
     featuredImage,
@@ -97,28 +126,66 @@ export function normalizeWpPost(item: WpPostItem, index: number = 0): Article {
 }
 
 /**
+ * Filter WordPress posts to retain only breathing, pranayama, meditation, philosophy, and rest topics.
+ */
+function isPranayamaFocused(post: WpPostItem): boolean {
+  const title = post.title?.rendered || "";
+  const slug = post.slug || "";
+  const excerpt = post.excerpt?.rendered || "";
+  const textToCheck = `${title} ${slug} ${excerpt}`;
+
+  // Reject explicitly excluded subjects
+  if (EXCLUDED_TOPIC_REGEX.test(textToCheck)) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
  * Fetch list of published posts from WordPress REST API (/wp/v2/posts?_embed=1)
  */
 export async function getPosts(options: { limit?: number; category?: string } = {}): Promise<Article[]> {
-  const limit = options.limit || 10;
+  const limit = options.limit || 12;
   const wpPosts = await fetchWP<WpPostItem[]>("/posts", {
     _embed: 1,
-    per_page: limit,
+    per_page: Math.max(limit * 2, 20),
     status: "publish",
   });
 
   if (!wpPosts || !Array.isArray(wpPosts) || wpPosts.length === 0) {
-    // Fallback to local mock data if WordPress is unavailable
+    // Fallback to authentic local articles if WordPress is unavailable
     return options.limit ? ARTICLES.slice(0, options.limit) : ARTICLES;
   }
 
-  return wpPosts.map((post, idx) => normalizeWpPost(post, idx));
+  // Filter out unrelated imported content (fertility, sexual wellness, unrelated Ayurveda)
+  const filteredWp = wpPosts.filter(isPranayamaFocused);
+  const normalizedWp = filteredWp.map((post, idx) => normalizeWpPost(post, idx));
+
+  // Merge with our verified authentic articles to guarantee rich content
+  const seenSlugs = new Set<string>();
+  const combined: Article[] = [];
+
+  for (const article of [...normalizedWp, ...ARTICLES]) {
+    if (!seenSlugs.has(article.slug)) {
+      seenSlugs.add(article.slug);
+      combined.push(article);
+    }
+  }
+
+  return options.limit ? combined.slice(0, options.limit) : combined;
 }
 
 /**
  * Fetch a single post by slug from WordPress REST API (/wp/v2/posts?slug=...&_embed=1)
  */
 export async function getPostBySlug(slug: string): Promise<Article | null> {
+  // First check local verified articles to ensure highest fidelity & safety copy
+  const localMatch = ARTICLES.find((a: Article) => a.slug === slug);
+  if (localMatch) {
+    return localMatch;
+  }
+
   const wpPosts = await fetchWP<WpPostItem[]>("/posts", {
     slug,
     _embed: 1,
@@ -126,10 +193,11 @@ export async function getPostBySlug(slug: string): Promise<Article | null> {
   });
 
   if (wpPosts && Array.isArray(wpPosts) && wpPosts.length > 0) {
-    return normalizeWpPost(wpPosts[0], 0);
+    const post = wpPosts[0];
+    if (isPranayamaFocused(post)) {
+      return normalizeWpPost(post, 0);
+    }
   }
 
-  // Fallback to mock data if matches slug in local fallback
-  const fallback = ARTICLES.find((a) => a.slug === slug);
-  return fallback || null;
+  return null;
 }

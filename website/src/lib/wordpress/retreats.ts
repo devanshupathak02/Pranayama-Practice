@@ -132,7 +132,7 @@ export function normalizeWpRetreat(item: WpRetreatItem, index: number = 0): Retr
     spotsRemaining: 4 + (index % 5),
     price: "$1,250 – $2,400",
     featuredImage,
-    category: (categoryTerm?.slug as any) || "intensive",
+    category: (categoryTerm?.slug as 'silent' | 'intensive' | 'restorative' | 'seasonal') || "intensive",
     highlights: DEFAULT_HIGHLIGHTS,
     itinerary: DEFAULT_ITINERARY,
     instructor,
@@ -172,7 +172,7 @@ export async function getRetreatBySlug(slug: string): Promise<Retreat | null> {
     return normalizeWpRetreat(wpRetreats[0], 0);
   }
 
-  // Fallback to local mock data if matches slug
-  const fallback = RETREATS.find((r) => r.slug === slug);
+  // Fallback to local data if matches slug
+  const fallback = RETREATS.find((r: Retreat) => r.slug === slug);
   return fallback || null;
 }

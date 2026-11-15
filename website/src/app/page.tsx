@@ -1,108 +1,93 @@
 import React from "react";
 import Link from "next/link";
-import { siteConfig } from "@/config/site";
-import { getRetreats } from "@/lib/wordpress/retreats";
+import Image from "next/image";
 import { getPosts } from "@/lib/wordpress/posts";
-import { APP_FEATURES } from "@/data/features";
+import { PRANAYAMA_PRACTICES } from "@/data/practices";
 import { BreathingVisualizer } from "@/components/BreathingVisualizer";
-import { RetreatCard } from "@/components/RetreatCard";
+import { PracticeCard } from "@/components/PracticeCard";
 import { ArticleCard } from "@/components/ArticleCard";
 import { AppCtaSection } from "@/components/AppCtaSection";
+import { NewsletterSection } from "@/components/NewsletterSection";
 import {
-  Sparkles,
   ArrowRight,
   ArrowUpRight,
-  CheckCircle2,
   Wind,
-  Moon,
-  Timer,
-  Bell,
-  Sliders,
   ShieldCheck,
+  Sparkles,
+  BookOpen,
 } from "lucide-react";
 
 export const revalidate = 3600;
 
-const ICON_MAP: Record<string, React.ReactNode> = {
-  Wind: <Wind className="w-6 h-6 text-[#FF5C23]" />,
-  Moon: <Moon className="w-6 h-6 text-[#FF5C23]" />,
-  Timer: <Timer className="w-6 h-6 text-[#FF5C23]" />,
-  Bell: <Bell className="w-6 h-6 text-[#FF5C23]" />,
-  Sliders: <Sliders className="w-6 h-6 text-[#FF5C23]" />,
-  ShieldCheck: <ShieldCheck className="w-6 h-6 text-[#FF5C23]" />,
-};
-
 export default async function HomePage() {
-  const featuredRetreats = await getRetreats({ limit: 3 });
   const featuredArticles = await getPosts({ limit: 3 });
-
+  const featuredPractices = PRANAYAMA_PRACTICES.slice(0, 4);
 
   return (
-    <div className="space-y-24 sm:space-y-32">
-      {/* 1. HERO SECTION */}
-      <section className="relative pt-8 pb-12 sm:pt-16 sm:pb-20 overflow-hidden">
-        {/* Subtle Background Glows */}
-        <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full bg-[#C8F3FF]/40 blur-3xl pointer-events-none -z-10" />
-        <div className="absolute top-1/3 left-10 w-80 h-80 rounded-full bg-[#FF5C23]/10 blur-3xl pointer-events-none -z-10" />
+    <div className="space-y-24 sm:space-y-32 pb-16">
+      {/* SECTION A: HERO */}
+      <section className="relative pt-28 sm:pt-36 pb-16 sm:pb-24 overflow-hidden">
+        {/* Subtle organic background tint */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#FAF7F2] via-[#EDE8DC] to-[#EDE8DC] -z-10" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-            {/* Hero Left Content */}
-            <div className="lg:col-span-7 space-y-6 sm:space-y-8 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 bg-[#C8F3FF] text-[#092832] border border-[#8EE0F7] px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold tracking-wide shadow-sm">
-                <Sparkles className="w-4 h-4 text-[#FF5C23]" />
-                <span>Still Mountain Breathwork & Meditation Platform</span>
+            {/* Hero Left Content (lg:col-span-7) */}
+            <div className="lg:col-span-7 space-y-7 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 bg-[#FAF7F2] text-[#263F35] border border-[#D6C6A5] px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase shadow-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#82947A]" />
+                <span>Still Mountain Wellness Retreat</span>
               </div>
 
-              <h1 className="font-serif font-extrabold text-4xl sm:text-6xl lg:text-7xl text-slate-950 tracking-tight leading-[1.08]">
-                Master the Breath. <br />
-                <span className="text-[#FF5C23]">Cultivate the Silence.</span>
+              <h1 className="font-serif font-bold text-4xl sm:text-6xl lg:text-7xl text-[#263F35] tracking-tight leading-[1.08]">
+                Find Your Stillness, <br />
+                <span className="italic font-normal text-[#1A2D25]">
+                  One Breath at a Time.
+                </span>
               </h1>
 
-              <p className="text-slate-600 text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto lg:mx-0 font-normal">
-                An authentic, audio-guided pranayama timer and sanctuary platform designed for closed-eye practice. Structured classical sequences, restorative yoga nidra, and immersive mountain retreats.
+              <p className="text-[#355245] text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto lg:mx-0 font-normal">
+                Explore the ancient practice of pranayama, deepen your understanding of conscious breathing, and create space for calm in everyday life.
               </p>
 
-              {/* Action Buttons */}
+              {/* Primary & Secondary Actions */}
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
-                <a
-                  href={siteConfig.pwaUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-[#FF5C23] hover:bg-[#E04B14] text-white px-8 py-4 rounded-2xl font-bold text-base shadow-lg shadow-[#FF5C23]/25 hover:shadow-xl hover:shadow-[#FF5C23]/35 hover:-translate-y-0.5 transition-all"
+                <Link
+                  href="/practice"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-[#263F35] hover:bg-[#1A2D25] text-[#FAF7F2] px-8 py-4 rounded-2xl font-medium text-base shadow-xs hover:shadow-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#263F35]"
                 >
-                  <Sparkles className="w-5 h-5" />
-                  <span>Start Practicing Free</span>
-                  <ArrowUpRight className="w-5 h-5 opacity-90" />
-                </a>
+                  <Wind className="w-4 h-4 text-[#D6C6A5]" />
+                  <span>Start Breathing</span>
+                  <ArrowRight className="w-4 h-4 opacity-80" />
+                </Link>
 
                 <Link
-                  href="/retreats"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-slate-900 border border-slate-200 px-7 py-4 rounded-2xl font-bold text-base shadow-sm hover:border-[#8EE0F7] transition-all"
+                  href="/journal"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#FAF7F2] hover:bg-[#F5F1E9] text-[#263F35] border border-[#D6C6A5] px-7 py-4 rounded-2xl font-medium text-base transition-colors"
                 >
-                  <span>Explore Retreats</span>
-                  <ArrowRight className="w-4 h-4 text-[#FF5C23]" />
+                  <BookOpen className="w-4 h-4 text-[#82947A]" />
+                  <span>Explore the Journal</span>
                 </Link>
               </div>
 
-              {/* Trust Badges */}
-              <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs font-semibold text-slate-500">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#FF5C23]" />
+              {/* Trust & Lineage Indicators */}
+              <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-[#82947A] font-medium">
+                <div className="flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-[#263F35]" />
+                  <span>Traditional 6-Stage Sequences</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-[#263F35]" />
                   <span>No Account Required</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#FF5C23]" />
-                  <span>100% Offline PWA</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#FF5C23]" />
-                  <span>Classical 6-Stage Sequences</span>
+                <div className="flex items-center gap-1.5">
+                  <Wind className="w-4 h-4 text-[#263F35]" />
+                  <span>Closed-Eye Audio Guidance</span>
                 </div>
               </div>
             </div>
 
-            {/* Hero Right Visualizer */}
+            {/* Hero Right: Breathing Visualizer (lg:col-span-5) */}
             <div className="lg:col-span-5 flex justify-center">
               <BreathingVisualizer />
             </div>
@@ -110,147 +95,122 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 2. PRANAYAMA INTRODUCTION */}
+      {/* SECTION B: INTRODUCTION TO PRANAYAMA */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-gradient-to-br from-[#C8F3FF]/40 via-white to-[#C8F3FF]/20 border border-[#8EE0F7] rounded-3xl p-8 sm:p-12 lg:p-16">
-          <div className="max-w-3xl space-y-5">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#FF5C23] block">
-              The Lineage & Science
-            </span>
-            <h2 className="font-serif font-bold text-3xl sm:text-4xl text-slate-950 leading-tight">
-              A Gentle, Distraction-Free Instrument for Daily Sadhana.
-            </h2>
-            <p className="text-slate-700 text-base sm:text-lg leading-relaxed">
-              Pranayama is not arbitrary breath manipulation—it is the systematic expansion and regulation of the vital life current (*prana*). When practiced in proper sequence with dedicated witness pauses, it harmonizes autonomic nervous tone and clears mental fog.
-            </p>
-            <div className="pt-2">
-              <Link
-                href="/about"
-                className="inline-flex items-center gap-2 text-sm font-bold text-[#FF5C23] hover:underline"
-              >
-                <span>Read more about our philosophy & lineage</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+        <div className="bg-[#FAF7F2] border border-[#D6C6A5] rounded-3xl p-8 sm:p-12 lg:p-16">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            <div className="lg:col-span-8 space-y-5">
+              <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#82947A]">
+                <span>Classical Foundation</span>
+              </div>
+              <h2 className="font-serif font-bold text-3xl sm:text-4xl lg:text-5xl text-[#263F35] leading-tight">
+                Discover the Art of Conscious Breathing.
+              </h2>
+              <p className="text-[#355245] text-base sm:text-lg leading-relaxed">
+                In classical Sanskrit, <em>Prana</em> signifies the subtle vital life current, while <em>Ayama</em> translates to conscious expansion and regulation. Far from mechanical hyperventilation, authentic pranayama is a deliberate, gentle training of the nervous system.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-3 text-sm text-[#355245]">
+                <div className="space-y-1.5">
+                  <h4 className="font-serif font-bold text-lg text-[#263F35]">
+                    Why Breath Awareness Matters
+                  </h4>
+                  <p className="leading-relaxed">
+                    The respiratory system is the only vital function that is both entirely automatic and under conscious voluntary control. By changing the cadence of your breath, you directly modulate the autonomic tone of your brainstem.
+                  </p>
+                </div>
+                <div className="space-y-1.5">
+                  <h4 className="font-serif font-bold text-lg text-[#263F35]">
+                    How Beginners Can Start
+                  </h4>
+                  <p className="leading-relaxed">
+                    Begin with natural diaphragmatic expansion, gentle alternate-nostril rhythm (Anulom Vilom), and prolonged unforced exhalations. Never strain the lungs or force breath retention.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-4">
+                <Link
+                  href="/learn"
+                  className="inline-flex items-center gap-2 bg-[#EDE8DC] hover:bg-[#E2E8DF] text-[#263F35] border border-[#D6C6A5] px-6 py-3 rounded-xl font-medium text-sm transition-colors"
+                >
+                  <span>Explore Learning Resources & Sequences</span>
+                  <ArrowRight className="w-4 h-4 text-[#82947A]" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="lg:col-span-4 relative h-72 sm:h-80 rounded-2xl overflow-hidden bg-[#EDE8DC] border border-[#D6C6A5]">
+              <Image
+                src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80"
+                alt="Morning meditation in nature"
+                fill
+                sizes="(max-width: 1024px) 100vw, 33vw"
+                className="object-cover"
+              />
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3. PWA FEATURES SHOWCASE */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
-          <span className="bg-[#C8F3FF] text-[#092832] border border-[#8EE0F7] px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-            Practice Application
-          </span>
-          <h2 className="font-serif font-bold text-3xl sm:text-4xl lg:text-5xl text-slate-950">
-            Engineered for Practitioners with Eyes Closed.
-          </h2>
-          <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
-            Most fitness timers are built for eyes glued to a screen. Our dedicated PWA is built to stay silent, accurate, and audio-guided while your phone rests face-down.
-          </p>
-        </div>
-
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {APP_FEATURES.map((feature) => (
-            <div
-              key={feature.id}
-              className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#8EE0F7] transition-all space-y-4 flex flex-col justify-between group"
-            >
-              <div className="space-y-4">
-                <div className="w-14 h-14 rounded-2xl bg-[#C8F3FF] border border-[#8EE0F7] flex items-center justify-center group-hover:scale-110 transition-transform">
-                  {ICON_MAP[feature.iconName] || <Wind className="w-6 h-6 text-[#FF5C23]" />}
-                </div>
-
-                <div>
-                  <span className="text-xs font-bold text-[#FF5C23] uppercase tracking-wider block mb-1">
-                    {feature.badge}
-                  </span>
-                  <h3 className="font-serif font-bold text-xl text-slate-950">
-                    {feature.title}
-                  </h3>
-                  <span className="text-xs text-slate-500 font-semibold block mt-0.5">
-                    {feature.tagline}
-                  </span>
-                </div>
-
-                <p className="text-slate-600 text-sm leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
-
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-end">
-                <a
-                  href={siteConfig.pwaUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs font-bold text-[#FF5C23] hover:underline flex items-center gap-1"
-                >
-                  <span>Practice in App</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                </a>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 4. RETREATS PREVIEW */}
+      {/* SECTION C: FEATURED PRANAYAMA PRACTICES */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div className="space-y-3">
-            <span className="bg-[#C8F3FF] text-[#092832] border border-[#8EE0F7] px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-              Immersive Sanctuaries
+            <span className="text-xs font-semibold uppercase tracking-widest text-[#82947A]">
+              Selected Disciplines
             </span>
-            <h2 className="font-serif font-bold text-3xl sm:text-4xl lg:text-5xl text-slate-950">
-              Upcoming Retreats in the Himalayas.
+            <h2 className="font-serif font-bold text-3xl sm:text-4xl lg:text-5xl text-[#263F35]">
+              Featured Pranayama Practices.
             </h2>
-            <p className="text-slate-600 text-base max-w-xl">
-              Step away from digital noise. Deepen your pranayama ratios, enter noble silence, and restore cellular vitality in our mountain sanctuary.
+            <p className="text-[#355245] text-base max-w-xl">
+              Traditional breathing practices arranged according to autonomic effect, difficulty level, and meditative depth.
             </p>
           </div>
 
           <Link
-            href="/retreats"
-            className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-900 border border-slate-200 px-6 py-3 rounded-2xl font-bold text-sm shadow-sm hover:border-[#8EE0F7] transition-colors self-start md:self-auto"
+            href="/learn"
+            className="inline-flex items-center gap-2 bg-[#FAF7F2] hover:bg-[#F5F1E9] text-[#263F35] border border-[#D6C6A5] px-6 py-3 rounded-2xl font-medium text-sm transition-colors self-start md:self-auto"
           >
-            <span>View All Retreats</span>
-            <ArrowRight className="w-4 h-4 text-[#FF5C23]" />
+            <span>View All Practices & Guides</span>
+            <ArrowRight className="w-4 h-4 text-[#82947A]" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredRetreats.map((retreat) => (
-            <RetreatCard key={retreat.id} retreat={retreat} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {featuredPractices.map((practice) => (
+            <PracticeCard key={practice.id} practice={practice} />
           ))}
         </div>
       </section>
 
-      {/* 5. JOURNAL PREVIEW */}
+      {/* SECTION D: PRANAYAMA TIMER FEATURE */}
+      <AppCtaSection />
+
+      {/* SECTION E: JOURNAL / LATEST ARTICLES */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div className="space-y-3">
-            <span className="bg-[#C8F3FF] text-[#092832] border border-[#8EE0F7] px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-              Breathwork Journal
+            <span className="text-xs font-semibold uppercase tracking-widest text-[#82947A]">
+              Editorial Journal
             </span>
-            <h2 className="font-serif font-bold text-3xl sm:text-4xl lg:text-5xl text-slate-950">
-              Essays on Breath Science & Stillness.
+            <h2 className="font-serif font-bold text-3xl sm:text-4xl lg:text-5xl text-[#263F35]">
+              Essays on Breath, Stillness & Science.
             </h2>
-            <p className="text-slate-600 text-base max-w-xl">
-              Discover the physiological and meditative mechanics behind kumbhaka, parasympathetic activation, and the art of the witness breath.
+            <p className="text-[#355245] text-base max-w-xl">
+              Reflections on autonomic neuroscience, traditional yogic commentaries, and practical protocols for daily inner quiet.
             </p>
           </div>
 
           <Link
             href="/journal"
-            className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-900 border border-slate-200 px-6 py-3 rounded-2xl font-bold text-sm shadow-sm hover:border-[#8EE0F7] transition-colors self-start md:self-auto"
+            className="inline-flex items-center gap-2 bg-[#FAF7F2] hover:bg-[#F5F1E9] text-[#263F35] border border-[#D6C6A5] px-6 py-3 rounded-2xl font-medium text-sm transition-colors self-start md:self-auto"
           >
-            <span>Read All Articles</span>
-            <ArrowRight className="w-4 h-4 text-[#FF5C23]" />
+            <span>View All Articles</span>
+            <ArrowRight className="w-4 h-4 text-[#82947A]" />
           </Link>
         </div>
 
-        {/* Featured First Article + 2 Smaller */}
+        {/* Featured First Article + Grid */}
         <div className="space-y-8">
           {featuredArticles.length > 0 && (
             <ArticleCard article={featuredArticles[0]} featured={true} />
@@ -264,8 +224,55 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 6. CONVERSION SECTION (PWA INSTALL) */}
-      <AppCtaSection />
+      {/* SECTION F: PHILOSOPHY / CONNECTION WITH SMWR */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-[#FAF7F2] border border-[#D6C6A5] rounded-3xl p-8 sm:p-12 lg:p-16">
+          <div className="max-w-3xl mx-auto text-center space-y-6">
+            <div className="w-12 h-12 mx-auto rounded-full bg-[#EDE8DC] border border-[#D6C6A5] flex items-center justify-center p-2.5">
+              <Image
+                src="/images/still-mountain-logo.png"
+                alt="Still Mountain logo"
+                width={32}
+                height={32}
+              />
+            </div>
+
+            <span className="text-xs font-semibold uppercase tracking-widest text-[#82947A] block">
+              Still Mountain Wellness Retreat
+            </span>
+
+            <h2 className="font-serif font-bold text-3xl sm:text-4xl lg:text-5xl text-[#263F35] leading-tight">
+              Rooted in Tradition. Made for Everyday Life.
+            </h2>
+
+            <p className="text-[#355245] text-base sm:text-lg leading-relaxed">
+              Still Mountain Wellness Retreat (SMWR) is an intentional sanctuary dedicated to traditional yoga sadhana, noble silence, and mindful living. This digital pranayama platform exists to bridge that quiet mountain environment into your morning living room, giving you an authentic instrument to build an enduring daily practice.
+            </p>
+
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a
+                href="https://smwr.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-[#263F35] hover:bg-[#1A2D25] text-[#FAF7F2] px-7 py-3.5 rounded-xl font-medium text-sm transition-colors shadow-xs"
+              >
+                <span>Discover Still Mountain</span>
+                <ArrowUpRight className="w-4 h-4 text-[#D6C6A5]" />
+              </a>
+
+              <Link
+                href="/about"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-[#263F35] hover:text-[#82947A] transition-colors"
+              >
+                <span>Learn about our connection with SMWR &rarr;</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION G: NEWSLETTER / COMMUNITY */}
+      <NewsletterSection />
     </div>
   );
 }
