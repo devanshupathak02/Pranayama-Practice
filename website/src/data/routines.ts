@@ -117,7 +117,9 @@ export const SET_15_PHASES: Phase[] = [
 ];
 
 // ==========================================
-// ROUTINE 3: 35 MINUTE PRACTICE (set-35)
+// OFFICIAL ROUTINE 1: 35 MINUTE PRACTICE (set-35)
+// Exactly 17 phases. Authoritative sequence & timings.
+// Calculated total: 1735s (28m 55s)
 // ==========================================
 export const SET_35_PHASES: Phase[] = [
   {
@@ -125,32 +127,32 @@ export const SET_35_PHASES: Phase[] = [
     type: 'meditation',
     label: 'Settle in / Meditation',
     durationSeconds: 120,
-    description: 'Sit tall, close your eyes, and arrive in the space.',
+    description: 'Sit tall, close your eyes, and arrive in the meditative space.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
     id: 'set-35-chant-3',
     type: 'chant',
     label: 'Chant Om 3 Times',
-    durationSeconds: 60,
-    description: 'Resonant grounding sound.',
+    durationSeconds: 30,
+    description: 'Resonant grounding sound uniting body, breath, and awareness.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
     id: 'set-35-bhastrika',
     type: 'pranayama',
     label: 'Bhastrika',
-    durationSeconds: 180,
-    description: 'Bellows breath: rhythmic diaphragmatic expulsions.',
+    durationSeconds: 120,
+    description: 'Bellows breath: rhythmic diaphragmatic expulsions awakening vital prana.',
     image: '/images/pranayama/bhastrika.png',
     audio: { file: '/audio/pranayama/bhastrika_name.mp3', category: 'technique-name', playOnce: true },
   },
   {
     id: 'set-35-witness-1',
     type: 'witness',
-    label: 'Normal Breath / Witness',
+    label: 'Normal Breath / No Mind Meditation',
     durationSeconds: 60,
-    description: 'Sit in silent observation. Do not force the breath.',
+    description: 'Rest in silent observation without forcing airflow.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
@@ -158,48 +160,48 @@ export const SET_35_PHASES: Phase[] = [
     type: 'pranayama',
     label: 'Kapalbhati',
     durationSeconds: 240,
-    description: 'Frontal skull-shining breath: active exhalations.',
+    description: 'Frontal skull-shining breath: active rapid abdominal exhalations.',
     image: '/images/pranayama/kapalbhati.png',
     audio: { file: '/audio/pranayama/kapalbhati_name.mp3', category: 'technique-name', playOnce: true },
   },
   {
     id: 'set-35-witness-2',
     type: 'witness',
-    label: 'Normal Breath / Witness',
+    label: 'Normal Breath / No Mind Meditation',
     durationSeconds: 60,
-    description: 'Feel the radiant stillness in the forehead.',
+    description: 'Feel the radiant stillness in the forehead center (Kevala Kumbhaka).',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
-    id: 'set-35-bahya',
+    id: 'set-35-bhaya',
     type: 'pranayama',
-    label: 'Bahya Pranayama',
-    durationSeconds: 180,
-    description: 'External breath suspension with three bandhas.',
+    label: 'Bhaya',
+    durationSeconds: 120,
+    description: 'External breath retention with Mula, Uddiyana, and Jalandhara bandhas.',
     image: '/images/pranayama/bahya.png',
     audio: { file: '/audio/pranayama/bahya_name.mp3', category: 'technique-name', playOnce: true },
   },
   {
     id: 'set-35-witness-3',
     type: 'witness',
-    label: 'Normal Breath / Witness',
+    label: 'Normal Breath / No Mind Meditation',
     durationSeconds: 60,
-    description: 'Observe the upward surge of vital prana.',
+    description: 'Observe the upward surge of vital prana through the spine.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
-    id: 'set-35-ujjayi',
+    id: 'set-35-ujjai',
     type: 'pranayama',
-    label: 'Ujjayi',
-    durationSeconds: 180,
-    description: 'Oceanic breath with gentle glottic resistance.',
+    label: 'Ujjai',
+    durationSeconds: 120,
+    description: 'Oceanic victorious breath with gentle glottic whisper slowing the heart.',
     image: '/images/pranayama/ujjayi.png',
     audio: { file: '/audio/pranayama/ujjayi_name.mp3', category: 'technique-name', playOnce: true },
   },
   {
     id: 'set-35-witness-4',
     type: 'witness',
-    label: 'Normal Breath / Witness',
+    label: 'Normal Breath / No Mind Meditation',
     durationSeconds: 60,
     description: 'Feel the soothing warmth across the heart space.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
@@ -216,42 +218,42 @@ export const SET_35_PHASES: Phase[] = [
   {
     id: 'set-35-witness-5',
     type: 'witness',
-    label: 'Normal Breath / Witness',
+    label: 'Normal Breath / No Mind Meditation',
     durationSeconds: 60,
-    description: 'Observe the equilibrium in both nostrils.',
+    description: 'Observe the equilibrium in both nostrils and mental tranquility.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
-    id: 'set-35-bhramari',
+    id: 'set-35-bhramri',
     type: 'pranayama',
-    label: 'Bhramari',
-    durationSeconds: 120,
-    description: 'Humming bee breath: cranial acoustic vibration.',
+    label: 'Bhramri',
+    durationSeconds: 60,
+    description: 'Humming bee breath creating cranial acoustic vibration.',
     image: '/images/pranayama/bhramari.png',
     audio: { file: '/audio/pranayama/bhramari_name.mp3', category: 'technique-name', playOnce: true },
   },
   {
     id: 'set-35-witness-6',
     type: 'witness',
-    label: 'Normal Breath / Witness',
+    label: 'Normal Breath / No Mind Meditation',
     durationSeconds: 60,
-    description: 'Bathe in the internal silence.',
+    description: 'Bathe in subtle acoustic resonance and deep internal silence.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
     id: 'set-35-chant-5',
     type: 'chant',
     label: 'Chant Om 5 Times',
-    durationSeconds: 120,
-    description: 'Closing universal resonance.',
+    durationSeconds: 45,
+    description: 'Closing universal resonance dedicated to presence.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
     id: 'set-35-meditation',
     type: 'meditation',
-    label: 'Meditation (Closing)',
+    label: 'Meditation',
     durationSeconds: 180,
-    description: 'Resting as the unattached witness.',
+    description: 'Resting as the unattached witness in pure stillness.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
@@ -259,28 +261,30 @@ export const SET_35_PHASES: Phase[] = [
     type: 'shavasana',
     label: 'Shavasana',
     durationSeconds: 180,
-    description: 'Total conscious physical release.',
-    audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
+    description: 'Total conscious physical release and cellular integration.',
+    audio: { file: COMPLETION_BELL, category: 'ending', playOnce: true },
   },
 ];
 
 // ==========================================
-// ROUTINE 4: 46 MINUTE PRACTICE (set-46)
+// OFFICIAL ROUTINE 2: 46 MINUTE PRACTICE (set-46)
+// Exactly 17 phases. Authoritative sequence & timings.
+// Calculated total: 2455s (40m 55s)
 // ==========================================
 export const SET_46_PHASES: Phase[] = [
   {
     id: 'set-46-settle',
     type: 'meditation',
     label: 'Settle in / Meditation',
-    durationSeconds: 240, // 4 min
-    description: 'Deep grounding and mental arrival.',
+    durationSeconds: 180,
+    description: 'Deep grounding and mental arrival on the cushion.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
     id: 'set-46-chant-3',
     type: 'chant',
     label: 'Chant Om 3 Times',
-    durationSeconds: 60,
+    durationSeconds: 30,
     description: 'Harmonic vibration uniting body and breath.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
@@ -288,118 +292,118 @@ export const SET_46_PHASES: Phase[] = [
     id: 'set-46-bhastrika',
     type: 'pranayama',
     label: 'Bhastrika',
-    durationSeconds: 240, // 4 min
-    description: 'Deep bellows breathing awakening pranic heat.',
+    durationSeconds: 240,
+    description: 'Deep bellows breathing awakening diaphragmatic strength and heat.',
     image: '/images/pranayama/bhastrika.png',
     audio: { file: '/audio/pranayama/bhastrika_name.mp3', category: 'technique-name', playOnce: true },
   },
   {
     id: 'set-46-witness-1',
     type: 'witness',
-    label: 'Normal Breath / Witness',
+    label: 'Normal Breath / No Mind Meditation',
     durationSeconds: 60,
-    description: 'Silent witness pause.',
+    description: 'Silent witness pause observing the natural respiratory ebb.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
     id: 'set-46-kapalbhati',
     type: 'pranayama',
     label: 'Kapalbhati',
-    durationSeconds: 420, // 7 min
-    description: 'Deep frontal sinus purification.',
+    durationSeconds: 420,
+    description: 'Extended frontal sinus purification with rhythmic active pulses.',
     image: '/images/pranayama/kapalbhati.png',
     audio: { file: '/audio/pranayama/kapalbhati_name.mp3', category: 'technique-name', playOnce: true },
   },
   {
     id: 'set-46-witness-2',
     type: 'witness',
-    label: 'Normal Breath / Witness',
+    label: 'Normal Breath / No Mind Meditation',
     durationSeconds: 60,
-    description: 'Kevala Kumbhaka observation.',
+    description: 'Kevala Kumbhaka observation and cranial lightness.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
-    id: 'set-46-bahya',
+    id: 'set-46-bhaya',
     type: 'pranayama',
-    label: 'Bahya Pranayama',
-    durationSeconds: 240, // 4 min
-    description: 'External suspension with three bandhas.',
+    label: 'Bhaya',
+    durationSeconds: 240,
+    description: 'External suspension with three energetic bandhas.',
     image: '/images/pranayama/bahya.png',
     audio: { file: '/audio/pranayama/bahya_name.mp3', category: 'technique-name', playOnce: true },
   },
   {
     id: 'set-46-witness-3',
     type: 'witness',
-    label: 'Normal Breath / Witness',
+    label: 'Normal Breath / No Mind Meditation',
     durationSeconds: 60,
-    description: 'Centering in the spine.',
+    description: 'Centering awareness along Sushumna nadi in the spine.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
-    id: 'set-46-ujjayi',
+    id: 'set-46-ujjai',
     type: 'pranayama',
-    label: 'Ujjayi',
-    durationSeconds: 240, // 4 min
-    description: 'Oceanic throat whisper slowing the heart rate.',
+    label: 'Ujjai',
+    durationSeconds: 240,
+    description: 'Oceanic throat whisper inducing deep parasympathetic vagal tone.',
     image: '/images/pranayama/ujjayi.png',
     audio: { file: '/audio/pranayama/ujjayi_name.mp3', category: 'technique-name', playOnce: true },
   },
   {
     id: 'set-46-witness-4',
     type: 'witness',
-    label: 'Normal Breath / Witness',
+    label: 'Normal Breath / No Mind Meditation',
     durationSeconds: 60,
-    description: 'Feeling warm parasympathetic tone.',
+    description: 'Feeling quietude and warmth in the chest.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
     id: 'set-46-anulom-vilom',
     type: 'pranayama',
     label: 'Anulom Vilom',
-    durationSeconds: 240, // 4 min
-    description: 'Balancing left and right cerebral hemispheres.',
+    durationSeconds: 240,
+    description: 'Balancing left and right cerebral hemispheres with rhythmic cadence.',
     image: '/images/pranayama/anulom_vilom.png',
     audio: { file: '/audio/pranayama/anulom_vilom_name.mp3', category: 'technique-name', playOnce: true },
   },
   {
     id: 'set-46-witness-5',
     type: 'witness',
-    label: 'Normal Breath / Witness',
+    label: 'Normal Breath / No Mind Meditation',
     durationSeconds: 60,
-    description: 'Resting in Sushumna nadi.',
+    description: 'Resting in central equilibrium.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
-    id: 'set-46-bhramari',
+    id: 'set-46-bhramri',
     type: 'pranayama',
-    label: 'Bhramari',
-    durationSeconds: 240, // 4 min
-    description: 'Sustained cranial humming.',
+    label: 'Bhramri',
+    durationSeconds: 120,
+    description: 'Sustained cranial humming resonating through the skull bones.',
     image: '/images/pranayama/bhramari.png',
     audio: { file: '/audio/pranayama/bhramari_name.mp3', category: 'technique-name', playOnce: true },
   },
   {
     id: 'set-46-witness-6',
     type: 'witness',
-    label: 'Normal Breath / Witness',
+    label: 'Normal Breath / No Mind Meditation',
     durationSeconds: 60,
-    description: 'Deep acoustic silence.',
+    description: 'Deep acoustic silence following resonance.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
     id: 'set-46-chant-5',
     type: 'chant',
     label: 'Chant Om 5 Times',
-    durationSeconds: 120,
-    description: 'Closing sacred syllable.',
+    durationSeconds: 45,
+    description: 'Closing sacred syllables dedicated to conscious rest.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
     id: 'set-46-meditation',
     type: 'meditation',
-    label: 'Meditation (Closing)',
+    label: 'Meditation',
     durationSeconds: 180,
-    description: 'Dhyana — pure contemplation.',
+    description: 'Dhyana — pure contemplation and unattached witnessing.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
@@ -407,156 +411,158 @@ export const SET_46_PHASES: Phase[] = [
     type: 'shavasana',
     label: 'Shavasana',
     durationSeconds: 180,
-    description: 'Resting integration.',
-    audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
+    description: 'Resting integration and cellular replenishment.',
+    audio: { file: COMPLETION_BELL, category: 'ending', playOnce: true },
   },
 ];
 
 // ==========================================
-// ROUTINE 5: 60 MINUTE PRACTICE (set-60)
+// OFFICIAL ROUTINE 3: 60 MINUTE PRACTICE (set-60)
+// Exactly 17 phases. Authoritative sequence & timings.
+// Calculated total: 3270s (54m 30s)
 // ==========================================
 export const SET_60_PHASES: Phase[] = [
   {
     id: 'set-60-settle',
     type: 'meditation',
     label: 'Settle in / Meditation',
-    durationSeconds: 300, // 5 min
-    description: 'Arrival into quiet meditative space.',
+    durationSeconds: 300,
+    description: 'Arrival into quiet meditative space and grounded stillness.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
     id: 'set-60-chant-3',
     type: 'chant',
     label: 'Chant Om 3 Times',
-    durationSeconds: 120, // 2 min
-    description: 'Three resonant chants.',
+    durationSeconds: 30,
+    description: 'Three resonant chants anchoring awareness.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
     id: 'set-60-bhastrika',
     type: 'pranayama',
     label: 'Bhastrika',
-    durationSeconds: 300, // 5 min
-    description: 'Vigorous bellows breath.',
+    durationSeconds: 300,
+    description: 'Extended bellows breath: robust diaphragmatic revitalization.',
     image: '/images/pranayama/bhastrika.png',
     audio: { file: '/audio/pranayama/bhastrika_name.mp3', category: 'technique-name', playOnce: true },
   },
   {
     id: 'set-60-witness-1',
     type: 'witness',
-    label: 'Normal Breath / Witness',
+    label: 'Normal Breath / No Mind Meditation',
     durationSeconds: 60,
-    description: 'Witnessing the prana.',
+    description: 'Witnessing the subtle prana without intervention.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
     id: 'set-60-kapalbhati',
     type: 'pranayama',
     label: 'Kapalbhati',
-    durationSeconds: 600, // 10 min
-    description: 'Extended frontal skull-shining practice.',
+    durationSeconds: 600,
+    description: 'Extended frontal skull-shining practice purifying the nadis.',
     image: '/images/pranayama/kapalbhati.png',
     audio: { file: '/audio/pranayama/kapalbhati_name.mp3', category: 'technique-name', playOnce: true },
   },
   {
     id: 'set-60-witness-2',
     type: 'witness',
-    label: 'Normal Breath / Witness',
+    label: 'Normal Breath / No Mind Meditation',
     durationSeconds: 60,
-    description: 'Spontaneous stillness pause.',
+    description: 'Spontaneous stillness pause in breathless presence.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
-    id: 'set-60-bahya',
+    id: 'set-60-bhaya',
     type: 'pranayama',
-    label: 'Bahya Pranayama',
-    durationSeconds: 300, // 5 min
-    description: 'External suspension with maha bandha.',
+    label: 'Bhaya',
+    durationSeconds: 300,
+    description: 'External suspension with maha bandha locks.',
     image: '/images/pranayama/bahya.png',
     audio: { file: '/audio/pranayama/bahya_name.mp3', category: 'technique-name', playOnce: true },
   },
   {
     id: 'set-60-witness-3',
     type: 'witness',
-    label: 'Normal Breath / Witness',
+    label: 'Normal Breath / No Mind Meditation',
     durationSeconds: 60,
-    description: 'Upward vital prana observation.',
+    description: 'Upward vital prana observation through the crown.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
-    id: 'set-60-ujjayi',
+    id: 'set-60-ujjai',
     type: 'pranayama',
-    label: 'Ujjayi',
-    durationSeconds: 300, // 5 min
-    description: 'Extended victorious breath.',
+    label: 'Ujjai',
+    durationSeconds: 300,
+    description: 'Extended victorious breath slowing mental agitation.',
     image: '/images/pranayama/ujjayi.png',
     audio: { file: '/audio/pranayama/ujjayi_name.mp3', category: 'technique-name', playOnce: true },
   },
   {
     id: 'set-60-witness-4',
     type: 'witness',
-    label: 'Normal Breath / Witness',
+    label: 'Normal Breath / No Mind Meditation',
     durationSeconds: 60,
-    description: 'Resting in throat resonance.',
+    description: 'Resting in soothing throat and heart resonance.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
     id: 'set-60-anulom-vilom',
     type: 'pranayama',
     label: 'Anulom Vilom',
-    durationSeconds: 300, // 5 min
-    description: 'Extended alternate nostril flow.',
+    durationSeconds: 300,
+    description: 'Extended alternate nostril flow harmonizing mind and body.',
     image: '/images/pranayama/anulom_vilom.png',
     audio: { file: '/audio/pranayama/anulom_vilom_name.mp3', category: 'technique-name', playOnce: true },
   },
   {
     id: 'set-60-witness-5',
     type: 'witness',
-    label: 'Normal Breath / Witness',
+    label: 'Normal Breath / No Mind Meditation',
     durationSeconds: 60,
-    description: 'Equilibrium in nadis.',
+    description: 'Complete equilibrium across energy pathways.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
-    id: 'set-60-bhramari',
+    id: 'set-60-bhramri',
     type: 'pranayama',
-    label: 'Bhramari',
-    durationSeconds: 300, // 5 min
-    description: 'Deep humming vibration.',
+    label: 'Bhramri',
+    durationSeconds: 180,
+    description: 'Deep humming vibration inducing tranquil brainwave patterns.',
     image: '/images/pranayama/bhramari.png',
     audio: { file: '/audio/pranayama/bhramari_name.mp3', category: 'technique-name', playOnce: true },
   },
   {
     id: 'set-60-witness-6',
     type: 'witness',
-    label: 'Normal Breath / Witness',
+    label: 'Normal Breath / No Mind Meditation',
     durationSeconds: 60,
-    description: 'Radiant mental quietude.',
+    description: 'Radiant mental quietude and pristine awareness.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
     id: 'set-60-chant-5',
     type: 'chant',
     label: 'Chant Om 5 Times',
-    durationSeconds: 180, // 3 min
-    description: 'Five sacred chants.',
+    durationSeconds: 60,
+    description: 'Five sacred chants sealing the sadhana.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
     id: 'set-60-meditation',
     type: 'meditation',
-    label: 'Meditation (Closing)',
-    durationSeconds: 240, // 4 min
-    description: 'Deep meditative absorption.',
+    label: 'Meditation',
+    durationSeconds: 240,
+    description: 'Deep meditative absorption and effortless being.',
     audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
   },
   {
     id: 'set-60-shavasana',
     type: 'shavasana',
     label: 'Shavasana',
-    durationSeconds: 300, // 5 min
-    description: 'Full surrender and cellular rest.',
-    audio: { file: WITNESS_BELL, category: 'bell', playOnce: true },
+    durationSeconds: 300,
+    description: 'Full surrender and cellular nervous system restoration.',
+    audio: { file: COMPLETION_BELL, category: 'ending', playOnce: true },
   },
 ];
 
@@ -564,32 +570,12 @@ const sumDuration = (phases: Phase[]) =>
   phases.reduce((acc, phase) => acc + phase.durationSeconds, 0);
 
 // ==========================================
-// EXPORTED CLASSICAL PRANAYAMA ROUTINES
+// EXPORTED OFFICIAL PRANAYAMA ROUTINES (Authoritative 3 Sets)
 // ==========================================
-export const SET_10_ROUTINE: Routine = {
-  id: 'set-10',
-  name: '10 Min Morning Reset',
-  description: 'Quick parasympathetic reset for busy mornings or afternoon grounding.',
-  totalDurationSeconds: sumDuration(SET_10_PHASES),
-  phases: SET_10_PHASES,
-  source: 'builtin',
-  category: 'pranayama',
-};
-
-export const SET_15_ROUTINE: Routine = {
-  id: 'set-15',
-  name: '15 Min Express Set',
-  description: 'A compact sequence for daily nervous system centering.',
-  totalDurationSeconds: sumDuration(SET_15_PHASES),
-  phases: SET_15_PHASES,
-  source: 'builtin',
-  category: 'pranayama',
-};
-
 export const SET_35_ROUTINE: Routine = {
   id: 'set-35',
-  name: '35 Min Classical Set',
-  description: 'The standard traditional 6-stage sequence with 1-minute witness breath pauses.',
+  name: '35 Minute Practice',
+  description: 'Authoritative 17-stage classical sequence featuring Bhastrika, Kapalbhati, Bhaya, Ujjai, Anulom Vilom, and Bhramri.',
   totalDurationSeconds: sumDuration(SET_35_PHASES),
   phases: SET_35_PHASES,
   source: 'builtin',
@@ -598,8 +584,8 @@ export const SET_35_ROUTINE: Routine = {
 
 export const SET_46_ROUTINE: Routine = {
   id: 'set-46',
-  name: '46 Min Deep Practice',
-  description: 'Deep lineage sequence with lengthened Kapalbhati and Ujjayi phases.',
+  name: '46 Minute Practice',
+  description: 'Deep 17-stage practice with lengthened Kapalbhati, retentions, and silent witnessing pauses.',
   totalDurationSeconds: sumDuration(SET_46_PHASES),
   phases: SET_46_PHASES,
   source: 'builtin',
@@ -608,10 +594,33 @@ export const SET_46_ROUTINE: Routine = {
 
 export const SET_60_ROUTINE: Routine = {
   id: 'set-60',
-  name: '60 Min Extended Immersion',
-  description: 'Full traditional sadhana for intensive retreat and weekend practice.',
+  name: '60 Minute Practice',
+  description: 'Full traditional 17-stage immersion for deep nervous system centering and inner stillness.',
   totalDurationSeconds: sumDuration(SET_60_PHASES),
   phases: SET_60_PHASES,
+  source: 'builtin',
+  category: 'pranayama',
+};
+
+// ==========================================
+// HISTORICAL / LEGACY ROUTINES (Kept solely for backward compatibility with past journal logs)
+// ==========================================
+export const SET_10_ROUTINE: Routine = {
+  id: 'set-10',
+  name: '10 Min Morning Reset (Legacy)',
+  description: 'Legacy 10-minute sequence preserved for past practice history records.',
+  totalDurationSeconds: sumDuration(SET_10_PHASES),
+  phases: SET_10_PHASES,
+  source: 'builtin',
+  category: 'pranayama',
+};
+
+export const SET_15_ROUTINE: Routine = {
+  id: 'set-15',
+  name: '15 Min Express Set (Legacy)',
+  description: 'Legacy 15-minute sequence preserved for past practice history records.',
+  totalDurationSeconds: sumDuration(SET_15_PHASES),
+  phases: SET_15_PHASES,
   source: 'builtin',
   category: 'pranayama',
 };
@@ -700,11 +709,14 @@ export const YOGA_NIDRA_SLEEP_WAVE: Routine = {
 };
 
 export const PRANAYAMA_ROUTINES: Routine[] = [
-  SET_10_ROUTINE,
-  SET_15_ROUTINE,
   SET_35_ROUTINE,
   SET_46_ROUTINE,
   SET_60_ROUTINE,
+];
+
+export const HISTORICAL_ROUTINES: Routine[] = [
+  SET_10_ROUTINE,
+  SET_15_ROUTINE,
 ];
 
 export const YOGA_NIDRA_ROUTINES: Routine[] = [
@@ -720,5 +732,5 @@ export const ALL_BUILTIN_ROUTINES: Routine[] = [
 ];
 
 export const getRoutineById = (id: string): Routine | undefined => {
-  return ALL_BUILTIN_ROUTINES.find((r) => r.id === id);
+  return [...ALL_BUILTIN_ROUTINES, ...HISTORICAL_ROUTINES].find((r) => r.id === id);
 };

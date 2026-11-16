@@ -23,8 +23,10 @@ export function PranayamaListScreen({
   onOpenCreateRoutine,
 }: PranayamaListScreenProps) {
   const formatDurationBadge = (seconds: number) => {
-    const minutes = Math.round(seconds / 60);
-    return `${minutes}m`;
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    if (secs > 0) return `${mins}m ${secs}s`;
+    return `${mins}m`;
   };
 
   return (
@@ -80,7 +82,7 @@ export function PranayamaListScreen({
               Select Breathing Sequence
             </h2>
             <p className="text-xs sm:text-sm text-[#355245] max-w-xl">
-              Each classical routine follows the authentic six-stage progression from preliminary cleansing to stillness.
+              Each classical routine follows the authentic 17-stage progression from preliminary centering to stillness.
             </p>
           </section>
 
@@ -117,7 +119,7 @@ export function PranayamaListScreen({
 
                 <div className="pt-5 mt-4 flex items-center justify-between border-t border-[#D6C6A5]/40">
                   <span className="text-[11px] font-semibold text-[#82947A]">
-                    {routine.phases?.length || 18} Phases &bull; Audio Led
+                    {routine.phases?.length || 17} Phases &bull; Audio Led
                   </span>
 
                   <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#263F35] group-hover:text-[#B97755] transition-colors">

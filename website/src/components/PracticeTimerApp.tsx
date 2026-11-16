@@ -56,6 +56,11 @@ export const PracticeTimerApp: React.FC = () => {
     muteAllAudio: false,
     witnessSoundId: "bell-1",
   });
+  const settingsRef = useRef(settings);
+
+  useEffect(() => {
+    settingsRef.current = settings;
+  });
   const [showSettingsPopover, setShowSettingsPopover] = useState(false);
 
   // History State
@@ -154,7 +159,9 @@ export const PracticeTimerApp: React.FC = () => {
         setPhaseSecondsRemaining(state.currentPhaseSecondsRemaining);
       },
       onPhaseChange: (phase) => {
-        webAudioPlayer.playPhaseAudio(phase, settings);
+        if (selectedRoutine.category !== 'yoga-nidra' && !selectedRoutine.audioFile) {
+          webAudioPlayer.playPhaseAudio(phase, settingsRef.current);
+        }
       },
       onComplete: async () => {
         setIsRunning(false);
@@ -171,7 +178,7 @@ export const PracticeTimerApp: React.FC = () => {
             durationSeconds: 0,
             audio: { file: COMPLETION_BELL, category: "ending", playOnce: true },
           },
-          settings
+          settingsRef.current
         );
 
         // Persist session to IndexedDB
@@ -209,7 +216,7 @@ export const PracticeTimerApp: React.FC = () => {
       releaseWakeLock();
       setActiveSessionFlag(false);
     };
-  }, [selectedRoutine, settings, releaseWakeLock]);
+  }, [selectedRoutine, releaseWakeLock]);
 
   // Handle visibility recovery (timestamp delta recalculation when tab re-enters focus)
   useEffect(() => {
@@ -264,14 +271,15 @@ export const PracticeTimerApp: React.FC = () => {
         sessionStartTimeRef.current = Date.now();
       }
 
-      // Unlock AudioContext & play initial phase audio
-      const currentPhase = selectedRoutine.phases[currentPhaseIndex];
-      if (currentPhase) {
-        webAudioPlayer.playPhaseAudio(currentPhase, settings);
-      }
-
-      if (selectedRoutine.audioFile) {
-        webAudioPlayer.playStreamingAudio(selectedRoutine.audioFile);
+      // Resume or play appropriate stream
+      const isYogaNidra = selectedRoutine.category === 'yoga-nidra' || !!selectedRoutine.audioFile;
+      if (isYogaNidra) {
+        webAudioPlayer.resumeStreamingAudio();
+      } else {
+        const currentPhase = selectedRoutine.phases[currentPhaseIndex];
+        if (currentPhase) {
+          webAudioPlayer.playPhaseAudio(currentPhase, settings);
+        }
       }
 
       timerEngineRef.current[currentPhaseIndex === 0 && phaseSecondsRemaining === selectedRoutine.phases[0].durationSeconds ? "start" : "resume"]();
@@ -313,9 +321,7 @@ export const PracticeTimerApp: React.FC = () => {
     const updated = { ...settings, muteAllAudio: !settings.muteAllAudio };
     setSettings(updated);
     await saveAppSettings(updated);
-    if (updated.muteAllAudio) {
-      webAudioPlayer.stop();
-    }
+    webAudioPlayer.setMuted(updated.muteAllAudio);
   };
 
   const toggleFullscreen = () => {
@@ -358,7 +364,7 @@ export const PracticeTimerApp: React.FC = () => {
             <button
               onClick={() => {
                 setActiveCategory("pranayama");
-                handleSelectRoutine(PRANAYAMA_ROUTINES[2]); // default to 35 min
+                handleSelectRoutine(PRANAYAMA_ROUTINES[0]); // default to 35 min
               }}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all ${
                 activeCategory === "pranayama"

@@ -9,12 +9,7 @@ interface AppSplashScreenProps {
 
 export function AppSplashScreen({ onFinish }: AppSplashScreenProps) {
   const [isFadingOut, setIsFadingOut] = useState(false);
-  const [isDismissed, setIsDismissed] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    }
-    return false;
-  });
+  const [isDismissed, setIsDismissed] = useState(false);
 
   const handleDismiss = useCallback(() => {
     if (isFadingOut || isDismissed) return;
@@ -34,6 +29,12 @@ export function AppSplashScreen({ onFinish }: AppSplashScreenProps) {
     // Progressive Launch: Start smooth exit immediately upon React mount
     // No artificial setTimeout delay - handoff happens as soon as the DOM is interactive
     const animFrame = requestAnimationFrame(() => {
+      if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        setIsDismissed(true);
+        onFinish?.();
+        return;
+      }
+
       const timer = setTimeout(() => {
         handleDismiss();
       }, 50);

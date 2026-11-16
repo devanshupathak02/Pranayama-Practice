@@ -1,14 +1,38 @@
 import { Phase, AppSettings } from '@/types/timer';
+import { getCachedAudioBlobUrl, backgroundAudioCache } from '@/lib/storage/offlineAudio';
 
 class WebAudioPlayer {
   private audioContext: AudioContext | null = null;
   private bufferCache: Map<string, AudioBuffer> = new Map();
   private activeSourceNode: AudioBufferSourceNode | null = null;
   private activeStreamingAudio: HTMLAudioElement | null = null;
+  private activeBlobUrl: string | null = null;
+  private currentPlayId: number = 0;
   private isUnlocked: boolean = false;
+  private isMuted: boolean = false;
 
   // Lazy constructor: Does not initialize AudioContext or attach global listeners during app launch
   constructor() {}
+
+  public setMuted(muted: boolean): void {
+    this.isMuted = muted;
+    if (this.activeStreamingAudio) {
+      this.activeStreamingAudio.muted = muted;
+    }
+    if (muted && this.activeSourceNode) {
+      try {
+        this.activeSourceNode.stop();
+        this.activeSourceNode.disconnect();
+      } catch {
+        // Ignore
+      }
+      this.activeSourceNode = null;
+    }
+  }
+
+  public getMuted(): boolean {
+    return this.isMuted;
+  }
 
   public unlock(): void {
     if (typeof window === 'undefined' || this.isUnlocked) return;
@@ -39,9 +63,18 @@ class WebAudioPlayer {
     return this.audioContext;
   }
 
+  /**
+   * Preload short audio cues into Web Audio memory buffers (e.g. bells, technique spoken cues).
+   * Guarded: Never decodes long-form audio (>= 5MB) into raw PCM memory.
+   */
   public async preloadBuffer(url: string): Promise<AudioBuffer | null> {
     if (this.bufferCache.has(url)) {
       return this.bufferCache.get(url)!;
+    }
+
+    // Never decode long-form yoga nidra tracks into memory buffers
+    if (url.includes('/yoga-nidra/') || url.endsWith('.mpeg')) {
+      return null;
     }
 
     const ctx = this.getAudioContext();
@@ -59,7 +92,15 @@ class WebAudioPlayer {
     }
   }
 
+  /**
+   * Complete hard stop of all media elements, audio nodes, and streams.
+   * Cancels in-flight requests and releases system audio hardware immediately.
+   */
   public stop(): void {
+    // Invalidate any in-flight playback promises
+    this.currentPlayId++;
+
+    // 1. Stop and disconnect Web Audio source node
     if (this.activeSourceNode) {
       try {
         this.activeSourceNode.stop();
@@ -70,14 +111,27 @@ class WebAudioPlayer {
       this.activeSourceNode = null;
     }
 
+    // 2. Stop and release HTML5 streaming audio
     if (this.activeStreamingAudio) {
       try {
         this.activeStreamingAudio.pause();
         this.activeStreamingAudio.currentTime = 0;
+        this.activeStreamingAudio.removeAttribute('src');
+        this.activeStreamingAudio.load(); // Forces mobile Safari/Chrome to release audio pipeline
       } catch {
         // Ignore
       }
       this.activeStreamingAudio = null;
+    }
+
+    // 3. Revoke active Blob URL if generated from offline storage
+    if (this.activeBlobUrl) {
+      try {
+        URL.revokeObjectURL(this.activeBlobUrl);
+      } catch {
+        // Ignore
+      }
+      this.activeBlobUrl = null;
     }
   }
 
@@ -113,8 +167,13 @@ class WebAudioPlayer {
     }
   }
 
+  /**
+   * Phase audio router:
+   * - Long-form guided sessions stream via HTML5 streaming.
+   * - Short bells and technique voice cues play via Web Audio buffer.
+   */
   public async playPhaseAudio(phase: Phase, settings: AppSettings): Promise<void> {
-    if (settings.muteAllAudio) {
+    if (this.isMuted || settings.muteAllAudio) {
       return;
     }
 
@@ -128,6 +187,16 @@ class WebAudioPlayer {
       return;
     }
 
+    // Long-form track detected: Delegate immediately to progressive streaming pipeline
+    const isLongForm = audioConfig.category === 'custom' ||
+      audioConfig.file.includes('/yoga-nidra/') ||
+      phase.durationSeconds > 600;
+
+    if (isLongForm) {
+      await this.playStreamingAudio(audioConfig.file, settings);
+      return;
+    }
+
     this.stop();
 
     const ctx = this.getAudioContext();
@@ -137,7 +206,7 @@ class WebAudioPlayer {
     }
 
     try {
-      // 1. Try to play decoded buffer for instant precision
+      // Short cue: Try to play decoded buffer for instant zero-latency precision
       let buffer = this.bufferCache.get(audioConfig.file);
       if (!buffer) {
         buffer = (await this.preloadBuffer(audioConfig.file)) || undefined;
@@ -156,38 +225,102 @@ class WebAudioPlayer {
         return;
       }
 
-      // 2. Fallback to HTML5 audio element
+      // Fallback for short audio
       const audioEl = new Audio(audioConfig.file);
       audioEl.volume = 0.85;
       this.activeStreamingAudio = audioEl;
       await audioEl.play();
     } catch {
-      // 3. Fallback to harmonic synthesized singing bowl chime
+      // Harmonic synthesized singing bowl chime fallback
       this.playSynthesizedChime(audioConfig.category === 'ending' ? 440 : 528);
     }
   }
 
-  public async playStreamingAudio(fileUrl: string): Promise<void> {
+  /**
+   * HTML5 Audio streaming pipeline for long-form sessions (Yoga Nidra).
+   * - Checks offline CacheStorage first for instant 0ms local playback.
+   * - Falls back to progressive HTTP Range streaming with < 1s startup.
+   * - Enforces single active instance and ignores aborted/stale requests.
+   */
+  public async playStreamingAudio(
+    fileUrl: string,
+    settings?: AppSettings,
+    onPlaybackStarted?: () => void
+  ): Promise<void> {
+    if (settings?.muteAllAudio) {
+      return;
+    }
+
+    // Synchronously stop any active playback
     this.stop();
+
+    const requestId = ++this.currentPlayId;
+
     try {
-      const audio = new Audio(fileUrl);
+      let resolvedSrc = fileUrl;
+
+      // 1. Check if the audio track is cached offline in CacheStorage
+      try {
+        const cachedBlobUrl = await getCachedAudioBlobUrl(fileUrl);
+        // Abort if another play or stop request occurred while waiting for cache
+        if (requestId !== this.currentPlayId) {
+          if (cachedBlobUrl) URL.revokeObjectURL(cachedBlobUrl);
+          return;
+        }
+
+        if (cachedBlobUrl) {
+          resolvedSrc = cachedBlobUrl;
+          this.activeBlobUrl = cachedBlobUrl;
+        }
+      } catch {
+        // Fall back to direct fileUrl stream
+      }
+
+      // 2. Instantiate and configure managed HTML5 Audio element
+      const audio = new Audio();
+      audio.preload = 'auto';
+      audio.src = resolvedSrc;
       audio.volume = 0.9;
+      audio.muted = this.isMuted || !!settings?.muteAllAudio;
+
+      // Buffer priority: If live playback stalls/buffers, deprioritize background caching
+      audio.addEventListener('waiting', () => {
+        backgroundAudioCache.pauseOrCancel(fileUrl);
+      });
+
       this.activeStreamingAudio = audio;
+
+      // 3. Start playback
       await audio.play();
-    } catch (err) {
-      console.warn('Streaming audio failed to start:', err);
+
+      if (requestId === this.currentPlayId) {
+        onPlaybackStarted?.();
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        // Play request was superseded or aborted by user
+        return;
+      }
+      console.warn('[WebAudioPlayer] Streaming audio failed to start:', err);
     }
   }
 
   public pauseStreamingAudio(): void {
     if (this.activeStreamingAudio) {
-      this.activeStreamingAudio.pause();
+      try {
+        this.activeStreamingAudio.pause();
+      } catch {
+        // Ignore
+      }
     }
   }
 
   public resumeStreamingAudio(): void {
-    if (this.activeStreamingAudio) {
-      this.activeStreamingAudio.play().catch(() => {});
+    if (this.activeStreamingAudio && this.activeStreamingAudio.paused) {
+      this.activeStreamingAudio.play().catch((err) => {
+        if (err instanceof Error && err.name === 'AbortError') return;
+        console.warn('[WebAudioPlayer] Streaming resume failed:', err);
+      });
     }
   }
 }

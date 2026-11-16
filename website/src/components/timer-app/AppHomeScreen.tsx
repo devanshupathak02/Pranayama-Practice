@@ -131,7 +131,7 @@ export function AppHomeScreen({
 
               <div className="pt-6 sm:pt-8 flex items-center justify-between border-t border-[#D6C6A5]/50 relative z-10 mt-6">
                 <div className="text-[11px] sm:text-xs text-[#82947A] font-medium flex items-center gap-2">
-                  <span>10m &bull; 15m &bull; 35m &bull; 46m &bull; 60m</span>
+                  <span>35m &bull; 46m &bull; 60m Official Sets</span>
                 </div>
 
                 <div className="inline-flex items-center gap-2 text-xs font-bold text-[#FAF7F2] bg-[#263F35] group-hover:bg-[#1A2D25] px-4 py-2.5 rounded-2xl shadow-xs transition-all group-hover:translate-x-0.5">

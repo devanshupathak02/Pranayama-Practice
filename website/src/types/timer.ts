@@ -53,10 +53,12 @@ export interface AppSettings {
   muteTechniqueNames: boolean;
   muteAllAudio: boolean;
   witnessSoundId: string;
+  autoCacheAudio?: boolean;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
   muteTechniqueNames: false,
   muteAllAudio: false,
   witnessSoundId: 'bell-1',
+  autoCacheAudio: true,
 };

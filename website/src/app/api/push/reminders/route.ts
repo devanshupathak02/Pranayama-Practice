@@ -69,8 +69,8 @@ export async function POST(req: NextRequest) {
       title: title || 'Morning Pranayama Sadhana',
       timeOfDay,
       timeZone: timeZone || 'UTC',
-      routineId: routineId || 'set-15',
-      routineName: routineName || '15-Minute Morning Reset',
+      routineId: routineId || 'set-35',
+      routineName: routineName || '35 Minute Practice',
       enabled: true,
       createdAt: Date.now(),
     };

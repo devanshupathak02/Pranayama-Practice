@@ -5,6 +5,7 @@ import { Routine, AppSettings, SessionRecord } from '@/types/timer';
 import { TimerEngine } from '@/lib/timer/TimerEngine';
 import { webAudioPlayer } from '@/lib/timer/webAudioPlayer';
 import { recordCompletedSession } from '@/lib/storage/indexedDB';
+import { backgroundAudioCache } from '@/lib/storage/offlineAudio';
 import { COMPLETION_BELL } from '@/data/routines';
 import {
   Play,
@@ -80,6 +81,17 @@ export function ActivePracticeScreen({
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
   const sessionStartTimeRef = useRef<number | null>(initialState.startTime);
 
+  // Mutable refs for values that must NOT reset the timer session when modified
+  const localMuteRef = useRef(localMute);
+  const settingsRef = useRef(settings);
+  const onSessionCompleteRef = useRef(onSessionComplete);
+
+  useEffect(() => {
+    localMuteRef.current = localMute;
+    settingsRef.current = settings;
+    onSessionCompleteRef.current = onSessionComplete;
+  });
+
   // Active Session coordination flag for Service Worker
   const setActiveSessionFlag = (active: boolean) => {
     if (typeof window !== 'undefined') {
@@ -135,9 +147,9 @@ export function ActivePracticeScreen({
     }
   }, []);
 
-  // Initialize TimerEngine with recovery support
+  // Initialize TimerEngine with recovery support (runs once per routine)
   useEffect(() => {
-    const effectiveSettings = { ...settings, muteAllAudio: localMute };
+    const isYogaNidra = routine.category === 'yoga-nidra' || !!routine.audioFile;
 
     const engine = new TimerEngine(routine.phases, {
       onTick: (state) => {
@@ -146,7 +158,11 @@ export function ActivePracticeScreen({
         syncSessionStorage(state.currentPhaseIndex, false);
       },
       onPhaseChange: (phase) => {
-        webAudioPlayer.playPhaseAudio(phase, effectiveSettings);
+        // Only trigger phase sound cues for pranayama routines; yoga nidra is a single continuous stream
+        if (!isYogaNidra) {
+          const currentSettings = { ...settingsRef.current, muteAllAudio: localMuteRef.current };
+          webAudioPlayer.playPhaseAudio(phase, currentSettings);
+        }
       },
       onComplete: async () => {
         setIsRunning(false);
@@ -156,6 +172,7 @@ export function ActivePracticeScreen({
         clearSessionStorage();
 
         // Completion bell
+        const currentSettings = { ...settingsRef.current, muteAllAudio: localMuteRef.current };
         webAudioPlayer.playPhaseAudio(
           {
             id: 'completion-bell',
@@ -164,7 +181,7 @@ export function ActivePracticeScreen({
             durationSeconds: 0,
             audio: { file: COMPLETION_BELL, category: 'ending', playOnce: true },
           },
-          effectiveSettings
+          currentSettings
         );
 
         // Record to IndexedDB
@@ -186,7 +203,7 @@ export function ActivePracticeScreen({
         };
 
         await recordCompletedSession(record);
-        onSessionComplete(record);
+        onSessionCompleteRef.current(record);
       },
       onStatusChange: (status) => {
         setIsRunning(status === 'RUNNING');
@@ -202,12 +219,25 @@ export function ActivePracticeScreen({
     setActiveSessionFlag(true);
     requestWakeLock();
 
-    const currentPhase = routine.phases[initialState.index];
-    if (currentPhase) {
-      webAudioPlayer.playPhaseAudio(currentPhase, effectiveSettings);
-    }
-    if (routine.audioFile) {
-      webAudioPlayer.playStreamingAudio(routine.audioFile);
+    // Unified Audio Launch: Continuous Yoga Nidra streams through HTML5 pipeline;
+    // Pranayama plays discrete phase audio and bell cues.
+    const initialSettings = { ...settingsRef.current, muteAllAudio: localMuteRef.current };
+    if (isYogaNidra && routine.audioFile) {
+      const audioUrl = routine.audioFile;
+      webAudioPlayer.playStreamingAudio(audioUrl, initialSettings, () => {
+        // Automatic Background Caching: Triggers after live streaming playback successfully starts
+        const isAutoCacheAllowed = settingsRef.current.autoCacheAudio !== false;
+        if (isAutoCacheAllowed && typeof navigator !== 'undefined' && navigator.onLine) {
+          setTimeout(() => {
+            backgroundAudioCache.triggerBackgroundCache(audioUrl);
+          }, 500);
+        }
+      });
+    } else {
+      const currentPhase = routine.phases[initialState.index];
+      if (currentPhase) {
+        webAudioPlayer.playPhaseAudio(currentPhase, initialSettings);
+      }
     }
     engine.start();
 
@@ -217,7 +247,7 @@ export function ActivePracticeScreen({
       releaseWakeLock();
       setActiveSessionFlag(false);
     };
-  }, [routine, settings, localMute, initialState.index, releaseWakeLock, requestWakeLock, syncSessionStorage, clearSessionStorage, onSessionComplete]);
+  }, [routine, initialState.index, releaseWakeLock, requestWakeLock, syncSessionStorage, clearSessionStorage]);
 
   // Tab visibility recovery
   useEffect(() => {
@@ -247,9 +277,13 @@ export function ActivePracticeScreen({
     if (!timerEngineRef.current) return;
     if (sessionCompleted) return;
 
+    const isYogaNidra = routine.category === 'yoga-nidra' || !!routine.audioFile;
+
     if (isRunning) {
       timerEngineRef.current.pause();
-      webAudioPlayer.pauseStreamingAudio();
+      if (isYogaNidra) {
+        webAudioPlayer.pauseStreamingAudio();
+      }
       releaseWakeLock();
       setActiveSessionFlag(false);
       syncSessionStorage(currentPhaseIndex, true);
@@ -258,8 +292,8 @@ export function ActivePracticeScreen({
       if (!sessionStartTimeRef.current) {
         sessionStartTimeRef.current = Date.now();
       }
-      if (routine.audioFile) {
-        webAudioPlayer.playStreamingAudio(routine.audioFile);
+      if (isYogaNidra) {
+        webAudioPlayer.resumeStreamingAudio();
       }
       timerEngineRef.current.resume();
       requestWakeLock();
@@ -295,6 +329,7 @@ export function ActivePracticeScreen({
     if (isRunning && !sessionCompleted) {
       setShowExitConfirm(true);
     } else {
+      webAudioPlayer.stop();
       clearSessionStorage();
       onExit();
     }
@@ -374,7 +409,7 @@ export function ActivePracticeScreen({
               onClick={() => {
                 const updated = !localMute;
                 setLocalMute(updated);
-                if (updated) webAudioPlayer.stop();
+                webAudioPlayer.setMuted(updated);
               }}
               aria-label="Toggle mute"
               className="w-10 h-10 rounded-2xl bg-[#FAF7F2] border border-[#D6C6A5]/60 flex items-center justify-center text-[#263F35] hover:bg-[#E2E8DF] active:scale-95 transition-all shadow-2xs"

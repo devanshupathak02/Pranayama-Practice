@@ -245,8 +245,8 @@ async function waitForServer(maxAttempts = 15) {
       timeOfDay: '06:00',
       timeZone: 'Asia/Kolkata',
       title: 'Dawn Sadhana',
-      routineId: 'set-15',
-      routineName: '15-Minute Morning Reset',
+      routineId: 'set-35',
+      routineName: '35 Minute Practice',
     }, { Host: 'app.pranayamatimes.org' });
     assert('26. Create Reminder HTTP 200 on App Origin', reminderRes.status === 200);
     const reminderId = reminderRes.body && reminderRes.body.reminder && reminderRes.body.reminder.id;

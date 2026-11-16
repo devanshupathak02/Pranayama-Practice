@@ -1,9 +1,23 @@
 'use client';
 
-import React, { useState } from 'react';
-import { ArrowLeft, Play, VolumeX, SlidersHorizontal, Music } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import {
+  ArrowLeft,
+  Play,
+  VolumeX,
+  SlidersHorizontal,
+  Music,
+  HardDrive,
+  Trash2,
+  CheckCircle2,
+} from 'lucide-react';
 import { AppSettings } from '@/types/timer';
 import { webAudioPlayer } from '@/lib/timer/webAudioPlayer';
+import {
+  backgroundAudioCache,
+  getAudioCacheSize,
+  formatBytes,
+} from '@/lib/storage/offlineAudio';
 
 interface AppSettingsScreenProps {
   settings: AppSettings;
@@ -38,6 +52,21 @@ export function AppSettingsScreen({
   onBack,
 }: AppSettingsScreenProps) {
   const [previewingId, setPreviewingId] = useState<string | null>(null);
+  const [cacheSize, setCacheSize] = useState<number>(0);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
+  const [clearNotice, setClearNotice] = useState<string | null>(null);
+
+  // Load offline storage size on mount
+  useEffect(() => {
+    let active = true;
+    getAudioCacheSize().then((sz) => {
+      if (active) setCacheSize(sz);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleToggleMuteTechniques = () => {
     onUpdateSettings({
@@ -54,6 +83,26 @@ export function AppSettingsScreen({
     });
     if (updated) {
       webAudioPlayer.stop();
+    }
+  };
+
+  const handleToggleAutoCache = () => {
+    const current = settings.autoCacheAudio !== false;
+    onUpdateSettings({
+      ...settings,
+      autoCacheAudio: !current,
+    });
+  };
+
+  const handleClearCache = async () => {
+    setIsClearing(true);
+    const res = await backgroundAudioCache.clearAllAudioCache();
+    setIsClearing(false);
+    setShowClearConfirm(false);
+    if (res.success) {
+      setCacheSize(0);
+      setClearNotice(`Cleared ${formatBytes(res.freedBytes)} of cached audio.`);
+      setTimeout(() => setClearNotice(null), 3500);
     }
   };
 
@@ -81,8 +130,10 @@ export function AppSettingsScreen({
     }, 2500);
   };
 
+  const isAutoCacheEnabled = settings.autoCacheAudio !== false;
+
   return (
-    <div className="flex flex-col h-full w-full overflow-hidden">
+    <div className="flex flex-col h-full w-full overflow-hidden relative">
       {/* 1. Fixed Top Header (Anchored at Top with Safe Area) */}
       <header className="app-anchor-bar pt-safe w-full bg-[#FAF7F2]/95 backdrop-blur-md border-b border-[#D6C6A5]/40 shadow-2xs">
         <div className="max-w-3xl mx-auto px-4 sm:px-8 py-3.5 sm:py-4 flex items-center gap-3">
@@ -98,7 +149,7 @@ export function AppSettingsScreen({
               Settings &amp; Preferences
             </h1>
             <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.16em] text-[#82947A] block">
-              Audio Cues &bull; Transition Bells
+              Audio Cues &bull; Offline Storage
             </span>
           </div>
         </div>
@@ -112,7 +163,7 @@ export function AppSettingsScreen({
               Sound &amp; Environment
             </h2>
             <p className="text-xs sm:text-sm text-[#355245] mt-1">
-              Configure spoken cues, audio volume, and authentic Himalayan transition instruments.
+              Configure spoken cues, background caching, and authentic Himalayan transition instruments.
             </p>
           </div>
 
@@ -185,6 +236,98 @@ export function AppSettingsScreen({
                     }`}
                   />
                 </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Section: Yoga Nidra & Offline Storage */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <HardDrive className="w-4 h-4 text-[#82947A]" />
+              <h3 className="font-sans font-bold text-base text-[#1A2D25] uppercase tracking-wider text-xs">
+                Yoga Nidra &amp; Offline Storage
+              </h3>
+            </div>
+
+            <div className="space-y-3">
+              {/* Automatic Offline Caching Toggle */}
+              <div className="bg-[#FAF7F2] border border-[#D6C6A5]/80 rounded-3xl p-5 sm:p-6 flex items-center justify-between gap-5 shadow-2xs">
+                <div className="space-y-1 pr-2">
+                  <span className="font-sans font-bold text-base text-[#1A2D25] block">
+                    Automatic Offline Caching
+                  </span>
+                  <p className="text-xs text-[#355245] leading-relaxed max-w-lg">
+                    Automatically prepares Yoga Nidra sessions in the background when played. Allows seamless offline playback on subsequent sessions without manual downloads.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={isAutoCacheEnabled}
+                  onClick={handleToggleAutoCache}
+                  className={`relative inline-flex h-8 w-14 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#263F35] ${
+                    isAutoCacheEnabled ? 'bg-[#263F35]' : 'bg-[#D6C6A5]'
+                  }`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                      isAutoCacheEnabled ? 'translate-x-6' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* Cache Storage Management Card */}
+              <div className="bg-[#FAF7F2] border border-[#D6C6A5]/80 rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
+                <div className="space-y-1">
+                  <span className="font-sans font-bold text-base text-[#1A2D25] block">
+                    Cached Audio Storage
+                  </span>
+                  <p className="text-xs text-[#355245]">
+                    {cacheSize > 0
+                      ? `Currently storing ${formatBytes(cacheSize)} of verified offline recordings on this device.`
+                      : 'No offline audio tracks stored on this device.'}
+                  </p>
+                  {clearNotice && (
+                    <span className="inline-flex items-center gap-1.5 text-xs text-[#263F35] font-semibold pt-1">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#263F35]" />
+                      <span>{clearNotice}</span>
+                    </span>
+                  )}
+                </div>
+
+                {cacheSize > 0 && !showClearConfirm && (
+                  <button
+                    type="button"
+                    onClick={() => setShowClearConfirm(true)}
+                    className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl border border-[#D6C6A5] bg-white hover:bg-[#F5EBE6] text-[#B97755] hover:text-[#985E40] text-xs font-semibold transition-all shadow-2xs cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Clear Cache</span>
+                  </button>
+                )}
+
+                {showClearConfirm && (
+                  <div className="shrink-0 flex items-center gap-2 p-2 bg-[#F5EBE6] rounded-2xl border border-[#ECC3B3]">
+                    <span className="text-xs text-[#B97755] font-medium pr-1">Confirm delete?</span>
+                    <button
+                      type="button"
+                      disabled={isClearing}
+                      onClick={handleClearCache}
+                      className="px-3 py-1.5 rounded-xl bg-[#B97755] text-white text-xs font-bold hover:bg-[#985E40] transition-colors cursor-pointer"
+                    >
+                      {isClearing ? 'Clearing...' : 'Yes, Delete'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowClearConfirm(false)}
+                      className="px-2.5 py-1.5 rounded-xl bg-white border border-[#D6C6A5] text-[#263F35] text-xs font-medium cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

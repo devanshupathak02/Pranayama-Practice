@@ -7,6 +7,7 @@ import {
   PRANAYAMA_ROUTINES,
   YOGA_NIDRA_ROUTINES,
   SET_35_ROUTINE,
+  getRoutineById,
 } from '@/data/routines';
 import {
   loadAppSettings,
@@ -14,7 +15,6 @@ import {
   loadSessionHistory,
   clearAllSessionHistory,
 } from '@/lib/storage/indexedDB';
-import { isAudioCachedOffline, downloadAudioTrack } from '@/lib/storage/offlineAudio';
 import { startupMetrics } from '@/lib/performance/startupMetrics';
 import { AppSplashScreen } from './AppSplashScreen';
 import { AppHomeScreen } from './AppHomeScreen';
@@ -55,94 +55,27 @@ type AppView =
   | 'history'
   | 'custom-routine';
 
-function getInitialView(): AppView {
-  if (typeof window === 'undefined') return 'home';
-  const params = new URLSearchParams(window.location.search);
-  const paramView = params.get('view') as AppView | null;
-  if (paramView) return paramView;
-
-  // Active Session Recovery: Prioritize resuming active session if practitioner was interrupted
-  try {
-    const raw = sessionStorage.getItem('pranayama_active_session');
-    if (raw) {
-      const saved = JSON.parse(raw);
-      if (saved.routineId && saved.sessionStartedAtMs) {
-        return 'active';
-      }
-    }
-  } catch {
-    // Ignore storage parse errors
-  }
-
-  return 'home';
-}
-
-function getInitialRoutine(): Routine {
-  if (typeof window === 'undefined') return SET_35_ROUTINE;
-  const params = new URLSearchParams(window.location.search);
-  const routineId = params.get('routine');
-  const sessionId = params.get('session');
-
-  if (routineId) {
-    const match = PRANAYAMA_ROUTINES.find((r) => r.id === routineId);
-    if (match) return match;
-  } else if (sessionId) {
-    const match = YOGA_NIDRA_ROUTINES.find((r) => r.id === sessionId);
-    if (match) return match;
-  }
-
-  // Active session recovery matching routine
-  try {
-    const raw = sessionStorage.getItem('pranayama_active_session');
-    if (raw) {
-      const saved = JSON.parse(raw);
-      if (saved.routineId) {
-        const match = [...PRANAYAMA_ROUTINES, ...YOGA_NIDRA_ROUTINES].find((r) => r.id === saved.routineId);
-        if (match) return match;
-      }
-    }
-  } catch {
-    // Ignore
-  }
-
-  return SET_35_ROUTINE;
-}
-
 export function TimerAppShell() {
   startupMetrics.mark('mount_start');
 
-  // Navigation View State
-  const [currentView, setCurrentView] = useState<AppView>(getInitialView);
-  const [selectedRoutine, setSelectedRoutine] = useState<Routine>(getInitialRoutine);
+  // Navigation View State - Initialized deterministically for SSR and hydration parity
+  const [currentView, setCurrentView] = useState<AppView>('home');
+  const [selectedRoutine, setSelectedRoutine] = useState<Routine>(SET_35_ROUTINE);
   const [customRoutines, setCustomRoutines] = useState<Routine[]>([]);
 
   // Splash Screen State: starts true, dismisses progressively on mount
   const [showSplash, setShowSplash] = useState(true);
 
-  // App Settings: Read synchronously from localStorage cache for instant 0ms availability
-  const [settings, setSettings] = useState<AppSettings>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const cached = localStorage.getItem('pranayama_app_settings_v1');
-        if (cached) return JSON.parse(cached);
-      } catch {
-        // Fallback to default
-      }
-    }
-    return {
-      muteTechniqueNames: false,
-      muteAllAudio: false,
-      witnessSoundId: 'bell-1',
-    };
+  // App Settings: Default SSR state, reconciled instantly on mount from local cache
+  const [settings, setSettings] = useState<AppSettings>({
+    muteTechniqueNames: false,
+    muteAllAudio: false,
+    witnessSoundId: 'bell-1',
   });
 
-  // History and cache state - initialized lazily on-demand
+  // History state - initialized lazily on-demand
   const [history, setHistory] = useState<SessionRecord[]>([]);
   const [historyLoaded, setHistoryLoaded] = useState(false);
-  const [cachedAudioMap, setCachedAudioMap] = useState<Record<string, boolean>>({});
-  const [audioCacheChecked, setAudioCacheChecked] = useState(false);
-  const [downloadingTrack, setDownloadingTrack] = useState<string | null>(null);
-  const [downloadProgress, setDownloadProgress] = useState(0);
 
   // Combine built-in routines with user custom routines
   const allPranayamaRoutines = useMemo(() => {
@@ -153,23 +86,46 @@ export function TimerAppShell() {
   const syncStateFromUrl = useCallback(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
-    const view = (params.get('view') as AppView) || 'home';
+    const view = params.get('view') as AppView | null;
     const routineId = params.get('routine');
     const sessionId = params.get('session');
 
     if (routineId) {
-      const match = allPranayamaRoutines.find((r) => r.id === routineId);
+      const match = allPranayamaRoutines.find((r) => r.id === routineId) || getRoutineById(routineId);
       if (match) {
         setSelectedRoutine(match);
       }
     } else if (sessionId) {
-      const match = YOGA_NIDRA_ROUTINES.find((r) => r.id === sessionId);
+      const match = YOGA_NIDRA_ROUTINES.find((r) => r.id === sessionId) || getRoutineById(sessionId);
       if (match) {
         setSelectedRoutine(match);
       }
     }
 
-    setCurrentView(view);
+    if (view) {
+      setCurrentView(view);
+      return;
+    }
+
+    // Active session recovery matching routine
+    try {
+      const raw = sessionStorage.getItem('pranayama_active_session');
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved.routineId && saved.sessionStartedAtMs) {
+          const match = getRoutineById(saved.routineId);
+          if (match) {
+            setSelectedRoutine(match);
+          }
+          setCurrentView('active');
+          return;
+        }
+      }
+    } catch {
+      // Ignore
+    }
+
+    setCurrentView('home');
   }, [allPranayamaRoutines]);
 
   // Navigate to view and update URL history
@@ -199,10 +155,27 @@ export function TimerAppShell() {
     setCurrentView(view);
   }, []);
 
-  // Listen for browser popstate (back/forward navigation)
+  // Hydration sync on client mount & popstate navigation
   useEffect(() => {
+    const frameId = requestAnimationFrame(() => {
+      syncStateFromUrl();
+
+      // Reconcile settings from localStorage cache immediately on mount
+      try {
+        const cached = localStorage.getItem('pranayama_app_settings_v1');
+        if (cached) {
+          setSettings(JSON.parse(cached));
+        }
+      } catch {
+        // Ignore
+      }
+    });
+
     window.addEventListener('popstate', syncStateFromUrl);
-    return () => window.removeEventListener('popstate', syncStateFromUrl);
+    return () => {
+      cancelAnimationFrame(frameId);
+      window.removeEventListener('popstate', syncStateFromUrl);
+    };
   }, [syncStateFromUrl]);
 
   // Critical Startup Effect: Measure milestones, defer nonessential I/O to idle time
@@ -257,25 +230,6 @@ export function TimerAppShell() {
     }
   }, [currentView, historyLoaded]);
 
-  // On-demand load: Check Yoga Nidra offline audio cache only when visiting Yoga Nidra screen
-  useEffect(() => {
-    if (currentView === 'yoga-nidra' && !audioCacheChecked) {
-      const timer = setTimeout(() => {
-        setAudioCacheChecked(true);
-        YOGA_NIDRA_ROUTINES.forEach((session) => {
-          if (session.audioFile) {
-            isAudioCachedOffline(session.audioFile)
-              .then((cached) => {
-                setCachedAudioMap((prev) => ({ ...prev, [session.audioFile!]: cached }));
-              })
-              .catch(() => { });
-          }
-        });
-      }, 0);
-      return () => clearTimeout(timer);
-    }
-  }, [currentView, audioCacheChecked]);
-
   // Handlers
   const handleUpdateSettings = async (newSettings: AppSettings) => {
     setSettings(newSettings);
@@ -291,21 +245,6 @@ export function TimerAppShell() {
     const updated = await loadSessionHistory();
     setHistory(updated);
     setHistoryLoaded(true);
-  };
-
-  const handleDownloadTrack = async (audioFile: string) => {
-    if (downloadingTrack) return;
-    setDownloadingTrack(audioFile);
-    setDownloadProgress(0);
-
-    const res = await downloadAudioTrack(audioFile, (p) => {
-      setDownloadProgress(p.percentage);
-    });
-
-    setDownloadingTrack(null);
-    if (res.success) {
-      setCachedAudioMap((prev) => ({ ...prev, [audioFile]: true }));
-    }
   };
 
   const handleSelectPranayama = (routine: Routine) => {
@@ -357,11 +296,7 @@ export function TimerAppShell() {
       {currentView === 'yoga-nidra' && (
         <YogaNidraListScreen
           sessions={YOGA_NIDRA_ROUTINES}
-          cachedAudioMap={cachedAudioMap}
-          downloadingTrack={downloadingTrack}
-          downloadProgress={downloadProgress}
           onSelectSession={handleSelectYogaNidra}
-          onDownloadTrack={handleDownloadTrack}
           onBack={() => navigateTo('home')}
           onOpenSettings={() => navigateTo('settings')}
           onOpenHistory={() => navigateTo('history')}
