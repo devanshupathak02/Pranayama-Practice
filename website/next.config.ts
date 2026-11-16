@@ -3,6 +3,12 @@ import path from "path";
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.resolve(__dirname, ".."),
+  allowedDevOrigins: [
+    '192.168.100.106',
+    '192.168.100.106:3000',
+    'localhost:3000',
+    '127.0.0.1:3000',
+  ],
   experimental: {
     cpus: 1,
   },

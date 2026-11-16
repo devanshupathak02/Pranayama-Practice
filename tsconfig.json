@@ -30,6 +30,9 @@
   ],
   "exclude": [
     "node_modules",
-    "website/node_modules"
+    "website/node_modules",
+    "public",
+    "website/public",
+    "website/.next"
   ]
 }

@@ -1,4 +1,5 @@
 import { AppSettings, DEFAULT_SETTINGS, SessionRecord } from '@/types/timer';
+import { startupMetrics } from '@/lib/performance/startupMetrics';
 
 const DB_NAME = 'PranayamaTimesDB';
 const DB_VERSION = 1;
@@ -25,25 +26,42 @@ class IndexedDBClient {
       return this.dbPromise;
     }
 
-    this.dbPromise = new Promise<IDBDatabase>((resolve, reject) => {
-      const request = indexedDB.open(DB_NAME, DB_VERSION);
+    startupMetrics.mark('idb_open_start');
 
-      request.onupgradeneeded = (event) => {
-        const db = (event.target as IDBOpenDBRequest).result;
-        if (!db.objectStoreNames.contains(STORE_NAME)) {
-          db.createObjectStore(STORE_NAME);
-        }
-      };
+    const openPromise = new Promise<IDBDatabase>((resolve, reject) => {
+      try {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-      request.onsuccess = (event) => {
-        resolve((event.target as IDBOpenDBRequest).result);
-      };
+        request.onupgradeneeded = (event) => {
+          const db = (event.target as IDBOpenDBRequest).result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME);
+          }
+        };
 
-      request.onerror = (event) => {
-        reject((event.target as IDBOpenDBRequest).error);
-      };
+        request.onsuccess = (event) => {
+          startupMetrics.measure('indexeddb_open', 'idb_open_start');
+          resolve((event.target as IDBOpenDBRequest).result);
+        };
+
+        request.onerror = (event) => {
+          reject((event.target as IDBOpenDBRequest).error);
+        };
+
+        request.onblocked = () => {
+          reject(new Error('IndexedDB blocked'));
+        };
+      } catch (err) {
+        reject(err);
+      }
     });
 
+    // iOS WebKit Guard: 800ms timeout fallback prevents Safari IndexedDB stalls from blocking the app
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('IndexedDB open timeout (iOS fallback)')), 800);
+    });
+
+    this.dbPromise = Promise.race([openPromise, timeoutPromise]);
     return this.dbPromise;
   }
 

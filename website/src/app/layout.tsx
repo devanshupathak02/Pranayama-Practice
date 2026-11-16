@@ -1,14 +1,32 @@
 import type { Metadata, Viewport } from "next";
+import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 import { siteConfig } from "@/config/site";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { PwaManager } from "@/components/PwaManager";
+import { PwaManifestLink } from "@/components/pwa/PwaManifestLink";
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-serif",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 export const viewport: Viewport = {
   themeColor: "#263F35",
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
 };
 
 export const metadata: Metadata = {
@@ -75,16 +93,18 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className="h-full antialiased scroll-smooth">
+    <html lang="en" className={`${inter.variable} ${cormorant.variable} h-full antialiased scroll-smooth`}>
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {/* Dynamic manifest link strictly injected only on app subdomain */}
+        <PwaManifestLink />
       </head>
       <body className="min-h-full flex flex-col bg-[#EDE8DC] text-[#263F35] selection:bg-[#82947A] selection:text-[#FAF7F2]">
         <Navbar />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 flex flex-col">{children}</main>
         <Footer />
         <PwaManager />
       </body>

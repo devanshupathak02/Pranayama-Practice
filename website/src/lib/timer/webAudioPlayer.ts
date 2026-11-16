@@ -7,31 +7,19 @@ class WebAudioPlayer {
   private activeStreamingAudio: HTMLAudioElement | null = null;
   private isUnlocked: boolean = false;
 
-  constructor() {
-    this.setupUnlockListeners();
-  }
+  // Lazy constructor: Does not initialize AudioContext or attach global listeners during app launch
+  constructor() {}
 
-  private setupUnlockListeners(): void {
-    if (typeof window === 'undefined') return;
-
-    const unlock = () => {
-      if (this.isUnlocked) return;
-      const ctx = this.getAudioContext();
-      if (ctx && ctx.state === 'suspended') {
-        ctx.resume().then(() => {
-          this.isUnlocked = true;
-        }).catch(() => {});
-      } else {
+  public unlock(): void {
+    if (typeof window === 'undefined' || this.isUnlocked) return;
+    const ctx = this.getAudioContext();
+    if (ctx && ctx.state === 'suspended') {
+      ctx.resume().then(() => {
         this.isUnlocked = true;
-      }
-      window.removeEventListener('click', unlock);
-      window.removeEventListener('touchstart', unlock);
-      window.removeEventListener('keydown', unlock);
-    };
-
-    window.addEventListener('click', unlock, { passive: true, once: true });
-    window.addEventListener('touchstart', unlock, { passive: true, once: true });
-    window.addEventListener('keydown', unlock, { passive: true, once: true });
+      }).catch(() => {});
+    } else {
+      this.isUnlocked = true;
+    }
   }
 
   public getAudioContext(): AudioContext | null {

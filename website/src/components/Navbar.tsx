@@ -6,12 +6,14 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { useAppUrl } from "@/lib/hooks/useAppUrl";
+import { useDisplayMode } from "@/lib/hooks/useDisplayMode";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const appUrl = useAppUrl();
+  const { isTimerApp } = useDisplayMode();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -21,6 +23,11 @@ export const Navbar: React.FC = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Suppress marketing navbar inside dedicated timer application & /practice
+  if (isTimerApp || pathname?.startsWith("/practice")) {
+    return null;
+  }
 
   return (
     <header

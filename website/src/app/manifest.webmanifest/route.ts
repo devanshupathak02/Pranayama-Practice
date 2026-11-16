@@ -4,13 +4,15 @@ export const dynamic = 'force-static';
 
 export async function GET() {
   const manifest = {
+    id: '/',
     name: 'Pranayama Times',
     short_name: 'Pranayama',
     description: 'Classical pranayama breathing timer and guided yoga nidra by Still Mountain.',
     start_url: '/',
     scope: '/',
     display: 'standalone',
-    orientation: 'portrait',
+    display_override: ['window-controls-overlay', 'standalone', 'minimal-ui'],
+    orientation: 'any',
     background_color: '#EDE8DC',
     theme_color: '#263F35',
     categories: ['health', 'lifestyle', 'wellness', 'education'],

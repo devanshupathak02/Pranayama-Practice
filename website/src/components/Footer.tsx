@@ -1,10 +1,21 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { siteConfig } from "@/config/site";
+import { useDisplayMode } from "@/lib/hooks/useDisplayMode";
 import { ArrowUpRight } from "lucide-react";
 
 export const Footer: React.FC = () => {
+  const pathname = usePathname();
+  const { isTimerApp } = useDisplayMode();
+
+  // Suppress marketing footer inside dedicated timer application & /practice
+  if (isTimerApp || pathname?.startsWith("/practice")) {
+    return null;
+  }
   return (
     <footer className="bg-[#1A2D25] text-[#EDE8DC] pt-16 pb-12 border-t border-[#263F35]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

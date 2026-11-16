@@ -1,6 +1,8 @@
+// @ts-nocheck
+/// <reference lib="webworker" />
 /**
  * Pranayama Times — Progressive Web App Service Worker
- * Version: v2.1.0
+ * Version: v2.4.0
  *
  * Reliability & Safety Guarantees:
  * - Controlled activation: Does NOT blindly force skipWaiting() during active practice sessions.
@@ -10,7 +12,7 @@
  * - Security: Strictly bypasses /api/* routes, authentication tokens, and private user records.
  */
 
-const CACHE_VERSION = 'v2.1.0';
+const CACHE_VERSION = 'v2.4.0';
 const SHELL_CACHE = `pranayama-shell-${CACHE_VERSION}`;
 const STATIC_CACHE = `pranayama-static-${CACHE_VERSION}`;
 const AUDIO_CACHE = `pranayama-audio-${CACHE_VERSION}`;
@@ -18,7 +20,6 @@ const AUDIO_CACHE = `pranayama-audio-${CACHE_VERSION}`;
 const PRECACHE_SHELL = [
   '/',
   '/practice',
-  '/learn',
   '/manifest.webmanifest',
   '/favicon.png',
   '/favicon-32.png',
@@ -29,32 +30,16 @@ const PRECACHE_SHELL = [
   '/apple-touch-icon.png',
 ];
 
-const PRECACHE_AUDIO = [
-  // Classical Bells & Gongs
-  '/audio/bell/Bell1.mp3',
-  '/audio/bell/Boxing Bell.mp3',
-  '/audio/bell/Gong.mp3',
-  '/audio/bell/Gong2.mp3',
-
-  // Spoken Technique Voice Cues
-  '/audio/pranayama/anulom_vilom_name.mp3',
-  '/audio/pranayama/bahya_name.mp3',
-  '/audio/pranayama/bhastrika_name.mp3',
-  '/audio/pranayama/bhramari_name.mp3',
-  '/audio/pranayama/kapalbhati_name.mp3',
-  '/audio/pranayama/udgeeth_name.mp3',
-  '/audio/pranayama/ujjayi_name.mp3',
-];
-
-// Install: Pre-cache shell assets & core classical timer audio without disrupting active session
+// Install: Pre-cache critical application shell only
+// Nonessential audio is cached progressively on-demand to keep mobile launch fast
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    Promise.all([
-      caches.open(SHELL_CACHE).then((cache) => cache.addAll(PRECACHE_SHELL)),
-      caches.open(AUDIO_CACHE).then((cache) => cache.addAll(PRECACHE_AUDIO)),
-    ]).catch((err) => {
-      console.warn('[ServiceWorker] Pre-cache warning:', err);
-    })
+    caches
+      .open(SHELL_CACHE)
+      .then((cache) => cache.addAll(PRECACHE_SHELL))
+      .catch((err) => {
+        console.warn('[ServiceWorker] Shell pre-cache warning:', err);
+      })
   );
 });
 
@@ -99,6 +84,20 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Strict Exclusion for local development & Turbopack/HMR:
+  // Bypass /_next/ for localhost, local domain, and local IP addresses (192.168.*, 10.*, 172.16-31.*)
+  const isDevHost =
+    url.hostname === 'localhost' ||
+    url.hostname === '127.0.0.1' ||
+    url.hostname.endsWith('.local') ||
+    /^192\.168\.\d+\.\d+$/.test(url.hostname) ||
+    /^10\.\d+\.\d+\.\d+$/.test(url.hostname) ||
+    /^172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+$/.test(url.hostname);
+
+  if (isDevHost && url.pathname.startsWith('/_next/')) {
+    return;
+  }
+
   // 2. Navigation requests (HTML pages): Network-First with offline fallback
   if (request.mode === 'navigate' || request.destination === 'document') {
     event.respondWith(
@@ -123,7 +122,7 @@ self.addEventListener('fetch', (event) => {
           if (homeFallback) return homeFallback;
 
           return new Response(
-            '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Pranayama Times — Offline</title></head><body style="background:#EDE8DC;color:#263F35;font-family:sans-serif;padding:2rem;text-align:center;"><h1>You are offline</h1><p>Your breathing timer and cached routines remain available at <a href="/practice" style="color:#B97755;">/practice</a>.</p></body></html>',
+            '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Pranayama Times — Offline</title></head><body style="background:#FAF7F2;color:#1A2D25;font-family:sans-serif;padding:2rem;text-align:center;"><h1>You are offline</h1><p>Your breathing timer and cached routines remain available at <a href="/practice" style="color:#FA5A2A;">/practice</a>.</p></body></html>',
             { headers: { 'Content-Type': 'text/html' } }
           );
         })
@@ -157,7 +156,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 4. Next.js Static Assets (/_next/static/...): Cache-First
+  // 4. Next.js Static Assets (/_next/static/...): Network-First or Fallback-to-Network
   if (url.pathname.startsWith('/_next/static/')) {
     event.respondWith(
       caches.match(request).then((cachedStatic) => {
@@ -169,75 +168,46 @@ self.addEventListener('fetch', (event) => {
             caches.open(STATIC_CACHE).then((cache) => cache.put(request, staticClone));
           }
           return networkStatic;
+        }).catch(() => {
+          return cachedStatic || new Response(null, { status: 404 });
         });
       })
     );
     return;
   }
 
-  // 5. Images and icons: Stale-While-Revalidate
+  // 5. Image and Font assets: Cache-First
   if (
+    url.pathname.startsWith('/images/') ||
     url.pathname.endsWith('.png') ||
-    url.pathname.endsWith('.svg') ||
     url.pathname.endsWith('.jpg') ||
+    url.pathname.endsWith('.jpeg') ||
+    url.pathname.endsWith('.svg') ||
     url.pathname.endsWith('.webp') ||
-    url.pathname.endsWith('.ico')
+    url.pathname.endsWith('.woff2')
   ) {
     event.respondWith(
-      caches.match(request).then((cachedImg) => {
-        const fetchPromise = fetch(request).then((networkImg) => {
-          if (networkImg && networkImg.ok && networkImg.status === 200) {
-            const imgClone = networkImg.clone();
-            caches.open(SHELL_CACHE).then((cache) => cache.put(request, imgClone));
-          }
-          return networkImg;
-        }).catch(() => cachedImg);
+      caches.match(request).then((cachedAsset) => {
+        if (cachedAsset) return cachedAsset;
 
-        return cachedImg || fetchPromise;
+        return fetch(request).then((networkAsset) => {
+          if (networkAsset && networkAsset.ok && networkAsset.status === 200) {
+            const assetClone = networkAsset.clone();
+            caches.open(STATIC_CACHE).then((cache) => cache.put(request, assetClone));
+          }
+          return networkAsset;
+        });
       })
     );
+    return;
   }
-});
 
-// Push: Listen for incoming daily practice reminders
-self.addEventListener('push', (event) => {
-  if (!event.data) return;
-
-  try {
-    const data = event.data.json();
-    const title = data.title || '🧘 Pranayama Sadhana';
-    const options = {
-      body: data.body || 'Time for your daily breathing practice.',
-      icon: '/icon-192.png',
-      badge: '/favicon-32.png',
-      tag: 'pranayama-reminder',
-      renotify: true,
-      data: {
-        url: (data.data && data.data.url) || '/',
-      },
-    };
-
-    event.waitUntil(self.registration.showNotification(title, options));
-  } catch (err) {
-    console.warn('[ServiceWorker] Push data parse error:', err);
-  }
-});
-
-// Notification Click: Focus existing app tab or navigate to /
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  const targetUrl = (event.notification.data && event.notification.data.url) || '/';
-
-  event.waitUntil(
-    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      for (const client of clientList) {
-        if (client.url.includes(self.location.origin) && 'focus' in client) {
-          return client.focus();
-        }
-      }
-      if (self.clients.openWindow) {
-        return self.clients.openWindow(targetUrl);
-      }
+  // 6. Default Network Fallback
+  event.respondWith(
+    fetch(request).catch(async () => {
+      const match = await caches.match(request);
+      if (match) return match;
+      return new Response(null, { status: 404 });
     })
   );
 });

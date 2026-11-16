@@ -46,13 +46,14 @@ function request(method, urlPath, body = null, headers = {}) {
   });
 }
 
-async function waitForServer(maxAttempts = 35) {
+async function waitForServer(maxAttempts = 15) {
   for (let i = 0; i < maxAttempts; i++) {
     try {
       const res = await request('GET', '/manifest.webmanifest');
       if (res.status === 200) return true;
-    } catch {
-      // server still starting
+      console.log(`Probe returned status ${res.status}`);
+    } catch (err) {
+      if (i % 5 === 0) console.log(`Waiting for server on 127.0.0.1:${PORT}: ${err.message}`);
     }
     await new Promise((r) => setTimeout(r, 1000));
   }
@@ -135,11 +136,11 @@ async function waitForServer(maxAttempts = 35) {
         manifestRes.body.start_url === '/'
     );
 
-    // C. Timer Page metadata includes manifest link
-    const timerHtml = await request('GET', '/practice');
+    // C. Verify /practice compatibility: never advertises rel="manifest" on the marketing domain
+    const timerHtml = await request('GET', '/practice', null, { Host: 'pranayamatimes.org' });
     assert(
-      '5. Timer Page advertises PWA Manifest',
-      typeof timerHtml.body === 'string' && timerHtml.body.includes('rel="manifest"')
+      '5. Manifest Isolation: /practice on marketing domain DOES NOT advertise PWA Manifest',
+      typeof timerHtml.body === 'string' && !timerHtml.body.includes('rel="manifest"')
     );
 
     // =========================================================
