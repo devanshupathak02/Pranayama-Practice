@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { useAppUrl } from "@/lib/hooks/useAppUrl";
 import { useDisplayMode } from "@/lib/hooks/useDisplayMode";
+import { useInstallPrompt } from "@/components/pwa/InstallContext";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 
 export const Navbar: React.FC = () => {
@@ -14,6 +15,7 @@ export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const appUrl = useAppUrl();
   const { isTimerApp } = useDisplayMode();
+  const { triggerAppCta } = useInstallPrompt();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -89,6 +91,7 @@ export const Navbar: React.FC = () => {
           <div className="hidden md:flex items-center gap-3">
             <a
               href={appUrl}
+              onClick={triggerAppCta}
               className="inline-flex items-center gap-2 bg-[#263F35] hover:bg-[#1A2D25] text-[#FAF7F2] px-5 py-2.5 rounded-xl font-medium text-sm border border-[#263F35] shadow-xs hover:shadow-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#263F35]"
             >
               <span>Open Timer App</span>
@@ -100,6 +103,7 @@ export const Navbar: React.FC = () => {
           <div className="flex md:hidden items-center gap-2">
             <a
               href={appUrl}
+              onClick={triggerAppCta}
               className="inline-flex items-center gap-1.5 bg-[#263F35] text-[#FAF7F2] px-3.5 py-1.5 rounded-lg text-xs font-medium"
             >
               <span>Timer</span>
@@ -144,6 +148,10 @@ export const Navbar: React.FC = () => {
           <div className="pt-2 border-t border-[#D6C6A5]/40 flex flex-col gap-2">
             <a
               href={appUrl}
+              onClick={(e) => {
+                setIsOpen(false);
+                triggerAppCta(e);
+              }}
               className="w-full inline-flex items-center justify-center gap-2 bg-[#263F35] hover:bg-[#1A2D25] text-[#FAF7F2] px-4 py-3 rounded-xl font-medium text-sm transition-colors text-center"
             >
               <span>Open Timer App</span>

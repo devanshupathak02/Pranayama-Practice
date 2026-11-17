@@ -1,51 +1,15 @@
 'use client';
 
 import React, { useEffect, useState, useSyncExternalStore } from 'react';
-import { Download, Share2, PlusSquare, X } from 'lucide-react';
+import { Download, X } from 'lucide-react';
 import { startupMetrics } from '@/lib/performance/startupMetrics';
-
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
-}
+import { useInstallPrompt } from '@/components/pwa/InstallContext';
 
 const noopSubscribe = () => () => { };
 
 export function PwaManager() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [showIosGuide, setShowIosGuide] = useState(false);
+  const { deferredPrompt, isStandalone, isIos, promptToInstall, openModal } = useInstallPrompt();
   const [dismissed, setDismissed] = useState(false);
-
-  // 1. Detect Standalone Mode via useSyncExternalStore (React 19 compliant)
-  const isStandalone = useSyncExternalStore(
-    (callback) => {
-      if (typeof window === 'undefined') return () => { };
-      const mql = window.matchMedia('(display-mode: standalone)');
-      mql.addEventListener('change', callback);
-      return () => mql.removeEventListener('change', callback);
-    },
-    () => {
-      if (typeof window === 'undefined') return false;
-      return (
-        window.matchMedia('(display-mode: standalone)').matches ||
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (navigator as any).standalone === true
-      );
-    },
-    () => false
-  );
-
-  // 2. Detect iOS Device via useSyncExternalStore
-  const isIos = useSyncExternalStore(
-    noopSubscribe,
-    () => {
-      if (typeof window === 'undefined') return false;
-      const ua = navigator.userAgent.toLowerCase();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return /iphone|ipad|ipod/.test(ua) && !(window as any).MSStream;
-    },
-    () => false
-  );
 
   // 3. Detect App Subdomain: PWA features are strictly isolated to app.pranayamatimes.org
   const isAppSubdomain = useSyncExternalStore(
@@ -120,34 +84,21 @@ export function PwaManager() {
         return;
       }
     }
-
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-    };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    };
   }, [isAppSubdomain]);
 
   const handleInstallClick = async () => {
     if (deferredPrompt) {
-      await deferredPrompt.prompt();
-      const choiceResult = await deferredPrompt.userChoice;
-      if (choiceResult.outcome === 'accepted') {
-        setDeferredPrompt(null);
+      const outcome = await promptToInstall();
+      if (outcome === 'accepted') {
         setDismissed(true);
       }
-    } else if (isIos) {
-      setShowIosGuide(true);
+    } else {
+      openModal();
     }
   };
 
   const handleDismiss = () => {
     setDismissed(true);
-    setShowIosGuide(false);
     try {
       localStorage.setItem('pranayama_install_dismissed_at', Date.now().toString());
     } catch {
@@ -223,68 +174,6 @@ export function PwaManager() {
           </button>
         </div>
       </div>
-
-      {/* iOS Installation Instructions Modal */}
-      {showIosGuide && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 bg-[#263F35]/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-4 animate-fade-in"
-        >
-          <div className="bg-[#FAF7F2] border border-[#263F35]/20 rounded-3xl p-6 max-w-sm w-full shadow-2xl text-[#263F35]">
-            <div className="flex items-center justify-between pb-3 border-b border-[#263F35]/10">
-              <h3 className="font-serif text-lg font-medium">Install on iPhone / iPad</h3>
-              <button
-                type="button"
-                onClick={() => setShowIosGuide(false)}
-                className="p-1 text-[#263F35]/60 hover:text-[#263F35]"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <ol className="mt-4 space-y-3.5 text-xs text-[#263F35]/80 leading-relaxed">
-              <li className="flex items-start gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-[#EDE8DC] text-[#263F35] font-semibold flex items-center justify-center shrink-0">
-                  1
-                </span>
-                <span>
-                  In <strong>Safari</strong>, tap the <strong>Share</strong> button at the bottom of the screen:
-                  <Share2 className="inline-block w-4 h-4 mx-1 text-[#B97755]" />
-                </span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-[#EDE8DC] text-[#263F35] font-semibold flex items-center justify-center shrink-0">
-                  2
-                </span>
-                <span>
-                  Scroll down the menu and tap <strong>Add to Home Screen</strong>:
-                  <PlusSquare className="inline-block w-4 h-4 mx-1 text-[#263F35]" />
-                </span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-[#EDE8DC] text-[#263F35] font-semibold flex items-center justify-center shrink-0">
-                  3
-                </span>
-                <span>
-                  Tap <strong>Add</strong> in the top right corner. The icon will appear on your Home Screen.
-                </span>
-              </li>
-            </ol>
-
-            <button
-              type="button"
-              onClick={() => {
-                setShowIosGuide(false);
-                handleDismiss();
-              }}
-              className="mt-6 w-full py-2.5 rounded-xl bg-[#263F35] text-[#FAF7F2] text-xs font-medium hover:bg-[#82947A] transition-colors"
-            >
-              Got It
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
 }

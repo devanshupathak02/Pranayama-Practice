@@ -6,6 +6,8 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { PwaManager } from "@/components/PwaManager";
 import { PwaManifestLink } from "@/components/pwa/PwaManifestLink";
+import { InstallProvider } from "@/components/pwa/InstallContext";
+import { InstallOnboardingModal } from "@/components/pwa/InstallOnboardingModal";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -103,10 +105,13 @@ export default function RootLayout({
         <PwaManifestLink />
       </head>
       <body className="min-h-full flex flex-col bg-[#EDE8DC] text-[#263F35] selection:bg-[#82947A] selection:text-[#FAF7F2]">
-        <Navbar />
-        <main className="flex-1 flex flex-col">{children}</main>
-        <Footer />
-        <PwaManager />
+        <InstallProvider>
+          <Navbar />
+          <main className="flex-1 flex flex-col">{children}</main>
+          <Footer />
+          <PwaManager />
+          <InstallOnboardingModal />
+        </InstallProvider>
       </body>
     </html>
   );

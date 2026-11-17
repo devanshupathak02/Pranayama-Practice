@@ -4,9 +4,11 @@ import React from "react";
 import Image from "next/image";
 import { ArrowRight, Volume2, Sparkles, CheckCircle2 } from "lucide-react";
 import { useAppUrl } from "@/lib/hooks/useAppUrl";
+import { useInstallPrompt } from "@/components/pwa/InstallContext";
 
 export function AppCtaSection() {
   const appUrl = useAppUrl();
+  const { triggerAppCta } = useInstallPrompt();
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -51,6 +53,7 @@ export function AppCtaSection() {
             <div className="pt-4 flex flex-wrap items-center gap-4">
               <a
                 href={appUrl}
+                onClick={triggerAppCta}
                 className="inline-flex items-center gap-2.5 bg-[#263F35] hover:bg-[#1A2D25] text-[#FAF7F2] px-8 py-4 rounded-2xl font-medium text-base shadow-sm hover:shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#263F35]"
               >
                 <span>Open Pranayama Timer</span>

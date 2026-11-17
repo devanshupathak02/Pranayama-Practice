@@ -8,6 +8,7 @@ import { PracticeCard } from "@/components/PracticeCard";
 import { ArticleCard } from "@/components/ArticleCard";
 import { AppCtaSection } from "@/components/AppCtaSection";
 import { NewsletterSection } from "@/components/NewsletterSection";
+import { AppCtaButton } from "@/components/pwa/AppCtaButton";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -52,14 +53,13 @@ export default async function HomePage() {
 
               {/* Primary & Secondary Actions */}
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
-                <Link
-                  href="/practice"
+                <AppCtaButton
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-[#263F35] hover:bg-[#1A2D25] text-[#FAF7F2] px-8 py-4 rounded-2xl font-medium text-base shadow-xs hover:shadow-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#263F35]"
                 >
                   <Wind className="w-4 h-4 text-[#D6C6A5]" />
                   <span>Start Breathing</span>
                   <ArrowRight className="w-4 h-4 opacity-80" />
-                </Link>
+                </AppCtaButton>
 
                 <Link
                   href="/journal"
