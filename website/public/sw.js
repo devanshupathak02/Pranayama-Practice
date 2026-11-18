@@ -12,7 +12,7 @@
  * - Security: Strictly bypasses /api/* routes, authentication tokens, and private user records.
  */
 
-const CACHE_VERSION = 'v2.4.0';
+const CACHE_VERSION = 'v2.5.0';
 const SHELL_CACHE = `pranayama-shell-${CACHE_VERSION}`;
 const STATIC_CACHE = `pranayama-static-${CACHE_VERSION}`;
 const AUDIO_CACHE = `pranayama-audio-${CACHE_VERSION}`;
@@ -21,6 +21,7 @@ const PRECACHE_SHELL = [
   '/',
   '/practice',
   '/manifest.webmanifest',
+  '/favicon.ico',
   '/favicon.png',
   '/favicon-32.png',
   '/favicon-16.png',

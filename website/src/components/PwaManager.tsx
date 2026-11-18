@@ -11,7 +11,7 @@ export function PwaManager() {
   const { deferredPrompt, isStandalone, isIos, promptToInstall, openModal } = useInstallPrompt();
   const [dismissed, setDismissed] = useState(false);
 
-  // 3. Detect App Subdomain: PWA features are strictly isolated to app.pranayamatimes.org
+  // 3. Detect App Subdomain (for in-app banner display)
   const isAppSubdomain = useSyncExternalStore(
     noopSubscribe,
     () => {
@@ -26,13 +26,9 @@ export function PwaManager() {
     () => false
   );
 
-  // 4. Register Service Worker & capture install prompt ONLY on app subdomain (deferred to idle)
+  // 4. Register Service Worker on client (deferred to post-hydration idle)
+  // Required for offline audio caching, push reminders, and PWA installability
   useEffect(() => {
-    // Strictly isolate PWA registration to app subdomain: Never register on main marketing website
-    if (!isAppSubdomain) {
-      return;
-    }
-
     const initServiceWorker = () => {
       if ('serviceWorker' in navigator) {
         startupMetrics.mark('sw_init_start');
@@ -75,16 +71,7 @@ export function PwaManager() {
         setTimeout(initServiceWorker, 1000);
       }, { once: true });
     }
-
-    const dismissedAt = localStorage.getItem('pranayama_install_dismissed_at');
-    if (dismissedAt) {
-      const daysSince = (Date.now() - parseInt(dismissedAt, 10)) / (1000 * 60 * 60 * 24);
-      if (daysSince < 7) {
-        // Already dismissed recently
-        return;
-      }
-    }
-  }, [isAppSubdomain]);
+  }, []);
 
   const handleInstallClick = async () => {
     if (deferredPrompt) {

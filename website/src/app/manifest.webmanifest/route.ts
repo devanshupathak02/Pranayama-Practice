@@ -3,10 +3,12 @@ import { NextResponse } from 'next/server';
 export const dynamic = 'force-static';
 
 export async function GET() {
+  const isDev = process.env.NODE_ENV === 'development';
+
   const manifest = {
-    id: '/',
+    id: 'pranayama-times',
     name: 'Pranayama Times',
-    short_name: 'Pranayama',
+    short_name: 'Pranayama Times',
     description: 'Classical pranayama breathing timer and guided yoga nidra by Still Mountain.',
     start_url: '/',
     scope: '/',
@@ -18,25 +20,25 @@ export async function GET() {
     categories: ['health', 'lifestyle', 'wellness', 'education'],
     icons: [
       {
-        src: '/icon-192.png',
+        src: '/icon-192.png?v=2',
         sizes: '192x192',
         type: 'image/png',
         purpose: 'any',
       },
       {
-        src: '/icon-512.png',
+        src: '/icon-512.png?v=2',
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any',
       },
       {
-        src: '/icon-maskable-512.png',
+        src: '/icon-maskable-512.png?v=2',
         sizes: '512x512',
         type: 'image/png',
         purpose: 'maskable',
       },
       {
-        src: '/apple-touch-icon.png',
+        src: '/apple-touch-icon.png?v=2',
         sizes: '180x180',
         type: 'image/png',
       },
@@ -46,7 +48,7 @@ export async function GET() {
   return NextResponse.json(manifest, {
     headers: {
       'Content-Type': 'application/manifest+json; charset=utf-8',
-      'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800',
+      'Cache-Control': isDev ? 'no-cache, no-store, must-revalidate' : 'public, max-age=3600, must-revalidate',
     },
   });
 }

@@ -14,17 +14,8 @@ export function PwaManifestLink() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const hostname = window.location.hostname.toLowerCase();
-    const isApp =
-      hostname.startsWith('app.') ||
-      hostname.startsWith('timer.') ||
-      window.location.search.includes('subdomain=app') ||
-      window.location.search.includes('pwa_dev=1');
-
-    if (!isApp) {
-      return;
-    }
-
+    // Dynamically attach the manifest on the client so that native beforeinstallprompt
+    // is enabled across both local testing and production, while preserving SSR HTML isolation.
     const existingLink = document.querySelector('link[rel="manifest"]');
     if (!existingLink) {
       const link = document.createElement('link');
